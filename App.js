@@ -1,20 +1,31 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useState } from "react";
+import {
+  SafeAreaView,
+  StatusBar,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
+
+import Login from "./screens/Login";
+import Signup from "./screens/Signup";
 
 export default function App() {
+  const [currentScreen, setCurrentScreen] = useState("login");
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#2D3047" }}>
+      <StatusBar backgroundColor="#2D3047" barStyle="light-content" />
+
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+      >
+        {currentScreen === "login" ? (
+          <Login onNavigate={() => setCurrentScreen("signup")} />
+        ) : (
+          <Signup onNavigate={() => setCurrentScreen("login")} />
+        )}
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});

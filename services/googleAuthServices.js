@@ -5,7 +5,7 @@ WebBrowser.maybeCompleteAuthSession();
 
 export async function signInWithGoogle() {
   const redirectTo = "orgfinder://google-auth";
-  
+
   const { data, error } = await supabase.auth.signInWithOAuth(
     {
       provider: "google",
@@ -19,4 +19,9 @@ export async function signInWithGoogle() {
       },
     },
   );
+}
+
+if (!data) {
+  console.error("Error signing in with Google:", error);
+  return;
 }
