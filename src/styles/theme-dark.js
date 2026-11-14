@@ -1,19 +1,22 @@
 export const colors = {
     // brand
-    primary: "#BC9A7A",
-    primaryPressed: "#A3825F",
+    primary: "#D4B08C",
+    primaryPressed: "#BF9A74",
     onPrimary: "#1F2133",
-    accent: "#8B9CA3",
+    accent: "#9DB0B8",
     onAccent: "#1F2133",
+    support: "#55607A",
+    supportSoft: "#3F4662",
+    onSupport: "#F1ECE6",
 
     // neutral
-    background: "#1F2133",
-    surface: "#2A2E42",
-    elevated: "#424B5F",
-    border: "#4A5469",
-    textPrimary: "#ECE7E1",
-    textSecondary: "#A7B2B8",
-    textDisabled: "#6B7689",
+    background: "#2B2F45",
+    surface: "#363B53",
+    elevated: "#4B546A",
+    border: "#5A647A",
+    textPrimary: "#F1ECE6",
+    textSecondary: "#B4BEC4",
+    textDisabled: "#7B869A",
 
     // status
     success: "#6FCF97",
@@ -33,7 +36,7 @@ export const spacing = {
     md: BASE * 4,
     lg: BASE * 6,
     xl: BASE * 8,
-    '2xl': BASE * 12,
+    "2xl": BASE * 12,
 };
 
 export const fontSizes = {
