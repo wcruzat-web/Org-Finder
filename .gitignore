@@ -40,3 +40,7 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+
+library/test*.m?js
+library/services/test*.m?js

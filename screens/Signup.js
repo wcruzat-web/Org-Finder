@@ -10,6 +10,9 @@ import {
   Alert,
 } from "react-native";
 
+//!wag na ites baguhin, eto na yung connection for our database
+import { registerAccount } from "../library/services/authService.js";
+
 const COLORS = {
   background: "#2D3047",
   gold: "#DDB68E",
@@ -27,10 +30,10 @@ export default function Signup({ onNavigate }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [errors, setError] = useState("");
+  const [errors, setError] = useState({});
 
   //! eto muna yung logic na gamitin kase wala pa usch backend integration
-  const handleSignUp = () => {
+  const handleSignUp = async () => {
     const emailRegex = /^[^\s@]+@cvsu\.edu\.ph$/i;
     const passwordRegex = {
       uppercase: {
@@ -85,7 +88,17 @@ export default function Signup({ onNavigate }) {
       return;
     }
 
-    Alert.alert("Form validated successfully", "Testing success");
+    try {
+      const data = await registerAccount(email, password);
+      console.log("User registered successfully:", data);
+
+      Alert.alert(
+        "Form validated successfully",
+        `${data.user.email} has been registered successfully!`,
+      );
+    } catch (error) {
+      console.error("Error registering user:", error.message);
+    }
   };
 
   return (

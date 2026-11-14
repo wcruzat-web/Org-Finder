@@ -1,4 +1,5 @@
-import React from "react";
+
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -6,8 +7,10 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  Alert,
 } from "react-native";
-import { useState } from "react";
+
+import { loginUser } from "../library/services/authService.js";
 
 const COLORS = {
   background: "#2D3047",
@@ -23,6 +26,39 @@ const stars = Array.from({ length: 35 }, (_, i) => ({
 }));
 
 export default function Login({ onNavigate }) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleLogin = async () => {
+    if (!email.trim() || !password) {
+      Alert.alert("Missing Fields", "Please enter your email and password.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const data = await loginUser(email.trim(), password);
+
+      console.log("Login successful:", data.user);
+
+      Alert.alert(
+        "Login Successful",
+        `Welcome back, ${data.user.email}!`
+      );
+    } catch (error) {
+      console.error("Login error:", error);
+
+      Alert.alert(
+        "Login Failed",
+        error.message || "Something went wrong. Please try again."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <ScrollView
       contentContainerStyle={styles.container}
@@ -50,6 +86,7 @@ export default function Login({ onNavigate }) {
 
       <View style={styles.form}>
         <Text style={styles.title}>Welcome Back</Text>
+
         <Text style={styles.subtitle}>
           Find the right organization for your needs.
         </Text>
@@ -61,6 +98,9 @@ export default function Login({ onNavigate }) {
             placeholderTextColor={COLORS.gray}
             keyboardType="email-address"
             autoCapitalize="none"
+            autoCorrect={false}
+            value={email}
+            onChangeText={setEmail}
           />
 
           <TextInput
@@ -68,6 +108,8 @@ export default function Login({ onNavigate }) {
             placeholder="Password"
             placeholderTextColor={COLORS.gray}
             secureTextEntry
+            value={password}
+            onChangeText={setPassword}
           />
         </View>
 
@@ -75,12 +117,20 @@ export default function Login({ onNavigate }) {
           <Text style={styles.forgotText}>Forgot Password?</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.button}>
-          <Text style={styles.buttonText}>Log In</Text>
+        <TouchableOpacity
+          style={[styles.button, loading && styles.disabledButton]}
+          onPress={handleLogin}
+          disabled={loading}
+        >
+          <Text style={styles.buttonText}>
+            {loading ? "Logging In..." : "Log In"}
+          </Text>
         </TouchableOpacity>
 
         <View style={styles.switchContainer}>
-          <Text style={styles.switchText}>Don't have an account? </Text>
+          <Text style={styles.switchText}>
+            Don't have an account?{" "}
+          </Text>
 
           <TouchableOpacity onPress={onNavigate}>
             <Text style={styles.switchLink}>Sign Up</Text>
@@ -158,6 +208,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginTop: 25,
+  },
+  disabledButton: {
+    opacity: 0.6,
   },
   buttonText: {
     color: COLORS.background,

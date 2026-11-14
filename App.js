@@ -8,6 +8,7 @@ import {
 
 import Login from "./screens/Login";
 import Signup from "./screens/Signup";
+import Signin from "./screens/Signin";
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState("login");
@@ -21,9 +22,9 @@ export default function App() {
         behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
         {currentScreen === "login" ? (
-          <Login onNavigate={() => setCurrentScreen("signup")} />
+          <Login onNavigate={() => setCurrentScreen("signin")} />
         ) : (
-          <Signup onNavigate={() => setCurrentScreen("login")} />
+          <Signin onNavigate={() => setCurrentScreen("login")} />
         )}
       </KeyboardAvoidingView>
     </SafeAreaView>
