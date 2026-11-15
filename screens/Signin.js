@@ -1,4 +1,3 @@
-
 import React from "react";
 import {
   View,
@@ -6,7 +5,11 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  Alert,
 } from "react-native";
+
+//? import this jade para sa google auth
+import { signInWithGoogle } from "../library/services/googleAuthServices.js";
 
 const COLORS = {
   background: "#2D3047",
@@ -22,6 +25,33 @@ const stars = Array.from({ length: 35 }, (_, i) => ({
 }));
 
 export default function Signin({ onNavigate }) {
+  const [loading, setLoading] = React.useState(false);
+
+  const handleGoogleSignIn = async () => {
+    try {
+      setLoading(true);
+
+      const result = await signInWithGoogle();
+
+      if (result.cancelled) return;
+
+      const user = result.user;
+
+      console.log("bai na successful auth mo:", user);
+
+      Alert.alert("Google Sign-In Successful", `Welcome, ${user.email}!`);
+    } catch (error) {
+      console.log("bai may mali sa auth natin:", error);
+
+      Alert.alert(
+        "Google Sign-In Error",
+        "An error occurred during Google Sign-In. Please try again.",
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <ScrollView
       contentContainerStyle={styles.container}
@@ -57,18 +87,17 @@ export default function Signin({ onNavigate }) {
         <TouchableOpacity
           style={styles.googleButton}
           activeOpacity={0.8}
-          onPress={() => {}}
+          onPress={handleGoogleSignIn}
+          disabled={loading}
         >
           <Text style={styles.googleIcon}>G</Text>
           <Text style={styles.googleButtonText}>
-            Continue with Google
+            {loading ? "Connecting..." : "Continue with Google"}
           </Text>
         </TouchableOpacity>
 
         <View style={styles.switchContainer}>
-          <Text style={styles.switchText}>
-            Already have an account?{" "}
-          </Text>
+          <Text style={styles.switchText}>Already have an account? </Text>
 
           <TouchableOpacity onPress={onNavigate}>
             <Text style={styles.switchLink}>Log In</Text>

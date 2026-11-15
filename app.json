@@ -17,6 +17,9 @@
     },
     "web": {
       "favicon": "./assets/app-icon.jpg"
-    }
+    },
+    "plugins": [
+      "expo-web-browser"
+    ]
   }
 }
