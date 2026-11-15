@@ -17,13 +17,17 @@ const renderSource = (source, resizeMode) =>
         <Image source={source} style={styles.fill} resizeMode={resizeMode} />
     );
 
-// Image sources report their own size; elements (SVG) use the aspectRatio prop.
-const getAspectRatio = (source, fallback) => {
-    if (isElement(source)) return fallback;
+const DEFAULT_ASPECT_RATIO = 390 / 160;
+
+const getAspectRatio = (source, aspectRatio) => {
+    if (aspectRatio) return aspectRatio;
+    if (isElement(source) || typeof Image.resolveAssetSource !== "function") {
+        return DEFAULT_ASPECT_RATIO;
+    }
     const asset = Image.resolveAssetSource(source);
     return asset?.width && asset?.height
         ? asset.width / asset.height
-        : fallback;
+        : DEFAULT_ASPECT_RATIO;
 };
 
 function Layer({
@@ -37,7 +41,7 @@ function Layer({
     const {
         source,
         anchor = "top",
-        aspectRatio = 390 / 160,
+        aspectRatio,
         stretch = true,
         fill = false,
         fade,
@@ -58,7 +62,6 @@ function Layer({
             : 1;
 
         if (isTop) {
-            // Drifts up at (speed x scroll). Never moves down, so no gap opens at the top.
             const transform = [
                 {
                     translateY: interpolate(
@@ -69,7 +72,6 @@ function Layer({
                     ),
                 },
             ];
-            // Pulled down past the top: stretch from the top edge to fill the gap
             if (stretch) {
                 transform.push({
                     scale: interpolate(y, [-headerHeight, 0], [2, 1], {
@@ -81,8 +83,6 @@ function Layer({
             return { opacity, transform };
         }
 
-        // Bottom layers live in the scroll content (already moving at speed 1).
-        // Push them down by the difference so they appear to move at `speed`.
         return {
             opacity,
             transform: [
@@ -98,9 +98,8 @@ function Layer({
         };
     });
 
-    // Natural height from the aspect ratio, unless a top layer should fill the whole header
     const fillsHeader = isTop && fill;
-    const layerWidth = width + edgeBleed * 2; // a little wider than the screen, so no gaps at the sides
+    const layerWidth = width + edgeBleed * 2;
     const height = fillsHeader
         ? headerHeight
         : layerWidth / getAspectRatio(source, aspectRatio);
@@ -111,7 +110,6 @@ function Layer({
             style={[
                 isTop ? styles.topLayer : styles.bottomLayer,
                 { left: -edgeBleed, right: -edgeBleed, height },
-                // bottom layers sink a few px under the body, hiding any transparent strip at their base
                 !isTop && { bottom: -bottomBleed },
                 animatedStyle,
             ]}
@@ -124,11 +122,11 @@ function Layer({
 export default function ParallaxHeaderScrollView({
     layers = [],
     headerHeight = 300,
-    bodyColor = "#000000", // must match the fill color of the lowest 'bottom' layer exactly
-    edgeBleed = 2, // px that layers extend past each side of the screen
-    bottomBleed = 3, // px that bottom layers sink under the body
+    bodyColor = "#000000",
+    edgeBleed = 2,
+    bottomBleed = 3,
     headerContent,
-    bottomPadding = 0, // extra room at the end (e.g. floating tab bar)
+    bottomPadding = 0,
     children,
     contentContainerStyle,
     ...scrollProps
@@ -157,7 +155,6 @@ export default function ParallaxHeaderScrollView({
 
     return (
         <View style={[styles.root, { backgroundColor: bodyColor }]}>
-            {/* Behind the scroll view: stays on screen, moves by parallax only */}
             {topLayers.map(renderLayer)}
 
             <Animated.ScrollView
@@ -167,13 +164,11 @@ export default function ParallaxHeaderScrollView({
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={contentContainerStyle}
             >
-                {/* Transparent header area: top layers show through */}
                 <View style={{ height: headerHeight }}>
                     {bottomLayers.map(renderLayer)}
                     <View>{headerContent}</View>
                 </View>
 
-                {/* Opaque body, same color as the lowest bottom layer's fill */}
                 <View
                     style={[
                         styles.body,
@@ -207,6 +202,5 @@ const styles = StyleSheet.create({
         right: 0,
         bottom: 0,
     },
-    // 1px overlap hides any hairline seam between the last layer and the body
     body: { marginTop: -1 },
 });
