@@ -12,6 +12,13 @@ Run the following commands in your project terminal:
 
 ```bash
 npm install @supabase/supabase-js
+npx expo install @react-native-async-storage/async-storage react-native-url-polyfill
+```
+
+### Install Supabase CLI
+
+```bash
+npm install supabase --save-dev
 ```
 
 ### Install Babel Preset Expo
@@ -40,17 +47,37 @@ npx expo customize metro.config.js
 
 ---
 
-## 3. Summary of Commands
+## 3. Supabase CLI & VS Code Setup
+
+install n'yo deno sa vscode extension
+
+login sa supabase gamit:
+
+```bash
+npx supabase login
+npx supabase link --project-ref puivenvticyywronifuz
+```
+
+---
+
+## 4. Summary of Commands
 
 For convenience, here are all the commands in one place:
 
 ```bash
 npm install @supabase/supabase-js
+npx expo install @react-native-async-storage/async-storage react-native-url-polyfill
+npm install supabase --save-dev
 npx expo install babel-preset-expo
 
 npx expo customize babel.config.js
 npx expo customize metro.config.js
+
+npx supabase login
+npx supabase link --project-ref puivenvticyywronifuz
 ```
+
+---
 
 # Project Structure
 # OrgFinder
@@ -69,3 +96,4 @@ OrgFinder/
 ├── pages/
 └── services/
     └── googleAuthServices.js
+```

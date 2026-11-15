@@ -1,13 +1,9 @@
-import { registerAccount } from "./authService.js";
+import { registerUser } from "./authService.js";
 
-const tryRegistration = async () => {
-  try {
-    const data = await registerAccount("error@cvsu.edu.ph", "Trial@123");
+try {
+  const result = await registerUser("wency.cruzat@cvsu.edu.ph");
 
-    console.log("User registered successfully:", data);
-  } catch (error) {
-    console.error("Error during registration:", error.message);
-  }
-};
-
-tryRegistration();
+  console.log("Registration successful:", result);
+} catch (error) {
+  console.error("Registration failed:", error.message);
+}

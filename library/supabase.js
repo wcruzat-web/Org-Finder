@@ -1,4 +1,4 @@
-import "react-native-url-polyfill/auto";
+import "react-native-url-polyfill/auto.js";
 
 import { AppState, Platform } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
