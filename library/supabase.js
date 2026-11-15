@@ -1,16 +1,14 @@
 import "react-native-url-polyfill/auto";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { AppState, Platform } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createClient } from "@supabase/supabase-js";
 
 const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
 const supabaseKey = process.env.EXPO_PUBLIC_SUPABASE_KEY;
 
 if (!supabaseUrl || !supabaseKey) {
-  throw new Error(
-    "Supabase URL or Key is not defined in the environment variables.",
-  );
+  throw new Error("Missing Supabase environment variables.");
 }
 
 const supabase = createClient(supabaseUrl, supabaseKey, {
@@ -22,6 +20,7 @@ const supabase = createClient(supabaseUrl, supabaseKey, {
   },
 });
 
+//* bali automatically nito ima-manage yung token refresh based on app state
 if (Platform.OS !== "web") {
   AppState.addEventListener("change", (state) => {
     if (state === "active") {

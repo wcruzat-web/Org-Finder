@@ -1,15 +1,13 @@
-import React from "react";
+
+import React, { useState } from "react";
 import {
   View,
   Text,
+  TextInput,
   TouchableOpacity,
   StyleSheet,
   ScrollView,
-  Alert,
 } from "react-native";
-
-//? import this jade para sa google auth
-import { signInWithGoogle } from "../library/services/googleAuthServices.js";
 
 const COLORS = {
   background: "#2D3047",
@@ -25,32 +23,9 @@ const stars = Array.from({ length: 35 }, (_, i) => ({
 }));
 
 export default function Signin({ onNavigate }) {
-  const [loading, setLoading] = React.useState(false);
-
-  const handleGoogleSignIn = async () => {
-    try {
-      setLoading(true);
-
-      const result = await signInWithGoogle();
-
-      if (result.cancelled) return;
-
-      const user = result.user;
-
-      console.log("bai na successful auth mo:", user);
-
-      Alert.alert("Google Sign-In Successful", `Welcome, ${user.email}!`);
-    } catch (error) {
-      console.log("bai may mali sa auth natin:", error);
-
-      Alert.alert(
-        "Google Sign-In Error",
-        "An error occurred during Google Sign-In. Please try again.",
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   return (
     <ScrollView
@@ -84,20 +59,48 @@ export default function Signin({ onNavigate }) {
           Find the right organization for your needs.
         </Text>
 
+        <View style={styles.inputs}>
+          <TextInput
+            style={styles.input}
+            placeholder="Email address"
+            placeholderTextColor={COLORS.gray}
+            keyboardType="email-address"
+            autoCapitalize="none"
+            autoCorrect={false}
+            value={email}
+            onChangeText={setEmail}
+          />
+
+          <TextInput
+            style={styles.input}
+            placeholder="Password"
+            placeholderTextColor={COLORS.gray}
+            secureTextEntry
+            value={password}
+            onChangeText={setPassword}
+          />
+
+          <TextInput
+            style={styles.input}
+            placeholder="Confirm Password"
+            placeholderTextColor={COLORS.gray}
+            secureTextEntry
+            value={confirmPassword}
+            onChangeText={setConfirmPassword}
+          />
+        </View>
+
         <TouchableOpacity
-          style={styles.googleButton}
+          style={styles.button}
           activeOpacity={0.8}
-          onPress={handleGoogleSignIn}
-          disabled={loading}
         >
-          <Text style={styles.googleIcon}>G</Text>
-          <Text style={styles.googleButtonText}>
-            {loading ? "Connecting..." : "Continue with Google"}
-          </Text>
+          <Text style={styles.buttonText}>Create Account</Text>
         </TouchableOpacity>
 
         <View style={styles.switchContainer}>
-          <Text style={styles.switchText}>Already have an account? </Text>
+          <Text style={styles.switchText}>
+            Already have an account?{" "}
+          </Text>
 
           <TouchableOpacity onPress={onNavigate}>
             <Text style={styles.switchLink}>Log In</Text>
@@ -147,24 +150,30 @@ const styles = StyleSheet.create({
     marginTop: 8,
     marginBottom: 30,
   },
-  googleButton: {
+  inputs: {
+    gap: 14,
+  },
+  input: {
     height: 52,
-    backgroundColor: COLORS.white,
+    backgroundColor: "#373A51",
+    borderRadius: 12,
+    paddingHorizontal: 17,
+    color: COLORS.white,
+    fontSize: 14,
+    borderWidth: 1,
+    borderColor: "#454960",
+  },
+  button: {
+    height: 50,
+    backgroundColor: COLORS.gold,
     borderRadius: 30,
-    flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    gap: 12,
-    marginTop: 10,
+    marginTop: 25,
   },
-  googleIcon: {
-    color: "#4285F4",
-    fontSize: 19,
-    fontWeight: "700",
-  },
-  googleButtonText: {
-    color: "#2D3047",
-    fontSize: 14,
+  buttonText: {
+    color: COLORS.background,
+    fontSize: 15,
     fontWeight: "600",
   },
   switchContainer: {

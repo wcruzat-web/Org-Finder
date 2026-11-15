@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import {
   View,
@@ -8,9 +9,6 @@ import {
   ScrollView,
   Alert,
 } from "react-native";
-
-import { loginUser } from "../library/services/authService.js";
-import { signInWithGoogle } from "../library/services/googleAuthServices.js";
 
 const COLORS = {
   background: "#2D3047",
@@ -28,56 +26,12 @@ const stars = Array.from({ length: 35 }, (_, i) => ({
 export default function Login({ onNavigate }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
 
-  const handleGoogleLogin = async () => {
-    try {
-      setLoading(true);
-
-      const result = await signInWithGoogle();
-
-      if (result.cancelled) return;
-
-      const user = result.user;
-
-      Alert.alert("Google Sign-In Successful", `Welcome, ${user.email}!`);
-
-      console.log("Google Sign-In successful:", user);
-    } catch (error) {
-      console.error("Google Sign-In error:", error);
-
-      Alert.alert(
-        "Google Sign-In Error",
-        error.message ||
-          "An error occurred during Google Sign-In. Please try again.",
-      );
-    }
-  };
-
-  const handleLogin = async () => {
-    if (!email.trim() || !password) {
-      Alert.alert("Missing Fields", "Please enter your email and password.");
-      return;
-    }
-
-    try {
-      setLoading(true);
-
-      const data = await loginUser(email.trim(), password);
-
-      console.log("Login successful:", data.user);
-
-      Alert.alert("Login Successful", `Welcome back, ${data.user.email}!`);
-    } catch (error) {
-      console.error("Login error:", error);
-
-      Alert.alert(
-        "Login Failed",
-        error.message || "Something went wrong. Please try again.",
-      );
-    } finally {
-      setLoading(false);
-    }
+  const handleLogin = () => {
+    Alert.alert(
+      "Coming Soon",
+      "Authentication has not been connected yet.",
+    );
   };
 
   return (
@@ -139,30 +93,16 @@ export default function Login({ onNavigate }) {
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={[styles.button, loading && styles.disabledButton]}
+          style={styles.button}
           onPress={handleLogin}
-          disabled={loading}
         >
-          <Text style={styles.buttonText}>
-            {loading ? "Logging In..." : "Log In"}
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.googleButton}
-          onPress={handleGoogleLogin}
-          disabled={loading}
-          activeOpacity={0.8}
-        >
-          <Text style={styles.googleIcon}>G</Text>
-
-          <Text style={styles.googleButtonText}>
-            {loading ? "Connecting..." : "Continue with Google"}
-          </Text>
+          <Text style={styles.buttonText}>Log In</Text>
         </TouchableOpacity>
 
         <View style={styles.switchContainer}>
-          <Text style={styles.switchText}>Don't have an account? </Text>
+          <Text style={styles.switchText}>
+            Don't have an account?{" "}
+          </Text>
 
           <TouchableOpacity onPress={onNavigate}>
             <Text style={styles.switchLink}>Sign Up</Text>
@@ -241,9 +181,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 25,
   },
-  disabledButton: {
-    opacity: 0.6,
-  },
   buttonText: {
     color: COLORS.background,
     fontSize: 15,
@@ -261,28 +198,6 @@ const styles = StyleSheet.create({
   switchLink: {
     color: COLORS.gold,
     fontSize: 12,
-    fontWeight: "600",
-  },
-  googleButton: {
-    height: 52,
-    backgroundColor: COLORS.white,
-    borderRadius: 30,
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    gap: 12,
-    marginTop: 15,
-  },
-
-  googleIcon: {
-    color: "#4285F4",
-    fontSize: 19,
-    fontWeight: "700",
-  },
-
-  googleButtonText: {
-    color: COLORS.background,
-    fontSize: 14,
     fontWeight: "600",
   },
 });
