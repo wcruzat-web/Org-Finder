@@ -4,7 +4,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import ParallaxHeaderScrollView from "../components/ParallaxHeaderScrollView";
 import Header from "../components/Header";
-import theme from "../styles/theme-dark";
+import theme, { spacing } from "../styles/theme-dark";
 import StarsSvg from "../../assets/header/stars.svg";
 import MountainsFrontSvg from "../../assets/header/mountains-front.svg";
 
@@ -49,7 +49,7 @@ export default function HomeScreen() {
             layers={HEADER_LAYERS}
             headerHeight={headerHeight}
             bodyColor={colors.background}
-            bottomPadding={120}
+            bottomPadding={spacing.md}
             headerContent={
                 <>
                     <View

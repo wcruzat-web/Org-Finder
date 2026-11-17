@@ -38,7 +38,7 @@ export default function Header({
     variant = "default",
     onBack,
     onMenuPress,
-    fadeHeight = spacing["2xl"], // space under the row used by the fade; 0 = no fade space
+    fadeHeight = spacing.lg, // space under the row used by the fade; 0 = no fade space
     safeArea = true, // add the status bar / notch height on top
     }) {
     const insets = useSafeAreaInsets();
@@ -48,14 +48,14 @@ export default function Header({
         <LinearGradient
             // Solid for the top quarter, then fades out. Same color at 0 alpha avoids a gray fringe.
             colors={[colors.background, `${colors.background}00`]}
-            locations={[0.25, 1]}
+            locations={[0.35, 1]}
             // The fade area is only decoration: let touches pass through to what's underneath
             pointerEvents="box-none"
             style={[
                 styles.container,
                 {
-                    paddingTop: spacing.lg + (safeArea ? insets.top : 0),
-                    paddingBottom: fadeHeight,
+                    paddingTop: spacing.lg,
+                    paddingBottom: fadeHeight+spacing.xs,
                 },
             ]}
         >

@@ -10,6 +10,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Header from "../components/Header";
 import BottomNav from "../components/BottomNav";
 import HomeScreen from "../screens/HomeScreen";
+import ProfileScreen from "../screens/ProfileScreen.js";
 import theme from "../styles/theme-dark";
 
 import logoutUser from "../../library/services/authService.js";
@@ -54,7 +55,7 @@ export default function MainTabs({ onLogout }) {
         // The header floats over the page so content can scroll under its fade
         headerTransparent: true,
         header: ({ options }) => (
-          <Header title={options.title} onMenuPress={onLogout} />
+          <Header title={options.title} />
         ),
         sceneStyle: { backgroundColor: colors.background },
       }}
@@ -63,6 +64,11 @@ export default function MainTabs({ onLogout }) {
         name="Discover"
         component={HomeScreen}
         options={{ title: "Discover" }}
+      />
+      <Tab.Screen
+        name="Profile"
+        component={(props) => <ProfileScreen {...props} onLogout={onLogout} />}
+        options={{ title: "Profile" }}
       />
       {/* Later, named to match BottomNav's keys: Applications, Orgs, Alerts, Profile */}
     </Tab.Navigator>
