@@ -1,6 +1,7 @@
 import React from "react";
 import { StyleSheet, Text, View, useWindowDimensions } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useHeaderHeight } from "@react-navigation/elements";
 import ParallaxHeaderScrollView from "../components/ParallaxHeaderScrollView";
 import Header from "../components/Header";
 import theme from "../styles/theme-dark";
@@ -40,6 +41,7 @@ const HEADER_LAYERS = [
 export default function HomeScreen() {
     const insets = useSafeAreaInsets();
     const { width } = useWindowDimensions();
+    const navHeaderHeight = useHeaderHeight();
     const headerHeight = width * (219.071 / 390) + insets.top;
 
     return (
@@ -50,8 +52,12 @@ export default function HomeScreen() {
             bottomPadding={120}
             headerContent={
                 <>
-                    <Header title="Discover" onMenuPress={() => {}} />
-                    <View style={styles.welcome}>
+                    <View
+                        style={[
+                            styles.welcome,
+                            { paddingTop: navHeaderHeight + 12 },
+                        ]}
+                    >
                         <Text style={styles.greeting}>Greetings, User.</Text>
                         <Text style={styles.subtitle}>
                             What would you like to do today?
@@ -60,7 +66,6 @@ export default function HomeScreen() {
                 </>
             }
         >
-            {/* Recommended + Search Bar */}
             <View style={styles.content}>
                 <Text style={styles.sectionTitle}>Browse organizations</Text>
                 {Array.from({ length: 8 }).map((_, i) => (

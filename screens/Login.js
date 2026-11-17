@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import {
   View,
@@ -9,6 +8,8 @@ import {
   ScrollView,
   Alert,
 } from "react-native";
+
+import { loginUser } from "../library/services/authService.js";
 
 const COLORS = {
   background: "#2D3047",
@@ -23,15 +24,31 @@ const stars = Array.from({ length: 35 }, (_, i) => ({
   size: 8 + (i % 7),
 }));
 
-export default function Login({ onNavigate }) {
+export default function Login({ onNavigate, onLogin }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = () => {
-    Alert.alert(
-      "Coming Soon",
-      "Authentication has not been connected yet.",
-    );
+  const handleLogin = async () => {
+    const normalizedEmail = email.trim().toLowerCase();
+
+    if (!normalizedEmail || !password) {
+      Alert.alert("Missing Fields", "Please enter your email and password.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      await loginUser(normalizedEmail, password);
+      onLogin();
+    } catch (error) {
+      Alert.alert(
+        "Login Failed",
+        error.message || "Something went wrong. Please try again.",
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -83,6 +100,7 @@ export default function Login({ onNavigate }) {
             placeholder="Password"
             placeholderTextColor={COLORS.gray}
             secureTextEntry
+            autoCapitalize="none"
             value={password}
             onChangeText={setPassword}
           />
@@ -93,16 +111,29 @@ export default function Login({ onNavigate }) {
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={styles.button}
+          style={[styles.button, loading && styles.disabledButton]}
           onPress={handleLogin}
+          disabled={loading}
         >
-          <Text style={styles.buttonText}>Log In</Text>
+          <Text style={styles.buttonText}>
+            {loading ? "Logging In..." : "Log In"}
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.googleButton}
+          disabled={loading}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.googleIcon}>G</Text>
+
+          <Text style={styles.googleButtonText}>
+            {loading ? "Connecting..." : "Continue with Google"}
+          </Text>
         </TouchableOpacity>
 
         <View style={styles.switchContainer}>
-          <Text style={styles.switchText}>
-            Don't have an account?{" "}
-          </Text>
+          <Text style={styles.switchText}>Don't have an account? </Text>
 
           <TouchableOpacity onPress={onNavigate}>
             <Text style={styles.switchLink}>Sign Up</Text>
@@ -181,6 +212,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 25,
   },
+  disabledButton: {
+    opacity: 0.6,
+  },
   buttonText: {
     color: COLORS.background,
     fontSize: 15,
@@ -198,6 +232,26 @@ const styles = StyleSheet.create({
   switchLink: {
     color: COLORS.gold,
     fontSize: 12,
+    fontWeight: "600",
+  },
+  googleButton: {
+    height: 52,
+    backgroundColor: COLORS.white,
+    borderRadius: 30,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 12,
+    marginTop: 15,
+  },
+  googleIcon: {
+    color: "#4285F4",
+    fontSize: 19,
+    fontWeight: "700",
+  },
+  googleButtonText: {
+    color: COLORS.background,
+    fontSize: 14,
     fontWeight: "600",
   },
 });

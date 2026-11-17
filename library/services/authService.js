@@ -14,7 +14,7 @@ const validateEmail = (email) => {
   return normalizedEmail;
 };
 
-//? pang register to, if mali logic tapon na natin
+// Register: sends a code and creates the user if they don't exist yet
 export const registerUser = async (email) => {
   const validatedEmail = validateEmail(email);
 
@@ -25,26 +25,113 @@ export const registerUser = async (email) => {
     },
   });
 
-  if (error) throw new Error(error.message);
+  if (error) {
+    throw new Error(error.message);
+  }
 
   return data;
 };
 
-//? pang login if existing si user
-export const loginUser = async (email) => {
-  const validatedEmail = validateEmail(email);
-
-  const { data, error } = await supabase.auth.signInWithOtp({
-    email: validatedEmail,
-    options: {
-      shouldCreateUser: false,
-    },
+// Login: sends a code only if the user already exists
+export const loginUser = async (email, password) => {
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email: validateEmail(email),
+    password,
   });
 
-  if (error) throw new Error(error.message);
+  if (error) {
+    throw new Error(error.message);
+  }
 
   return data;
 };
+
+export const loginWithOtp = async (email) => {
+  const { data, error } = await supabase.auth.signInWithOtp({
+    email: validateEmail(email),
+    options: { shouldCreateUser: false },
+  });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return data;
+};
+
+// Verify: used by both register and login after the user enters the code
+export const verifyOtp = async (email, token) => {
+  const validatedEmail = validateEmail(email);
+
+  const { data, error } = await supabase.auth.verifyOtp({
+    email: validatedEmail,
+    token,
+    type: "email",
+  });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return data; // { user, session }
+};
+
+// Sets the password for the currently signed-in user (works right after verifyOtp)
+export const setAccountPassword = async (password) => {
+  const { data, error } = await supabase.auth.updateUser({ password });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return data;
+};
+
+//? pang register to, if mali logic tapon na natin
+// export const registerUser = async (email) => {
+//   const validatedEmail = validateEmail(email);
+
+//   const { data, error } = await supabase.auth.signInWithOtp({
+//     email: validatedEmail,
+//     options: {
+//       shouldCreateUser: true,
+//     },
+//   });
+
+//   if (error) throw new Error(error.message);
+
+//   return data;
+// };
+
+// //? pang login if existing si user
+// export const loginUser = async (email, password) => {
+//   const { data, error } = await supabase.auth.signInWithPassword({
+//     email,
+//     password,
+//   });
+
+//   if (error) {
+//     throw new Error(error.message);
+//   }
+
+//   return data;
+// };
+
+//aalisin ko to
+// export const loginUser = async (email) => {
+//   const validatedEmail = validateEmail(email);
+
+//   const { data, error } = await supabase.auth.signInWithOtp({
+//     email: validatedEmail,
+//     options: {
+//       shouldCreateUser: false,
+//     },
+//   });
+
+//   if (error) throw new Error(error.message);
+
+//   return data;
+// };
 
 //! pang OTP verification to!!!
 export const verification = async (email, otp) => {

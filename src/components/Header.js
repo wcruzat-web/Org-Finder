@@ -38,9 +38,9 @@ export default function Header({
     variant = "default",
     onBack,
     onMenuPress,
-    fadeHeight = spacing[64], // space under the row used by the fade; 0 = no fade space
+    fadeHeight = spacing["2xl"], // space under the row used by the fade; 0 = no fade space
     safeArea = true, // add the status bar / notch height on top
-}) {
+    }) {
     const insets = useSafeAreaInsets();
     const v = VARIANTS[variant] ?? VARIANTS.default;
 
@@ -54,7 +54,7 @@ export default function Header({
             style={[
                 styles.container,
                 {
-                    paddingTop: spacing[16] + (safeArea ? insets.top : 0),
+                    paddingTop: spacing.lg + (safeArea ? insets.top : 0),
                     paddingBottom: fadeHeight,
                 },
             ]}
@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
-        paddingHorizontal: spacing[16],
+        paddingHorizontal: spacing.lg,
     },
     title: {
         flex: 1,
