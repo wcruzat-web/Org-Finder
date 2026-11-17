@@ -1,7 +1,7 @@
 import supabase from "../supabase.js";
 
 //* validation ng email
-const validateEmail = (email) => {
+export const validateEmail = (email) => {
   const normalizedEmail = email.trim().toLowerCase();
   const emailRegex = /^[^\s@]+@cvsu\.edu\.ph$/;
 
@@ -14,15 +14,17 @@ const validateEmail = (email) => {
   return normalizedEmail;
 };
 
-// Register: sends a code and creates the user if they don't exist yet
-export const registerUser = async (email) => {
+//? register user
+export const registerUser = async (email, password) => {
   const validatedEmail = validateEmail(email);
 
-  const { data, error } = await supabase.auth.signInWithOtp({
+  if (!password) {
+    throw new Error("Password is required.");
+  }
+
+  const { data, error } = await supabase.auth.signUp({
     email: validatedEmail,
-    options: {
-      shouldCreateUser: true,
-    },
+    password: password,
   });
 
   if (error) {
@@ -32,114 +34,55 @@ export const registerUser = async (email) => {
   return data;
 };
 
-// Login: sends a code only if the user already exists
-export const loginUser = async (email, password) => {
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email: validateEmail(email),
-    password,
-  });
+//! do not touch by touch
+
+export const createStudentAccount = async (fullName, course) => {
+  const normalizedFullName = fullName.trim();
+  const normalizedCourse = course.trim();
+
+  if (!normalizedFullName || !normalizedCourse) {
+    throw new Error("Full name and course are required.");
+  }
+
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  if (userError) throw new Error(userError.message);
+
+  if (!user || !user.email) {
+    throw new Error("User not found!");
+  }
+
+  const validatedEmail = validateEmail(user.email);
+
+  const { data, error } = await supabase
+    .from("accounts")
+    .insert({
+      auth_user_id: user.id,
+      email: validatedEmail,
+      full_name: normalizedFullName,
+      course: normalizedCourse,
+    })
+    .select()
+    .single();
 
   if (error) {
+    console.log("Account Insert Error:", error);
     throw new Error(error.message);
   }
 
   return data;
 };
 
-export const loginWithOtp = async (email) => {
-  const { data, error } = await supabase.auth.signInWithOtp({
-    email: validateEmail(email),
-    options: { shouldCreateUser: false },
-  });
-
-  if (error) {
-    throw new Error(error.message);
-  }
-
-  return data;
-};
-
-// Verify: used by both register and login after the user enters the code
-export const verifyOtp = async (email, token) => {
-  const validatedEmail = validateEmail(email);
-
-  const { data, error } = await supabase.auth.verifyOtp({
-    email: validatedEmail,
-    token,
-    type: "email",
-  });
-
-  if (error) {
-    throw new Error(error.message);
-  }
-
-  return data; // { user, session }
-};
-
-// Sets the password for the currently signed-in user (works right after verifyOtp)
-export const setAccountPassword = async (password) => {
-  const { data, error } = await supabase.auth.updateUser({ password });
-
-  if (error) {
-    throw new Error(error.message);
-  }
-
-  return data;
-};
-
-//? pang register to, if mali logic tapon na natin
-// export const registerUser = async (email) => {
-//   const validatedEmail = validateEmail(email);
-
-//   const { data, error } = await supabase.auth.signInWithOtp({
-//     email: validatedEmail,
-//     options: {
-//       shouldCreateUser: true,
-//     },
-//   });
-
-//   if (error) throw new Error(error.message);
-
-//   return data;
-// };
-
-// //? pang login if existing si user
-// export const loginUser = async (email, password) => {
-//   const { data, error } = await supabase.auth.signInWithPassword({
-//     email,
-//     password,
-//   });
-
-//   if (error) {
-//     throw new Error(error.message);
-//   }
-
-//   return data;
-// };
-
-//aalisin ko to
-// export const loginUser = async (email) => {
-//   const validatedEmail = validateEmail(email);
-
-//   const { data, error } = await supabase.auth.signInWithOtp({
-//     email: validatedEmail,
-//     options: {
-//       shouldCreateUser: false,
-//     },
-//   });
-
-//   if (error) throw new Error(error.message);
-
-//   return data;
-// };
-
-//! pang OTP verification to!!!
+//? verification
 export const verification = async (email, otp) => {
   const validatedEmail = validateEmail(email);
 
   const { data, error } = await supabase.auth.verifyOtp({
     email: validatedEmail,
-    token: otp.trim(),
+    token: otp,
     type: "email",
   });
 
@@ -148,13 +91,16 @@ export const verification = async (email, otp) => {
   return data;
 };
 
-export const logoutUser = async () => {
-  const { error } = await supabase.auth.signOut({
-    scope: "local",
+//? login hey
+export const loginUser = async (email, password) => {
+  const validatedEmail = validateEmail(email);
+
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email: validatedEmail,
+    password,
   });
 
-  if (error) {
-    throw new Error(error.message);
-  }
-  return true;
+  if (error) throw new Error(error.message);
+
+  return data;
 };

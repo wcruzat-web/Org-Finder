@@ -9,8 +9,9 @@ import {
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { NavigationContainer } from "@react-navigation/native";
 
-import Login from "./screens/Login";
-import Signup from "./screens/Signup";
+import Login from "./src/screens/Login";
+import Signin from "./src/screens/Signin";
+
 import MainTabs from "./src/navigations/MainTabs";
 
 export default function App() {

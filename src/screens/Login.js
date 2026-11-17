@@ -7,9 +7,10 @@ import {
   StyleSheet,
   ScrollView,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 
-import { loginUser } from "../library/services/authService.js";
+import { loginUser } from "../../library/services/authService.js";
 
 const COLORS = {
   background: "#2D3047",
@@ -27,27 +28,23 @@ const stars = Array.from({ length: 35 }, (_, i) => ({
 export default function Login({ onNavigate, onLogin }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleLogin = async () => {
-    const normalizedEmail = email.trim().toLowerCase();
-
-    if (!normalizedEmail || !password) {
-      Alert.alert("Missing Fields", "Please enter your email and password.");
+    if (!email.trim() || !password) {
+      Alert.alert("Required", "Please enter your email and password.");
       return;
     }
 
     try {
-      setLoading(true);
-      await loginUser(normalizedEmail, password);
-      onLogin();
+      setIsLoading(true);
+      await loginUser(email.trim().toLowerCase(), password);
+      alert("Success Login successful.");
+      Alert.alert("Success", "Login successful.");
     } catch (error) {
-      Alert.alert(
-        "Login Failed",
-        error.message || "Something went wrong. Please try again.",
-      );
+      Alert.alert("Login Failed", error.message);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -113,23 +110,13 @@ export default function Login({ onNavigate, onLogin }) {
         <TouchableOpacity
           style={[styles.button, loading && styles.disabledButton]}
           onPress={handleLogin}
-          disabled={loading}
+          disabled={isLoading}
         >
-          <Text style={styles.buttonText}>
-            {loading ? "Logging In..." : "Log In"}
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.googleButton}
-          disabled={loading}
-          activeOpacity={0.8}
-        >
-          <Text style={styles.googleIcon}>G</Text>
-
-          <Text style={styles.googleButtonText}>
-            {loading ? "Connecting..." : "Continue with Google"}
-          </Text>
+          {isLoading ? (
+            <ActivityIndicator color={COLORS.background} />
+          ) : (
+            <Text style={styles.buttonText}>Log In</Text>
+          )}
         </TouchableOpacity>
 
         <View style={styles.switchContainer}>
