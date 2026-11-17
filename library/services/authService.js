@@ -1,7 +1,7 @@
 import supabase from "../supabase.js";
 
 //* validation ng email
-const validateEmail = (email) => {
+export const validateEmail = (email) => {
   const normalizedEmail = email.trim().toLowerCase();
   const emailRegex = /^[^\s@]+@cvsu\.edu\.ph$/;
 
@@ -14,45 +14,75 @@ const validateEmail = (email) => {
   return normalizedEmail;
 };
 
-//? pang register to, if mali logic tapon na natin
-export const registerUser = async (email) => {
+//? register user
+export const registerUser = async (email, password) => {
   const validatedEmail = validateEmail(email);
 
-  const { data, error } = await supabase.auth.signInWithOtp({
+  if (!password) {
+    throw new Error("Password is required.");
+  }
+
+  const { data, error } = await supabase.auth.signUp({
     email: validatedEmail,
-    options: {
-      shouldCreateUser: true,
-    },
+    password: password,
   });
 
-  if (error) throw new Error(error.message);
+  if (error) {
+    throw new Error(error.message);
+  }
 
   return data;
 };
 
-//? pang login if existing si user
-export const loginUser = async (email) => {
-  const validatedEmail = validateEmail(email);
+//! do not touch by touch
 
-  const { data, error } = await supabase.auth.signInWithOtp({
-    email: validatedEmail,
-    options: {
-      shouldCreateUser: false,
-    },
-  });
+export const createStudentAccount = async (fullName, course) => {
+  const normalizedFullName = fullName.trim();
+  const normalizedCourse = course.trim();
 
-  if (error) throw new Error(error.message);
+  if (!normalizedFullName || !normalizedCourse) {
+    throw new Error("Full name and course are required.");
+  }
+
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  if (userError) throw new Error(userError.message);
+
+  if (!user || !user.email) {
+    throw new Error("User not found!");
+  }
+
+  const validatedEmail = validateEmail(user.email);
+
+  const { data, error } = await supabase
+    .from("accounts")
+    .insert({
+      auth_user_id: user.id,
+      email: validatedEmail,
+      full_name: normalizedFullName,
+      course: normalizedCourse,
+    })
+    .select()
+    .single();
+
+  if (error) {
+    console.log("Account Insert Error:", error);
+    throw new Error(error.message);
+  }
 
   return data;
 };
 
-//! pang OTP verification to!!!
+//? verification
 export const verification = async (email, otp) => {
   const validatedEmail = validateEmail(email);
 
   const { data, error } = await supabase.auth.verifyOtp({
     email: validatedEmail,
-    token: otp.trim(),
+    token: otp,
     type: "email",
   });
 
@@ -61,13 +91,16 @@ export const verification = async (email, otp) => {
   return data;
 };
 
-export const logoutUser = async () => {
-  const { error } = await supabase.auth.signOut({
-    scope: "local",
+//? login hey
+export const loginUser = async (email, password) => {
+  const validatedEmail = validateEmail(email);
+
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email: validatedEmail,
+    password,
   });
 
-  if (error) {
-    throw new Error(error.message);
-  }
-  return true;
+  if (error) throw new Error(error.message);
+
+  return data;
 };

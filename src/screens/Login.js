@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import {
   View,
@@ -8,7 +7,10 @@ import {
   StyleSheet,
   ScrollView,
   Alert,
+  ActivityIndicator,
 } from "react-native";
+
+import { loginUser } from "../../library/services/authService.js";
 
 const COLORS = {
   background: "#2D3047",
@@ -26,12 +28,24 @@ const stars = Array.from({ length: 35 }, (_, i) => ({
 export default function Login({ onNavigate }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleLogin = () => {
-    Alert.alert(
-      "Coming Soon",
-      "Authentication has not been connected yet.",
-    );
+  const handleLogin = async () => {
+    if (!email.trim() || !password) {
+      Alert.alert("Required", "Please enter your email and password.");
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      await loginUser(email.trim().toLowerCase(), password);
+      alert("Success Login successful.");
+      Alert.alert("Success", "Login successful.");
+    } catch (error) {
+      Alert.alert("Login Failed", error.message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -95,14 +109,17 @@ export default function Login({ onNavigate }) {
         <TouchableOpacity
           style={styles.button}
           onPress={handleLogin}
+          disabled={isLoading}
         >
-          <Text style={styles.buttonText}>Log In</Text>
+          {isLoading ? (
+            <ActivityIndicator color={COLORS.background} />
+          ) : (
+            <Text style={styles.buttonText}>Log In</Text>
+          )}
         </TouchableOpacity>
 
         <View style={styles.switchContainer}>
-          <Text style={styles.switchText}>
-            Don't have an account?{" "}
-          </Text>
+          <Text style={styles.switchText}>Don't have an account? </Text>
 
           <TouchableOpacity onPress={onNavigate}>
             <Text style={styles.switchLink}>Sign Up</Text>

@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import {
   SafeAreaView,
@@ -7,8 +6,8 @@ import {
   Platform,
 } from "react-native";
 
-import Login from "./screens/Login";
-import Signin from "./screens/Signin";
+import Login from "./src/screens/Login";
+import Signin from "./src/screens/Signin";
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState("login");
