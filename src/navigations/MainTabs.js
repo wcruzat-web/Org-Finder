@@ -54,7 +54,7 @@ export default function MainTabs({ onLogout }) {
         // The header floats over the page so content can scroll under its fade
         headerTransparent: true,
         header: ({ options }) => (
-          <Header title={options.title} onMenuPress={confirmLogout} />
+          <Header title={options.title} onMenuPress={onLogout} />
         ),
         sceneStyle: { backgroundColor: colors.background },
       }}
