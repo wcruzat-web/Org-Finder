@@ -25,6 +25,7 @@ export const registerUser = async (email, password) => {
   const { data, error } = await supabase.auth.signUp({
     email: validatedEmail,
     password: password,
+    createUser: true,
   });
 
   if (error) {
@@ -98,6 +99,7 @@ export const loginUser = async (email, password) => {
   const { data, error } = await supabase.auth.signInWithPassword({
     email: validatedEmail,
     password,
+    createUser: false,
   });
 
   if (error) throw new Error(error.message);

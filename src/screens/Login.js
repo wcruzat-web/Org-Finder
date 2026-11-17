@@ -25,7 +25,7 @@ const stars = Array.from({ length: 35 }, (_, i) => ({
   size: 8 + (i % 7),
 }));
 
-export default function Login({ onNavigate, onLogin }) {
+export default function Login({ onNavigate, onLoginSuccess }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -39,8 +39,12 @@ export default function Login({ onNavigate, onLogin }) {
     try {
       setIsLoading(true);
       await loginUser(email.trim().toLowerCase(), password);
-      alert("Success Login successful.");
-      Alert.alert("Success", "Login successful.");
+      Alert.alert("Success", "Login successful.", [
+        {
+          text: "Continue",
+          onPress: onLoginSuccess,
+        },
+      ]);
     } catch (error) {
       Alert.alert("Login Failed", error.message);
     } finally {
@@ -97,7 +101,6 @@ export default function Login({ onNavigate, onLogin }) {
             placeholder="Password"
             placeholderTextColor={COLORS.gray}
             secureTextEntry
-            autoCapitalize="none"
             value={password}
             onChangeText={setPassword}
           />
@@ -108,7 +111,7 @@ export default function Login({ onNavigate, onLogin }) {
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={[styles.button, loading && styles.disabledButton]}
+          style={styles.button}
           onPress={handleLogin}
           disabled={isLoading}
         >
@@ -199,9 +202,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 25,
   },
-  disabledButton: {
-    opacity: 0.6,
-  },
   buttonText: {
     color: COLORS.background,
     fontSize: 15,
@@ -219,26 +219,6 @@ const styles = StyleSheet.create({
   switchLink: {
     color: COLORS.gold,
     fontSize: 12,
-    fontWeight: "600",
-  },
-  googleButton: {
-    height: 52,
-    backgroundColor: COLORS.white,
-    borderRadius: 30,
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    gap: 12,
-    marginTop: 15,
-  },
-  googleIcon: {
-    color: "#4285F4",
-    fontSize: 19,
-    fontWeight: "700",
-  },
-  googleButtonText: {
-    color: COLORS.background,
-    fontSize: 14,
     fontWeight: "600",
   },
 });

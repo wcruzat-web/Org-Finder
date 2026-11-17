@@ -15,7 +15,7 @@ import {
   createStudentAccount,
 } from "../../library/services/authService.js";
 
-export default function Signin({ onNavigate }) {
+export default function Signin({ onNavigate, onRegistrationComplete }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -38,14 +38,18 @@ export default function Signin({ onNavigate }) {
     if (!email || !password || !confirmPassword) {
       Alert.alert("Error", "Please fill in all fields.");
       return;
-    }
-
-    if (!passwordRegex.uppercase.test(password)) {
-      Alert.alert(
-        "Error",
-        "Password must contain at least one uppercase letter.",
-      );
-      return;
+    } else if (false) {
+      // This is a placeholder for the condition that checks if the password is valid
+    } else {
+      for (const [key, regex] of Object.entries(passwordRegex)) {
+        if (!regex.test(password)) {
+          Alert.alert(
+            "Error",
+            `Password must contain at least one ${key} character.`,
+          );
+          return;
+        }
+      }
     }
 
     if (password !== confirmPassword) {
@@ -96,9 +100,17 @@ export default function Signin({ onNavigate }) {
     try {
       setIsLoading(true);
       await createStudentAccount(fullName, course);
-      Alert.alert("Success", "Your account has been created.");
+      Alert.alert("Success", "Account created successfully.", [
+        {
+          text: "Continue",
+          onPress: onRegistrationComplete,
+        },
+      ]);
     } catch (error) {
-      Alert.alert("Account Creation Failed", error.message);
+      Alert.alert(
+        "Account Creation Failed",
+        "Account Already Exists or " + error.message,
+      );
     } finally {
       setIsLoading(false);
     }
