@@ -5,7 +5,6 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  ScrollView,
   Alert,
   ActivityIndicator,
 } from "react-native";
@@ -18,12 +17,6 @@ const COLORS = {
   white: "#F5F1F0",
   gray: "#A7A8B5",
 };
-
-const stars = Array.from({ length: 35 }, (_, i) => ({
-  top: (i * 37) % 270,
-  left: `${(i * 17) % 100}%`,
-  size: 8 + (i % 7),
-}));
 
 export default function Login({ onNavigate, onLoginSuccess }) {
   const [email, setEmail] = useState("");
@@ -53,113 +46,63 @@ export default function Login({ onNavigate, onLoginSuccess }) {
   };
 
   return (
-    <ScrollView
-      contentContainerStyle={styles.container}
-      keyboardShouldPersistTaps="handled"
-    >
-      <View style={styles.hero}>
-        {stars.map((star, index) => (
-          <Text
-            key={index}
-            style={[
-              styles.star,
-              {
-                top: star.top,
-                left: star.left,
-                fontSize: star.size,
-              },
-            ]}
-          >
-            ✦
-          </Text>
-        ))}
+    <View>
+      <Text style={styles.title}>Welcome Back</Text>
 
-        <Text style={styles.logo}>✦ StarGaze</Text>
+      <Text style={styles.subtitle}>
+        Find the right organization for your needs.
+      </Text>
+
+      <View style={styles.inputs}>
+        <TextInput
+          style={styles.input}
+          placeholder="Email address"
+          placeholderTextColor={COLORS.gray}
+          keyboardType="email-address"
+          autoCapitalize="none"
+          autoCorrect={false}
+          value={email}
+          onChangeText={setEmail}
+        />
+
+        <TextInput
+          style={styles.input}
+          placeholder="Password"
+          placeholderTextColor={COLORS.gray}
+          secureTextEntry
+          value={password}
+          onChangeText={setPassword}
+        />
       </View>
 
-      <View style={styles.form}>
-        <Text style={styles.title}>Welcome Back</Text>
+      <TouchableOpacity style={styles.forgot}>
+        <Text style={styles.forgotText}>Forgot Password?</Text>
+      </TouchableOpacity>
 
-        <Text style={styles.subtitle}>
-          Find the right organization for your needs.
-        </Text>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={handleLogin}
+        disabled={isLoading}
+      >
+        {isLoading ? (
+          <ActivityIndicator color={COLORS.background} />
+        ) : (
+          <Text style={styles.buttonText}>Log In</Text>
+        )}
+      </TouchableOpacity>
 
-        <View style={styles.inputs}>
-          <TextInput
-            style={styles.input}
-            placeholder="Email address"
-            placeholderTextColor={COLORS.gray}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            autoCorrect={false}
-            value={email}
-            onChangeText={setEmail}
-          />
+      <View style={styles.switchContainer}>
+        <Text style={styles.switchText}>Don't have an account? </Text>
 
-          <TextInput
-            style={styles.input}
-            placeholder="Password"
-            placeholderTextColor={COLORS.gray}
-            secureTextEntry
-            value={password}
-            onChangeText={setPassword}
-          />
-        </View>
-
-        <TouchableOpacity style={styles.forgot}>
-          <Text style={styles.forgotText}>Forgot Password?</Text>
+        <TouchableOpacity onPress={onNavigate}>
+          <Text style={styles.switchLink}>Sign Up</Text>
         </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.button}
-          onPress={handleLogin}
-          disabled={isLoading}
-        >
-          {isLoading ? (
-            <ActivityIndicator color={COLORS.background} />
-          ) : (
-            <Text style={styles.buttonText}>Log In</Text>
-          )}
-        </TouchableOpacity>
-
-        <View style={styles.switchContainer}>
-          <Text style={styles.switchText}>Don't have an account? </Text>
-
-          <TouchableOpacity onPress={onNavigate}>
-            <Text style={styles.switchLink}>Sign Up</Text>
-          </TouchableOpacity>
-        </View>
       </View>
-    </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flexGrow: 1,
-    backgroundColor: COLORS.background,
-    justifyContent: "center",
-  },
-  hero: {
-    height: 320,
-    justifyContent: "center",
-    alignItems: "center",
-    overflow: "hidden",
-  },
-  star: {
-    position: "absolute",
-    color: "#747B92",
-    opacity: 0.65,
-  },
-  logo: {
-    color: COLORS.gold,
-    fontSize: 23,
-    fontWeight: "600",
-  },
-  form: {
-    paddingHorizontal: 28,
-    paddingBottom: 50,
-  },
   title: {
     color: COLORS.white,
     fontSize: 25,

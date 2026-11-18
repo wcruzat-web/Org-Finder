@@ -117,7 +117,7 @@ export default function Signin({ onNavigate, onRegistrationComplete }) {
   };
 
   return (
-    <View style={styles.container}>
+    <View>
       <Text style={styles.title}>
         {otpSent
           ? "Verify Your Email"
@@ -255,12 +255,6 @@ export default function Signin({ onNavigate, onRegistrationComplete }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    padding: 28,
-    backgroundColor: "#2D3047",
-  },
   title: {
     fontSize: 26,
     fontWeight: "600",

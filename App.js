@@ -3,8 +3,7 @@ import { StatusBar, KeyboardAvoidingView, Platform } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { NavigationContainer } from "@react-navigation/native";
 
-import Login from "./src/screens/Login";
-import Signin from "./src/screens/Signin";
+import AuthNavigator from "./src/navigations/AuthNavigator.js";
 import MainTabs from "./src/navigations/MainTabs";
 
 import supabase from "./library/supabase.js";
@@ -22,11 +21,11 @@ export default function App() {
 
       if (error) {
         Alert.alert("Session Error", error.message);
-        setCurrentScreen("login");
+        setCurrentScreen("auth");
         return;
       }
 
-      setCurrentScreen(data.session ? "home" : "login");
+      setCurrentScreen(data.session ? "home" : "auth");
     };
 
     const {
@@ -39,7 +38,7 @@ export default function App() {
       }
 
       if (event === "SIGNED_OUT") {
-        setCurrentScreen("login");
+        setCurrentScreen("auth");
       }
     });
 
@@ -61,19 +60,11 @@ export default function App() {
             style={{ flex: 1 }}
             behavior={Platform.OS === "ios" ? "padding" : undefined}
           >
-            {currentScreen === "login" ? (
-              <Login
-                onNavigate={() => setCurrentScreen("signin")}
-                onLoginSuccess={() => setCurrentScreen("home")}
-              />
-            ) : currentScreen === "signin" ? (
-              <Signin
-                onNavigate={() => setCurrentScreen("login")}
-                onRegistrationComplete={() => setCurrentScreen("home")}
-              />
-            ) : (
-              <MainTabs onLogout={() => setCurrentScreen("login")} />
-            )}
+          {currentScreen === "auth" ? (
+              <AuthNavigator onAuthenticated={() => setCurrentScreen("home")} />
+            ) : currentScreen === "home" ? (
+              <MainTabs onLogout={() => setCurrentScreen("auth")} />
+            ) : null}
           </KeyboardAvoidingView>
         </SafeAreaView>
       </NavigationContainer>
