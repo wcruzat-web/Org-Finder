@@ -50,4 +50,15 @@ export const fontSizes = {
     "4xl": 36,
 };
 
+export const fonts = {
+    Cause_200ExtraLight: "Cause_200ExtraLight",
+    Cause_400Regular: "Cause_400Regular",
+    Cause_700Bold: "Cause_700Bold",
+    Cause_900Black: "Cause_900Black",
+    Fredoka_300Light: "Fredoka_300Light",
+    Fredoka_400Regular: "Fredoka_400Regular",
+    Fredoka_700Bold: "Fredoka_700Bold",
+    Fredoka_900Black: "Fredoka_900Black",
+}
+
 export default { colors, spacing, fontSizes };

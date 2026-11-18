@@ -2,13 +2,45 @@ import React, { useState, useEffect } from "react";
 import { StatusBar, KeyboardAvoidingView, Platform } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { NavigationContainer } from "@react-navigation/native";
+import * as SplashScreen from "expo-splash-screen";
+
+import { useFonts } from "expo-font";
+import {
+  Cause_900Black,
+  Cause_700Bold,
+  Cause_400Regular,
+  Cause_200ExtraLight,
+} from "@expo-google-fonts/cause";
+import {
+  Fredoka_900Black,
+  Fredoka_700Bold,
+  Fredoka_400Regular,
+  Fredoka_300Light,
+} from "@expo-google-fonts/fredoka";
 
 import AuthNavigator from "./src/navigations/AuthNavigator.js";
 import MainTabs from "./src/navigations/MainTabs";
 
 import supabase from "./library/supabase.js";
 
+SplashScreen.preventAutoHideAsync();
+
 export default function App() {
+  const [fontsLoaded, err] = useFonts({
+    Cause_200ExtraLight, Cause_400Regular, Cause_700Bold, Cause_900Black,
+    Fredoka_300Light, Fredoka_400Regular, Fredoka_700Bold, Fredoka_900Black,
+  });
+
+  useEffect(() => {
+    if (fontsLoaded || err) {
+      SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded, err]);
+
+  if (!fontsLoaded && !err) {
+    return null;
+  }
+
   const [currentScreen, setCurrentScreen] = useState(null);
 
   useEffect(() => {
@@ -60,7 +92,7 @@ export default function App() {
             style={{ flex: 1 }}
             behavior={Platform.OS === "ios" ? "padding" : undefined}
           >
-          {currentScreen === "auth" ? (
+            {currentScreen === "auth" ? (
               <AuthNavigator onAuthenticated={() => setCurrentScreen("home")} />
             ) : currentScreen === "home" ? (
               <MainTabs onLogout={() => setCurrentScreen("auth")} />
