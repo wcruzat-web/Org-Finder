@@ -32,7 +32,7 @@ const RADIUS = 64; // fully rounded pill (Figma: spacing/64, not in the theme)
 const FONT_BOLD = "Overlock_700Bold";
 
 function NavItem({ tab, active, onPress }) {
-    const { Icon, label } = tab;
+  const { Icon, label } = tab;
 
     // fade: native-driven (icon crossfade). tint: JS-driven (label color).
     const fade = useRef(new Animated.Value(active ? 1 : 0)).current;
@@ -113,9 +113,9 @@ function NavItem({ tab, active, onPress }) {
 }
 
 export default function BottomNav({
-    activeKey,
-    defaultKey = "discover",
-    onChange,
+  activeKey,
+  defaultKey = "discover",
+  onChange,
 }) {
     const insets = useSafeAreaInsets();
 
@@ -138,10 +138,10 @@ export default function BottomNav({
         }).start();
     }, [activeIndex, indicatorIndex]);
 
-    const handlePress = (key) => {
-        if (activeKey === undefined) setInternalKey(key);
-        onChange?.(key);
-    };
+  const handlePress = (key) => {
+    if (activeKey === undefined) setInternalKey(key);
+    onChange?.(key);
+  };
 
     // Tabs are spread with space-between, so the pill slides by this step per tab
     const step =
