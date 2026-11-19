@@ -5,6 +5,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import * as SplashScreen from "expo-splash-screen";
 
 import { useFonts } from "expo-font";
+import { Overlock_700Bold } from "@expo-google-fonts/overlock";
 import {
   Cause_900Black,
   Cause_700Bold,
@@ -21,17 +22,23 @@ import {
 import AuthNavigator from "./src/navigations/AuthNavigator.js";
 import MainTabs from "./src/navigations/MainTabs";
 
+import AuthLayout from "./src/components/AuthLayout.js";
+import Signin from "./src/screens/Signin.js";
+import Login from "./src/screens/Login.js";
+
 import supabase from "./library/supabase.js";
 
 SplashScreen.preventAutoHideAsync();
 
 export default function App() {
   const [fontsLoaded, err] = useFonts({
+    Overlock_700Bold,
     Cause_200ExtraLight, Cause_400Regular, Cause_700Bold, Cause_900Black,
     Fredoka_300Light, Fredoka_400Regular, Fredoka_700Bold, Fredoka_900Black,
   });
 
   const [currentScreen, setCurrentScreen] = useState(null);
+  const [isRegistering, setIsRegistering] = useState(false);
 
   useEffect(() => {
     if (fontsLoaded || err) {
@@ -41,11 +48,12 @@ export default function App() {
 
   useEffect(() => {
     let isMounted = true;
+    let authStateChanged = false;
 
     const initializeSession = async () => {
       const { data, error } = await supabase.auth.getSession();
 
-      if (!isMounted) return;
+      if (!isMounted || authStateChanged) return;
 
       if (error) {
         Alert.alert("Session Error", error.message);
@@ -58,11 +66,11 @@ export default function App() {
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
+    } = supabase.auth.onAuthStateChange((event) => {
       if (!isMounted) return;
 
-      if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED") {
-        setCurrentScreen("home");
+      if (event === "SIGNED_IN" || event === "SIGNED_OUT") {
+        authStateChanged = true;
       }
 
       if (event === "SIGNED_OUT") {
@@ -82,6 +90,11 @@ export default function App() {
     return null;
   }
 
+  const handleRegistrationComplete = () => {
+    setIsRegistering(false);
+    setCurrentScreen("home");
+  };
+
   return (
     <SafeAreaProvider>
       <NavigationContainer>
@@ -92,11 +105,14 @@ export default function App() {
             style={{ flex: 1 }}
             behavior={Platform.OS === "ios" ? "padding" : undefined}
           >
-            {currentScreen === "auth" ? (
-              <AuthNavigator onAuthenticated={() => setCurrentScreen("home")} />
-            ) : currentScreen === "home" ? (
-              <MainTabs onLogout={() => setCurrentScreen("auth")} />
-            ) : null}
+            {currentScreen === "home" && !isRegistering ? (
+              <MainTabs />
+            ) : (
+              <AuthNavigator
+                onRegistering={setIsRegistering}
+                onRegistrationComplete={handleRegistrationComplete}
+              />
+            )}
           </KeyboardAvoidingView>
         </SafeAreaView>
       </NavigationContainer>
