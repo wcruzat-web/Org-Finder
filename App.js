@@ -27,11 +27,18 @@ SplashScreen.preventAutoHideAsync();
 
 export default function App() {
   const [fontsLoaded, err] = useFonts({
-    Cause_200ExtraLight, Cause_400Regular, Cause_700Bold, Cause_900Black,
-    Fredoka_300Light, Fredoka_400Regular, Fredoka_700Bold, Fredoka_900Black,
+    Cause_200ExtraLight,
+    Cause_400Regular,
+    Cause_700Bold,
+    Cause_900Black,
+    Fredoka_300Light,
+    Fredoka_400Regular,
+    Fredoka_700Bold,
+    Fredoka_900Black,
   });
 
   const [currentScreen, setCurrentScreen] = useState(null);
+  const [isRegistering, setIsRegistering] = useState(false);
 
   useEffect(() => {
     if (fontsLoaded || err) {
@@ -41,11 +48,12 @@ export default function App() {
 
   useEffect(() => {
     let isMounted = true;
+    let authStateChanged = false;
 
     const initializeSession = async () => {
       const { data, error } = await supabase.auth.getSession();
 
-      if (!isMounted) return;
+      if (!isMounted || authStateChanged) return;
 
       if (error) {
         Alert.alert("Session Error", error.message);
@@ -58,11 +66,11 @@ export default function App() {
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
+    } = supabase.auth.onAuthStateChange((event) => {
       if (!isMounted) return;
 
-      if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED") {
-        setCurrentScreen("home");
+      if (event === "SIGNED_IN" || event === "SIGNED_OUT") {
+        authStateChanged = true;
       }
 
       if (event === "SIGNED_OUT") {
@@ -81,6 +89,11 @@ export default function App() {
   if (!fontsLoaded && !err) {
     return null;
   }
+  
+  const handleRegistrationComplete = () => {
+    setIsRegistering(false);
+    setCurrentScreen("home");
+  };
 
   return (
     <SafeAreaProvider>
@@ -92,11 +105,14 @@ export default function App() {
             style={{ flex: 1 }}
             behavior={Platform.OS === "ios" ? "padding" : undefined}
           >
-            {currentScreen === "auth" ? (
-              <AuthNavigator onAuthenticated={() => setCurrentScreen("home")} />
-            ) : currentScreen === "home" ? (
-              <MainTabs onLogout={() => setCurrentScreen("auth")} />
-            ) : null}
+            {currentScreen === "home" && !isRegistering ? (
+              <MainTabs />
+            ) : (
+              <AuthNavigator
+                onRegistering={setIsRegistering}
+                onRegistrationComplete={handleRegistrationComplete}
+              />
+            )}
           </KeyboardAvoidingView>
         </SafeAreaView>
       </NavigationContainer>

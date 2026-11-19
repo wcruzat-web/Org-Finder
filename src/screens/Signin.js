@@ -15,7 +15,11 @@ import {
   createStudentAccount,
 } from "../../library/services/authService.js";
 
-export default function Signin({ onNavigate, onRegistrationComplete }) {
+export default function Signin({
+  onNavigate,
+  onRegistering,
+  onRegistrationComplete,
+}) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -59,6 +63,7 @@ export default function Signin({ onNavigate, onRegistrationComplete }) {
 
     try {
       setIsLoading(true);
+      onRegistering(true);
       await registerUser(email.trim().toLowerCase(), password);
       setOtpSent(true);
     } catch (error) {
@@ -74,7 +79,7 @@ export default function Signin({ onNavigate, onRegistrationComplete }) {
       await verification(email.trim().toLowerCase(), otp);
       setOtpSent(false);
       setNameStep(true);
-    } catch (error) {
+    } catch (error) { 
       Alert.alert("Verification Failed", error.message);
     } finally {
       setIsLoading(false);
