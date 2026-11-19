@@ -13,10 +13,10 @@ import HomeScreen from "../screens/HomeScreen";
 import ProfileScreen from "../screens/ProfileScreen.js";
 import theme from "../styles/theme-dark";
 
-import logoutUser from "../../library/services/authService.js";
-
 const { colors } = theme;
 const Tab = createBottomTabNavigator();
+
+import { logoutUser } from "../../library/services/authService.js";
 
 // BottomNav works with keys ("discover", "orgs", ...), not React Navigation props.
 // This adapter connects them: a route named "Discover" matches the key "discover".
@@ -36,13 +36,22 @@ function renderNavBar({ state, navigation }) {
 export default function MainTabs({ onLogout }) {
   // TEMPORARY: until the menu is designed, the menu icon offers a log out
   // so you can get back to the login screen while testing.
+  const handleLogout = async () => {
+    try {
+      await logoutUser();
+    } catch (error) {
+      Alert.alert("Logout Failed", error.message);
+      return;
+    }
+  };
+
   const confirmLogout = async () => {
     Alert.alert("Menu", "Log out of OrgFinder?", [
       { text: "Cancel", style: "cancel" },
       {
         text: "Log out",
         style: "destructive",
-        onPress: await logoutUser().then(onLogout),
+        onPress: handleLogout,
       },
     ]);
   };
@@ -55,7 +64,7 @@ export default function MainTabs({ onLogout }) {
         // The header floats over the page so content can scroll under its fade
         headerTransparent: true,
         header: ({ options }) => (
-          <Header title={options.title} />
+          <Header title={options.title} onMenuPress={confirmLogout} />
         ),
         sceneStyle: { backgroundColor: colors.background },
       }}
@@ -67,10 +76,9 @@ export default function MainTabs({ onLogout }) {
       />
       <Tab.Screen
         name="Profile"
+        component={ProfileScreen}
         options={{ title: "Profile" }}
-      >
-        {(props) => <ProfileScreen {...props} onLogout={onLogout} />}
-      </Tab.Screen>
+      />
       {/* Later, named to match BottomNav's keys: Applications, Orgs, Alerts, Profile */}
     </Tab.Navigator>
   );

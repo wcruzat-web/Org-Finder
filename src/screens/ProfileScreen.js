@@ -84,20 +84,20 @@ export default function ProfileScreen({ onLogout }) {
       }
     >
       <TouchableOpacity
-              style={styles.button}
-              onPress={handleLogout}
-              disabled={loading}
-            >
-              <Text style={styles.buttonText}>
-                {loading ? "Logging Out..." : "Logout"}
-              </Text>
-            </TouchableOpacity>
+        style={styles.button}
+        onPress={handleLogout}
+        disabled={loading}
+      >
+        <Text style={styles.buttonText}>
+          {loading ? "Logging Out..." : "Logout"}
+        </Text>
+      </TouchableOpacity>
     </ParallaxHeaderScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  welcome: { paddingHorizontal: 16,},
+  welcome: { paddingHorizontal: 16 },
   greeting: { color: colors.textPrimary, fontSize: 30, fontWeight: "700" },
   subtitle: { color: colors.textSecondary, fontSize: 14, marginTop: 4 },
   content: { paddingHorizontal: 20, paddingTop: 16, gap: 12 },
