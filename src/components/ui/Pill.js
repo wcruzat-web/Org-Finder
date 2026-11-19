@@ -4,7 +4,7 @@ import { View } from "react-native";
 import AppText from "./AppText";
 import { pill, pillLabel } from "../../styles/style";
 
-export default function Pill({ label, tone = "success", dot = false, style }) {
+export default function Pill({ label, tone = "muted", dot = false, style }) {
   const text = pillLabel[tone] ?? pillLabel.success;
 
   return (

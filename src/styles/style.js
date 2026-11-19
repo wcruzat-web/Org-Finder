@@ -162,6 +162,7 @@ export const layout = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  offsetNavbar: { paddingTop: spacing["2xl"] * 1.5 },
   // Scrollable page body
   content: {
     paddingHorizontal: spacing.lg,
@@ -300,6 +301,9 @@ export const pill = StyleSheet.create({
     gap: spacing.xs,
   },
   success: { backgroundColor: colors.success },
+  warning: { backgroundColor: colors.warning },
+  error: { backgroundColor: colors.error },
+  info: { backgroundColor: colors.info },
   muted: { backgroundColor: colors.supportSoft },
   dot: {
     width: 6,
@@ -312,6 +316,9 @@ export const pill = StyleSheet.create({
 export const pillLabel = {
   success: { variant: "tag", tone: "onSuccess" },
   muted: { variant: "tag", tone: "secondary" },
+  warning: { variant: "tag", tone: "onWarning" },
+  error: { variant: "tag", tone: "onError" },
+  info: { variant: "tag", tone: "onInfo" },
 };
 
 // Cards

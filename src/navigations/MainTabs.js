@@ -5,6 +5,8 @@ import BottomNav from "../components/BottomNav";
 import HomeScreen from "../screens/HomeScreen";
 import ProfileScreen from "../screens/ProfileScreen.js";
 import theme from "../styles/theme-dark";
+import OrgList from "../screens/OrgList.js";
+import NotifList from "../screens/NotifList.js"
 
 const { colors } = theme;
 const Tab = createBottomTabNavigator();
@@ -41,8 +43,18 @@ export default function MainTabs({ onLogout }) {
         options={{ title: "Discover" }}
       />
       <Tab.Screen
+      name="OrgLists"
+      component={OrgList}
+      options={{ title: "Organizations"}}
+      />
+      <Tab.Screen
+      name="Notification"
+      component={NotifList}
+      options={{ title: "Notification"}}
+      />
+      <Tab.Screen
         name="Profile"
-        options={{ title: "Profile", }}
+        options={{ title: "Profile" }}
       >
         {(props) => <ProfileScreen {...props} />}
       </Tab.Screen>

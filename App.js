@@ -22,10 +22,6 @@ import {
 import AuthNavigator from "./src/navigations/AuthNavigator.js";
 import MainTabs from "./src/navigations/MainTabs";
 
-import AuthLayout from "./src/components/AuthLayout.js";
-import Signin from "./src/screens/Signin.js";
-import Login from "./src/screens/Login.js";
-
 import supabase from "./library/supabase.js";
 
 SplashScreen.preventAutoHideAsync();

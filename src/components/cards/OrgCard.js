@@ -53,10 +53,24 @@ export default function OrgCard({
         </View>
 
         {featured && tag ? <Pill label={tag} tone="muted" dot /> : null}
-        {!featured && status ? <Pill label={status} tone="success" /> : null}
+        {!featured &&
+          status &&
+          (status === "open" ? (
+            <Pill label="Open" tone="success" />
+          ) : status === "closing" ? (
+            <Pill label="Closing Soon" tone="warning" />
+          ) : status === "pending" ? (
+            <Pill label="Pending" tone="info" />
+          ) : status === "joined" ? (
+            <Pill label="Joined" tone="muted" />
+          ) : null)}
       </View>
 
-      <AppText variant="caption" numberOfLines={featured ? 3 : 2} style={card.description}>
+      <AppText
+        variant="caption"
+        numberOfLines={featured ? 3 : 2}
+        style={card.description}
+      >
         {description}
       </AppText>
 
@@ -79,7 +93,9 @@ export default function OrgCard({
         <View style={card.footer}>
           <View style={card.stat}>
             <Users size={16} color={cardColors.icon} />
-            <AppText variant="caption" tone="primary">{memberCount} Members</AppText>
+            <AppText variant="caption" tone="primary">
+              {memberCount} Members
+            </AppText>
           </View>
           <TouchableOpacity
             onPress={handleMore}
