@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { StatusBar, KeyboardAvoidingView, Platform } from "react-native";
+import { StatusBar, KeyboardAvoidingView, Platform, Alert } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { NavigationContainer } from "@react-navigation/native";
 import * as SplashScreen from "expo-splash-screen";
@@ -31,17 +31,13 @@ export default function App() {
     Fredoka_300Light, Fredoka_400Regular, Fredoka_700Bold, Fredoka_900Black,
   });
 
+  const [currentScreen, setCurrentScreen] = useState(null);
+
   useEffect(() => {
     if (fontsLoaded || err) {
       SplashScreen.hideAsync();
     }
   }, [fontsLoaded, err]);
-
-  if (!fontsLoaded && !err) {
-    return null;
-  }
-
-  const [currentScreen, setCurrentScreen] = useState(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -81,6 +77,10 @@ export default function App() {
       subscription.unsubscribe();
     };
   }, []);
+
+  if (!fontsLoaded && !err) {
+    return null;
+  }
 
   return (
     <SafeAreaProvider>

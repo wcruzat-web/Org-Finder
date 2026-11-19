@@ -67,9 +67,10 @@ export default function MainTabs({ onLogout }) {
       />
       <Tab.Screen
         name="Profile"
-        component={(props) => <ProfileScreen {...props} onLogout={onLogout} />}
         options={{ title: "Profile" }}
-      />
+      >
+        {(props) => <ProfileScreen {...props} onLogout={onLogout} />}
+      </Tab.Screen>
       {/* Later, named to match BottomNav's keys: Applications, Orgs, Alerts, Profile */}
     </Tab.Navigator>
   );
