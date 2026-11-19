@@ -61,4 +61,4 @@ export const fonts = {
     Fredoka_900Black: "Fredoka_900Black",
 }
 
-export default { colors, spacing, fontSizes };
+export default { colors, spacing, fontSizes, fonts };

@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   StyleSheet,
   Text,
   View,
   useWindowDimensions,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
@@ -13,6 +14,8 @@ import Header from "../components/Header";
 import theme, { spacing } from "../styles/theme-dark";
 import StarsSvg from "../../assets/header/stars.svg";
 import MountainsFrontSvg from "../../assets/header/mountains-front.svg";
+
+import { logoutUser } from "../../library/services/authService.js";
 
 const { colors } = theme;
 
@@ -50,6 +53,22 @@ export default function ProfileScreen({ onLogout }) {
   const navHeaderHeight = useHeaderHeight();
   const headerHeight = width * (219.071 / 390) + insets.top;
 
+  const [loading, setLoading] = useState(false);
+
+  const handleLogout = async () => {
+    try {
+      setLoading(true);
+
+      await logoutUser();
+
+      Alert.alert("Logged Out", "You have successfully logged out.");
+    } catch (error) {
+      Alert.alert("Logout Failed", error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <ParallaxHeaderScrollView
       layers={HEADER_LAYERS}
@@ -64,9 +83,15 @@ export default function ProfileScreen({ onLogout }) {
         </>
       }
     >
-      <TouchableOpacity style={styles.button} onPress={onLogout}>
-        <Text style={styles.buttonText}>Log Out</Text>
-      </TouchableOpacity>
+      <TouchableOpacity
+              style={styles.button}
+              onPress={handleLogout}
+              disabled={loading}
+            >
+              <Text style={styles.buttonText}>
+                {loading ? "Logging Out..." : "Logout"}
+              </Text>
+            </TouchableOpacity>
     </ParallaxHeaderScrollView>
   );
 }
