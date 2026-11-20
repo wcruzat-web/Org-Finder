@@ -44,17 +44,26 @@ export default function OrgList() {
   const fetchOrganizations = async (course) => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
+      const { data: orgData, error: orgError } = await supabase
         .from("organizations")
         .select("*")
         .or(`course_eligibility.eq.all,eligible_courses.cs.{${course}}`);
 
-      if (error) throw error;
+      if (orgError) throw orgError;
 
-      console.log("Eligible organizations:", data);
-      setOrganizations(data);
+      const { data: countData, error: countError } = await supabase.rpc(
+        "get_organization_member_counts",
+      );
 
-      setOrganizations(data);
+      if (countError) throw countError;
+
+      const organizationWithCounts = orgData.map((org) => {
+        const count = countData.find((c) => c.organization_id === org.id);
+        return { ...org, memberCount: count?.member_count ?? 0 };
+      });
+
+      console.log("Eligible organizations:", orgData);
+      setOrganizations(organizationWithCounts);
     } catch (error) {
       setErrorMessage("Error fetching organizations: " + error.message);
       console.error("Error fetching organizations:", error);
