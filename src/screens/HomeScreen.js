@@ -12,7 +12,6 @@ import MountainsFrontSvg from "../../assets/header/mountains-front.svg";
 
 import supabase from "../../library/supabase.js";
 
-import supabase from "../../library/supabase";
 
 const { colors, spacing } = theme;
 

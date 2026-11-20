@@ -32,7 +32,7 @@ export default function MainTabs({ onLogout }) {
       screenOptions={{
         headerTransparent: true,
         header: ({ options }) => (
-          <Header title={options.title} onMenuPress={confirmLogout} />
+          <Header title={options.title} />
         ),
         sceneStyle: { backgroundColor: colors.background },
       }}
@@ -54,7 +54,6 @@ export default function MainTabs({ onLogout }) {
       />
       <Tab.Screen
         name="Profile"
-        component={ProfileScreen}
         options={{ title: "Profile" }}
       >
         {(props) => <ProfileScreen {...props} />}

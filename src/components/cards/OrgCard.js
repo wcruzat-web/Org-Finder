@@ -6,6 +6,8 @@ import { AppButton, AppText, Avatar, Pill } from "../ui";
 import HalftoneCorner from "./HalftoneCorner";
 import { card, cardColors } from "../../styles/style";
 
+
+
 export default function OrgCard({
   variant = "default",
   name,
