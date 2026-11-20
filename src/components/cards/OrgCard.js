@@ -65,7 +65,7 @@ export default function OrgCard({
             <Pill label="Pending" tone="info" />
           ) : status === "joined" ? (
             <Pill label="Joined" tone="muted" />
-          ) : null)}
+          ) : console.log("Invalid status \"" + status + "\" for " + name))}
       </View>
 
       <AppText

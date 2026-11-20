@@ -112,8 +112,6 @@ export default function HomeScreen() {
     fetchUser();
   }, []);
 
-  const status = ["open", "closing", "pending", "joined"];
-
   //fetch ng pang user for data ng organizations
 
   useEffect(() => {
@@ -233,8 +231,8 @@ export default function HomeScreen() {
             name={org.name}
             tags={[org.category, org.subcategory]}
             description={org.description}
-            status={status[index]}
             memberCount={org.memberCount}
+            status="I am the storm"
           />
         ))}
       </View>

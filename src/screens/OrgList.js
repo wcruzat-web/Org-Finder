@@ -5,9 +5,7 @@ import { layout } from "../styles/style";
 
 import supabase from "../../library/supabase.js";
 export default function OrgList() {
-  const tags = ["Non-Academic", "Performing"];
-  const status = ["open", "closing", "pending", "joined"];
-
+  
   const [organizations, setOrganizations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
@@ -85,7 +83,6 @@ export default function OrgList() {
             name={org.name}
             tags={[org.category, org.subcategory]}
             description={org.description}
-            status={status[1]}
             memberCount={org.memberCount}
           />
         ))}
