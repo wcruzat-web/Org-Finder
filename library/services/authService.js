@@ -25,12 +25,16 @@ export const registerUser = async (email, password) => {
   const { data, error } = await supabase.auth.signUp({
     email: validatedEmail,
     password: password,
-    createUser: true,
   });
 
   if (error) {
     throw new Error(error.message);
   }
+
+  if (data.user && data.user.identities?.length === 0)
+    throw new Error(
+      "An account with this email already exists. Please log in instead.",
+    );
 
   return data;
 };
@@ -71,6 +75,13 @@ export const createStudentAccount = async (fullName, course) => {
 
   if (error) {
     console.log("Account Insert Error:", error);
+
+    if (error.code === "23505") {
+      throw new Error(
+        "An account with this email already exists. Please log in instead.",
+      );
+    }
+
     throw new Error(error.message);
   }
 

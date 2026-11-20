@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import { View, TouchableOpacity, Alert } from "react-native";
 import { AppText, AppInput, AppButton } from "../components/ui";
+import { Dropdown } from "react-native-element-dropdown";
+
+import courses from "../../data/courses.js";
 
 import { layout } from "../styles/style";
 
@@ -10,7 +13,11 @@ import {
   createStudentAccount,
 } from "../../library/services/authService.js";
 
-export default function Signin({ onNavigate, onRegistering, onRegistrationComplete }) {
+export default function Signin({
+  onNavigate,
+  onRegistering,
+  onRegistrationComplete,
+}) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -161,11 +168,11 @@ export default function Signin({ onNavigate, onRegistering, onRegistrationComple
           />
 
           <AppButton
-                  title="Create Account"
-                  loading={isLoading}
-                  onPress={handleRegister}
-                  style={layout.formAction}
-                />
+            title="Create Account"
+            loading={isLoading}
+            onPress={handleRegister}
+            style={layout.formAction}
+          />
         </View>
       ) : otpSent ? (
         <View style={layout.stack}>
@@ -178,11 +185,11 @@ export default function Signin({ onNavigate, onRegistering, onRegistrationComple
           />
 
           <AppButton
-                  title="Verify OTP"
-                  loading={isLoading}
-                  onPress={handleVerifyOtp}
-                  style={layout.formAction}
-                />
+            title="Verify OTP"
+            loading={isLoading}
+            onPress={handleVerifyOtp}
+            style={layout.formAction}
+          />
         </View>
       ) : nameStep ? (
         <View style={layout.stack}>
@@ -194,34 +201,46 @@ export default function Signin({ onNavigate, onRegistering, onRegistrationComple
           />
 
           <AppButton
-                  title="Continue"
-                  loading={isLoading}
-                  onPress={handleNameSubmit}
-                  style={layout.formAction}
-                />
+            title="Continue"
+            loading={isLoading}
+            onPress={handleNameSubmit}
+            style={layout.formAction}
+          />
         </View>
       ) : courseStep ? (
         <View style={layout.stack}>
-          <AppInput
-            placeholder="Course"
-            autoCapitalize="characters"
+          <Dropdown
+            style={{
+              height: 55,
+              borderWidth: 1,
+              borderColor: "#9DB0B8",
+              borderRadius: 10,
+              paddingHorizontal: 15,
+            }}
+            data={courses}
+            search
+            maxHeight={300}
+            labelField="label"
+            valueField="value"
+            placeholder="Select your course"
+            searchPlaceholder="Search course..."
             value={course}
-            onChangeText={setCourse}
+            onChange={(item) => setCourse(item.value)}
           />
 
           <AppButton
-                  title="Finish Registration"
-                  loading={isLoading}
-                  onPress={handleCourseSubmit}
-                  style={layout.formAction}
-                />
+            title="Finish Registration"
+            loading={isLoading}
+            onPress={handleCourseSubmit}
+            style={layout.formAction}
+          />
         </View>
       ) : null}
 
       {!otpSent && !nameStep && !courseStep && (
         <TouchableOpacity style={layout.formFooter} onPress={onNavigate}>
           <AppText variant="caption">Already have an account? </AppText>
-                  <AppText variant="link">Log In</AppText>
+          <AppText variant="link">Log In</AppText>
         </TouchableOpacity>
       )}
     </View>
