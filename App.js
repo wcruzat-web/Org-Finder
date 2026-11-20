@@ -5,6 +5,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import * as SplashScreen from "expo-splash-screen";
 
 import { useFonts } from "expo-font";
+import { Overlock_700Bold } from "@expo-google-fonts/overlock";
 import {
   Cause_900Black,
   Cause_700Bold,
@@ -27,14 +28,9 @@ SplashScreen.preventAutoHideAsync();
 
 export default function App() {
   const [fontsLoaded, err] = useFonts({
-    Cause_200ExtraLight,
-    Cause_400Regular,
-    Cause_700Bold,
-    Cause_900Black,
-    Fredoka_300Light,
-    Fredoka_400Regular,
-    Fredoka_700Bold,
-    Fredoka_900Black,
+    Overlock_700Bold,
+    Cause_200ExtraLight, Cause_400Regular, Cause_700Bold, Cause_900Black,
+    Fredoka_300Light, Fredoka_400Regular, Fredoka_700Bold, Fredoka_900Black,
   });
 
   const [currentScreen, setCurrentScreen] = useState(null);
@@ -89,7 +85,7 @@ export default function App() {
   if (!fontsLoaded && !err) {
     return null;
   }
-  
+
   const handleRegistrationComplete = () => {
     setIsRegistering(false);
     setCurrentScreen("home");

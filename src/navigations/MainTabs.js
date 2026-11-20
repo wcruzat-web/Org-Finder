@@ -1,10 +1,3 @@
-// src/navigation/MainTabs.js
-//
-// The page loader shown after login. The top bar and nav bar are defined here once;
-// pages never render them. Only Discover is connected for now.
-
-import React from "react";
-import { Alert } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
 import Header from "../components/Header";
@@ -12,21 +5,18 @@ import BottomNav from "../components/BottomNav";
 import HomeScreen from "../screens/HomeScreen";
 import ProfileScreen from "../screens/ProfileScreen.js";
 import theme from "../styles/theme-dark";
+import OrgList from "../screens/OrgList.js";
+import NotifList from "../screens/NotifList.js"
 
 const { colors } = theme;
 const Tab = createBottomTabNavigator();
 
-import { logoutUser } from "../../library/services/authService.js";
-
-// BottomNav works with keys ("discover", "orgs", ...), not React Navigation props.
-// This adapter connects them: a route named "Discover" matches the key "discover".
 function renderNavBar({ state, navigation }) {
   return (
     <BottomNav
       activeKey={state.routes[state.index].name.toLowerCase()}
       onChange={(key) => {
         const route = state.routes.find((r) => r.name.toLowerCase() === key);
-        // Tabs without a page yet have no route, so tapping them does nothing
         if (route) navigation.navigate(route.name);
       }}
     />
@@ -34,34 +24,12 @@ function renderNavBar({ state, navigation }) {
 }
 
 export default function MainTabs({ onLogout }) {
-  // TEMPORARY: until the menu is designed, the menu icon offers a log out
-  // so you can get back to the login screen while testing.
-  const handleLogout = async () => {
-    try {
-      await logoutUser();
-    } catch (error) {
-      Alert.alert("Logout Failed", error.message);
-      return;
-    }
-  };
-
-  const confirmLogout = async () => {
-    Alert.alert("Menu", "Log out of OrgFinder?", [
-      { text: "Cancel", style: "cancel" },
-      {
-        text: "Log out",
-        style: "destructive",
-        onPress: handleLogout,
-      },
-    ]);
-  };
 
   return (
     <Tab.Navigator
       initialRouteName="Discover"
       tabBar={renderNavBar}
       screenOptions={{
-        // The header floats over the page so content can scroll under its fade
         headerTransparent: true,
         header: ({ options }) => (
           <Header title={options.title} onMenuPress={confirmLogout} />
@@ -75,11 +43,22 @@ export default function MainTabs({ onLogout }) {
         options={{ title: "Discover" }}
       />
       <Tab.Screen
+      name="OrgLists"
+      component={OrgList}
+      options={{ title: "Organizations"}}
+      />
+      <Tab.Screen
+      name="Notification"
+      component={NotifList}
+      options={{ title: "Notification"}}
+      />
+      <Tab.Screen
         name="Profile"
         component={ProfileScreen}
         options={{ title: "Profile" }}
-      />
-      {/* Later, named to match BottomNav's keys: Applications, Orgs, Alerts, Profile */}
+      >
+        {(props) => <ProfileScreen {...props} />}
+      </Tab.Screen>
     </Tab.Navigator>
   );
 }

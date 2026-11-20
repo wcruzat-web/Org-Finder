@@ -1,13 +1,8 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  ActivityIndicator,
-  Alert,
-} from "react-native";
+import { View, TouchableOpacity, Alert } from "react-native";
+import { AppText, AppInput, AppButton } from "../components/ui";
+
+import { layout } from "../styles/style";
 
 import {
   registerUser,
@@ -15,11 +10,7 @@ import {
   createStudentAccount,
 } from "../../library/services/authService.js";
 
-export default function Signin({
-  onNavigate,
-  onRegistering,
-  onRegistrationComplete,
-}) {
+export default function Signin({ onNavigate, onRegistering, onRegistrationComplete }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -123,32 +114,31 @@ export default function Signin({
 
   return (
     <View>
-      <Text style={styles.title}>
-        {otpSent
-          ? "Verify Your Email"
-          : nameStep
-            ? "What's Your Full Name?"
-            : courseStep
-              ? "What's Your Course?"
-              : "Create Account"}
-      </Text>
-
-      <Text style={styles.subtitle}>
-        {otpSent
-          ? "Enter the verification code sent to your email."
-          : nameStep
-            ? "Please enter your full name."
-            : courseStep
-              ? "Please enter your course."
-              : "Create your OrgFinder account."}
-      </Text>
+      <View style={layout.formHeader}>
+        <AppText variant="title">
+          {otpSent
+            ? "Verify Your Email"
+            : nameStep
+              ? "What's Your Full Name?"
+              : courseStep
+                ? "What's Your Course?"
+                : "Create Account"}
+        </AppText>
+        <AppText variant="subtitle" align="center">
+          {otpSent
+            ? "Enter the verification code sent to your email."
+            : nameStep
+              ? "Please enter your full name."
+              : courseStep
+                ? "Please enter your course."
+                : "Create your OrgFinder account."}
+        </AppText>
+      </View>
 
       {!otpSent && !nameStep && !courseStep ? (
-        <View style={styles.form}>
-          <TextInput
-            style={styles.input}
+        <View style={layout.stack}>
+          <AppInput
             placeholder="Email address"
-            placeholderTextColor="#A7A8B5"
             keyboardType="email-address"
             autoCapitalize="none"
             autoCorrect={false}
@@ -156,150 +146,84 @@ export default function Signin({
             onChangeText={setEmail}
           />
 
-          <TextInput
-            style={styles.input}
+          <AppInput
             placeholder="Password"
-            placeholderTextColor="#A7A8B5"
             secureTextEntry
             value={password}
             onChangeText={setPassword}
           />
 
-          <TextInput
-            style={styles.input}
+          <AppInput
             placeholder="Confirm Password"
-            placeholderTextColor="#A7A8B5"
             secureTextEntry
             value={confirmPassword}
             onChangeText={setConfirmPassword}
           />
 
-          <TouchableOpacity
-            style={styles.button}
-            onPress={handleRegister}
-            disabled={isLoading}
-          >
-            {isLoading ? (
-              <ActivityIndicator color="#2D3047" />
-            ) : (
-              <Text style={styles.buttonText}>Create Account</Text>
-            )}
-          </TouchableOpacity>
+          <AppButton
+                  title="Create Account"
+                  loading={isLoading}
+                  onPress={handleRegister}
+                  style={layout.formAction}
+                />
         </View>
       ) : otpSent ? (
-        <View style={styles.form}>
-          <TextInput
-            style={styles.input}
+        <View style={layout.stack}>
+          <AppInput
             placeholder="Enter OTP"
-            placeholderTextColor="#A7A8B5"
             keyboardType="number-pad"
             maxLength={6}
             value={otp}
             onChangeText={setOtp}
           />
 
-          <TouchableOpacity
-            style={styles.button}
-            onPress={handleVerifyOtp}
-            disabled={isLoading}
-          >
-            {isLoading ? (
-              <ActivityIndicator color="#2D3047" />
-            ) : (
-              <Text style={styles.buttonText}>Verify OTP</Text>
-            )}
-          </TouchableOpacity>
+          <AppButton
+                  title="Verify OTP"
+                  loading={isLoading}
+                  onPress={handleVerifyOtp}
+                  style={layout.formAction}
+                />
         </View>
       ) : nameStep ? (
-        <View style={styles.form}>
-          <TextInput
-            style={styles.input}
+        <View style={layout.stack}>
+          <AppInput
             placeholder="Full Name"
-            placeholderTextColor="#A7A8B5"
             autoCapitalize="words"
             value={fullName}
             onChangeText={setFullName}
           />
 
-          <TouchableOpacity style={styles.button} onPress={handleNameSubmit}>
-            <Text style={styles.buttonText}>Continue</Text>
-          </TouchableOpacity>
+          <AppButton
+                  title="Continue"
+                  loading={isLoading}
+                  onPress={handleNameSubmit}
+                  style={layout.formAction}
+                />
         </View>
       ) : courseStep ? (
-        <View style={styles.form}>
-          <TextInput
-            style={styles.input}
+        <View style={layout.stack}>
+          <AppInput
             placeholder="Course"
-            placeholderTextColor="#A7A8B5"
             autoCapitalize="characters"
             value={course}
             onChangeText={setCourse}
           />
 
-          <TouchableOpacity
-            style={styles.button}
-            onPress={handleCourseSubmit}
-            disabled={isLoading}
-          >
-            {isLoading ? (
-              <ActivityIndicator color="#2D3047" />
-            ) : (
-              <Text style={styles.buttonText}>Finish Registration</Text>
-            )}
-          </TouchableOpacity>
+          <AppButton
+                  title="Finish Registration"
+                  loading={isLoading}
+                  onPress={handleCourseSubmit}
+                  style={layout.formAction}
+                />
         </View>
       ) : null}
 
       {!otpSent && !nameStep && !courseStep && (
-        <TouchableOpacity onPress={onNavigate}>
-          <Text style={styles.switchText}>Already have an account? Log In</Text>
+        <TouchableOpacity style={layout.formFooter} onPress={onNavigate}>
+          <AppText variant="caption">Already have an account? </AppText>
+                  <AppText variant="link">Log In</AppText>
         </TouchableOpacity>
       )}
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  title: {
-    fontSize: 26,
-    fontWeight: "600",
-    color: "#F5F1F0",
-    textAlign: "center",
-  },
-  subtitle: {
-    fontSize: 14,
-    color: "#A7A8B5",
-    textAlign: "center",
-    marginTop: 10,
-    marginBottom: 30,
-  },
-  form: {
-    gap: 14,
-  },
-  input: {
-    height: 52,
-    backgroundColor: "#373A51",
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    color: "#F5F1F0",
-    borderWidth: 1,
-    borderColor: "#454960",
-  },
-  button: {
-    height: 50,
-    backgroundColor: "#DDB68E",
-    borderRadius: 30,
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 10,
-  },
-  buttonText: {
-    color: "#2D3047",
-    fontWeight: "600",
-  },
-  switchText: {
-    color: "#DDB68E",
-    textAlign: "center",
-    marginTop: 24,
-  },
-});

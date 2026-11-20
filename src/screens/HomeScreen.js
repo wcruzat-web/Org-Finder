@@ -1,16 +1,20 @@
 import React, { useEffect } from "react";
-import { StyleSheet, Text, View, useWindowDimensions } from "react-native";
+import { TouchableOpacity, View, useWindowDimensions } from "react-native";
+import { AppInput, AppText } from "../components/ui";
+import { OrgCard } from "../components/cards";
+import { layout } from "../styles/style";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import ParallaxHeaderScrollView from "../components/ParallaxHeaderScrollView";
-import Header from "../components/Header";
-import theme, { spacing } from "../styles/theme-dark";
+import theme from "../styles/theme-dark";
 import StarsSvg from "../../assets/header/stars.svg";
 import MountainsFrontSvg from "../../assets/header/mountains-front.svg";
 
 import supabase from "../../library/supabase.js";
 
-const { colors } = theme;
+import supabase from "../../library/supabase";
+
+const { colors, spacing } = theme;
 
 const GREETINGS = [
   "Hello",
@@ -22,6 +26,16 @@ const GREETINGS = [
   "Merry Christmas",
 ];
 
+const SUBTITLE = [
+  "What would you like to do today?",
+  "What's the constellation today?",
+  "How have you been?",
+  "Feeling fancy today?",
+  "Nothing beats a morning with a cup of coffee.",
+  "Friendly Reminder, You matter."
+]
+
+// SVG Image at homescreen, layer goes from back to front
 const HEADER_LAYERS = [
   {
     source: require("../../assets/header/sky.png"),
@@ -58,11 +72,17 @@ export default function HomeScreen() {
 
   const [fullName, setFullName] = React.useState("");
   const [greeting, setGreeting] = React.useState("");
+  const [subtitle, setSubtitle] = React.useState("");
+  const tags = ["Non-Academic", "Performing"];
 
   useEffect(() => {
     const randomGreeting =
       GREETINGS[Math.floor(Math.random() * GREETINGS.length)];
     setGreeting(randomGreeting);
+
+    const randomSubtitle =
+      SUBTITLE[Math.floor(Math.random() * SUBTITLE.length)];
+    setSubtitle(randomSubtitle);
   }, []);
 
   useEffect(() => {
@@ -93,7 +113,11 @@ export default function HomeScreen() {
     fetchUser();
   }, []);
 
+  
+  const status = ["open", "closing", "pending", "joined"]
+
   return (
+
     <ParallaxHeaderScrollView
       layers={HEADER_LAYERS}
       headerHeight={headerHeight}
@@ -101,44 +125,45 @@ export default function HomeScreen() {
       bottomPadding={spacing.md}
       headerContent={
         <>
-          <View style={[styles.welcome, { paddingTop: navHeaderHeight + 12 }]}>
-            <Text style={styles.greeting}>
-              {greeting}, {fullName ? fullName.trim().split(/\s+/)[0] : "User"}!
-            </Text>
-            <Text style={styles.subtitle}>
-              What would you like to do today?
-            </Text>
+          <View style={[layout.gutter, { paddingTop: navHeaderHeight + 12 }]}>
+            <AppText variant="headline">{greeting}, {fullName ? fullName.trim().split(/\s+/)[0] : "User"}!</AppText>
+            <AppText variant="subtitle">{subtitle}</AppText>
           </View>
         </>
       }
     >
-      <View style={styles.content}>
-        <Text style={styles.sectionTitle}>Browse organizations</Text>
-        {Array.from({ length: 8 }).map((_, i) => (
-          <View key={i} style={styles.card}>
-            <Text style={styles.cardText}>Organization {i + 1}</Text>
-          </View>
+      <View style={layout.content}>
+        <AppInput />
+      </View>
+      <View style={layout.content}>
+        <AppText variant="heading">Recommended for you</AppText>
+        <OrgCard 
+        variant="featured"
+        name="Organization Name"
+        tags={tags}
+        description="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+        tag="Featured"
+        slots={99}
+        />
+      </View>
+      <View style={layout.content}>
+        <View style={layout.row}>
+          <AppText variant="heading">Browse organizations</AppText>
+          <TouchableOpacity onPress={null}>
+            <AppText variant="link">See All</AppText>
+          </TouchableOpacity>
+        </View>
+        {Array.from({ length: 5 }).map((_, i) => (
+          <OrgCard
+          key={i}
+          name="Organization Name"
+          tags={tags}
+          description="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+          status={status[i]}
+          memberCount={99}
+        />
         ))}
       </View>
     </ParallaxHeaderScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  welcome: { paddingHorizontal: 16, marginTop: 12 },
-  greeting: { color: colors.textPrimary, fontSize: 30, fontWeight: "700" },
-  subtitle: { color: colors.textSecondary, fontSize: 14, marginTop: 4 },
-  content: { paddingHorizontal: 20, paddingTop: 16, gap: 12 },
-  sectionTitle: {
-    color: colors.textPrimary,
-    fontSize: 16,
-    fontWeight: "600",
-  },
-  card: {
-    backgroundColor: colors.surface,
-    borderRadius: 12,
-    padding: 16,
-    height: 110,
-  },
-  cardText: { color: colors.textPrimary, fontSize: 16 },
-});
