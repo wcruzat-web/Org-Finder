@@ -3,7 +3,6 @@ import { TabScroll, AppText, Avatar, AppButton } from "../components/ui";
 import { layout, card } from "../styles/style";
 
 import HalftoneCorner from "../components/cards/HalftoneCorner";
-import { opacity } from "react-native-reanimated/lib/typescript/Colors";
 
 export default function OrgDetails({ route, navigation }) {
   // Receive organization data
