@@ -74,6 +74,10 @@ export default function HomeScreen() {
   const tags = ["Non-Academic", "Performing"];
   const [browseOrganizations, setBrowseOrganizations] = useState([]);
 
+  //para sa ai huhu
+  const [recommendations, setRecommendations] = useState([]);
+  const [recommendationError, setRecommendationError] = useState(null);
+
   useEffect(() => {
     const randomGreeting =
       GREETINGS[Math.floor(Math.random() * GREETINGS.length)];
@@ -110,6 +114,48 @@ export default function HomeScreen() {
       }
     };
     fetchUser();
+  }, []);
+
+  //para sa recos
+  const fetchRecommendations = async () => {
+    try {
+      setRecommendationError(null);
+
+      const {
+        data: { session },
+        error: sessionError,
+      } = await supabase.auth.getSession();
+
+      if (sessionError) throw sessionError;
+
+      if (!session) throw new Error("No active session found");
+
+      const response = await fetch(
+        "https://org-finder-backend.onrender.com/api/recommendations",
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${session.access_token}`,
+            "Content-Type": "application/json",
+          },
+        },
+      );
+
+      const result = await response.json();
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || "Failed to fetch recommendations");
+      }
+      console.log("API result:", JSON.stringify(result, null, 2));
+      setRecommendations(result.data.recommendations);
+    } catch (error) {
+      console.error("Error fetching recommendations:", error.message);
+      setRecommendationError(error.message);
+    }
+  };
+
+  useEffect(() => {
+    fetchRecommendations();
   }, []);
 
   const status = ["open", "closing", "pending", "joined"];
@@ -166,7 +212,6 @@ export default function HomeScreen() {
           };
         });
 
-
         //pang shuffle ng organizations
         for (let i = organizationWithCounts.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
@@ -178,7 +223,7 @@ export default function HomeScreen() {
         }
 
         //random select to guysm 3-4 sha
-        const randomCount = Math.floor(Math.random() * 2) + 3;
+        const randomCount = Math.floor(Math.random() * 2) + 4;
 
         setBrowseOrganizations(organizationWithCounts.slice(0, randomCount));
       } catch (error) {
@@ -211,14 +256,21 @@ export default function HomeScreen() {
       </View>
       <View style={layout.content}>
         <AppText variant="heading">Recommended for you</AppText>
-        <OrgCard
-          variant="featured"
-          name="Organization Name"
-          tags={tags}
-          description="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
-          tag="Featured"
-          slots={99}
-        />
+        {Array.isArray(recommendations) && recommendations.length > 0 ? (
+          recommendations.map((org) => (
+            <OrgCard
+              key={org.id}
+              variant="featured"
+              name={org.name}
+              tags={[org.category]}
+              description={org.reason}
+              tag="Recommended"
+              slots={org.memberCount}
+            />
+          ))
+        ) : (
+          <AppText variant="caption">No recommendation available.</AppText>
+        )}
       </View>
       <View style={layout.content}>
         <View style={layout.row}>
