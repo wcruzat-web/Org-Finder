@@ -19,15 +19,12 @@ export default function OrgCard({
   tag,
   slots,
   onPress,
-  onMorePress,
   style,
 }) {
   const featured = variant === "featured";
-  const Root = onPress ? Pressable : View;
-  const rootProps = onPress
-    ? { onPress, accessibilityRole: "button", accessibilityLabel: name }
-    : {};
-  const handleMore = onMorePress ?? onPress;
+  const Root = featured ? View: Pressable;
+  const rootProps = featured
+    ? {} : { onPress, accessibilityRole: "button", accessibilityLabel: name };
 
   return (
     <Root
@@ -65,7 +62,7 @@ export default function OrgCard({
             <Pill label="Pending" tone="info" />
           ) : status === "joined" ? (
             <Pill label="Joined" tone="muted" />
-          ) : null)}
+          ) : console.log("Invalid status \"" + status + "\" for " + name))}
       </View>
 
       <AppText
@@ -88,7 +85,7 @@ export default function OrgCard({
             title="Learn More"
             size="sm"
             fullWidth={false}
-            onPress={handleMore}
+            onPress={onPress}
           />
         </View>
       ) : (
@@ -99,11 +96,8 @@ export default function OrgCard({
               {memberCount} Members
             </AppText>
           </View>
-          <TouchableOpacity
-            onPress={handleMore}
+          <View
             hitSlop={8}
-            accessibilityRole="button"
-            accessibilityLabel={`More info about ${name}`}
             style={card.more}
           >
             <AppText variant="link" tone="brand">
@@ -114,7 +108,7 @@ export default function OrgCard({
               color={cardColors.accent}
               style={card.chevron}
             />
-          </TouchableOpacity>
+          </View>
         </View>
       )}
     </Root>

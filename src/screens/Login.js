@@ -19,6 +19,7 @@ export default function Login({ onNavigate, onLoginSuccess }) {
     try {
       setIsLoading(true);
       await loginUser(email.trim().toLowerCase(), password);
+      console.log("sakses").
       Alert.alert("Success", "Login successful.", [
         {
           text: "Continue",
