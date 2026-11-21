@@ -1,10 +1,15 @@
 import { useState, useEffect } from "react";
-import { View, ScrollView, ActivityIndicator } from "react-native";
+import { ActivityIndicator } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 import { OrgCard } from "../components/cards";
-import { layout } from "../styles/style";
+import { TabScroll } from "../components/ui";
+
+import layout from "../styles/style.js";
 
 import supabase from "../../library/supabase.js";
 export default function OrgList() {
+
+  const navigation = useNavigation();
   
   const [organizations, setOrganizations] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -75,18 +80,17 @@ export default function OrgList() {
   }, []);
 
   return (
-    <ScrollView style={layout.offsetNavbar}>
-      <View style={layout.content}>
-        {organizations.map((org) => (
+    <TabScroll>
+      {organizations.map((org) => (
           <OrgCard
             key={org.id}
             name={org.name}
             tags={[org.category, org.subcategory]}
             description={org.description}
             memberCount={org.memberCount}
+            onPress={() => navigation.navigate("OrgDetail", { org })}
           />
         ))}
-      </View>
-    </ScrollView>
+    </TabScroll>
   );
 }

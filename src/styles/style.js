@@ -105,14 +105,14 @@ export const button = StyleSheet.create({
   primary: { backgroundColor: colors.primary },
   primaryPressed: { backgroundColor: colors.primaryPressed },
   secondary: {
-    backgroundColor: "transparent",
-    borderWidth: 1,
+    backgroundColor: colors.surface,
+    borderWidth: 2,
     borderColor: colors.border,
   },
   secondaryPressed: { backgroundColor: colors.surface },
   ghost: { backgroundColor: "transparent" },
   ghostPressed: { opacity: 0.6 },
-  disabled: { opacity: 0.5 },
+  disabled: { opacity: 0.75 },
 });
 
 export const buttonLabelTone = {
@@ -161,6 +161,10 @@ export const layout = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
+  },
+  columnCenter: {
+    alignItems: "center",
+    justifyContent: "center"
   },
   offsetNavbar: { paddingTop: spacing["2xl"] * 1.5 },
   // Scrollable page body
@@ -217,6 +221,11 @@ export const bottomNavColors = {
 
 export const bottomNav = StyleSheet.create({
   outer: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: "transparent",
     paddingHorizontal: spacing.md,
     paddingTop: spacing.sm,
   },
@@ -259,7 +268,7 @@ export const bottomNav = StyleSheet.create({
 
 //components/ParallaxHeaderScrollView.js
 export const parallaxView = StyleSheet.create({
-  root: { flex: 1 },
+  root: { flex: 1},
   fill: { width: "100%", height: "100%" },
   topLayer: {
     position: "absolute",

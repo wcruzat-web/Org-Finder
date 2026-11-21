@@ -20,7 +20,7 @@ import {
 } from "@expo-google-fonts/fredoka";
 
 import AuthNavigator from "./src/navigations/AuthNavigator.js";
-import MainTabs from "./src/navigations/MainTabs";
+import RootStack from "./src/navigations/RootStack";
 
 import supabase from "./library/supabase.js";
 
@@ -102,7 +102,7 @@ export default function App() {
             behavior={Platform.OS === "ios" ? "padding" : undefined}
           >
             {currentScreen === "home" && !isRegistering ? (
-              <MainTabs />
+              <RootStack />
             ) : (
               <AuthNavigator
                 onRegistering={setIsRegistering}

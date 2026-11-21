@@ -23,7 +23,7 @@ function renderNavBar({ state, navigation }) {
   );
 }
 
-export default function MainTabs({ onLogout }) {
+export default function MainTabs() {
 
   return (
     <Tab.Navigator

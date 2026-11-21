@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { TouchableOpacity, View, useWindowDimensions } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 import { AppInput, AppText } from "../components/ui";
 import { OrgCard } from "../components/cards";
 import { layout } from "../styles/style";
@@ -63,6 +64,9 @@ const HEADER_LAYERS = [
 ];
 
 export default function HomeScreen() {
+
+  const navigation = useNavigation();
+
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   const navHeaderHeight = useHeaderHeight();
@@ -192,7 +196,7 @@ export default function HomeScreen() {
       layers={HEADER_LAYERS}
       headerHeight={headerHeight}
       bodyColor={colors.background}
-      bottomPadding={spacing.md}
+      bottomPadding={spacing["2xl"] * 1.8}
       headerContent={
         <>
           <View style={[layout.gutter, { paddingTop: navHeaderHeight + 12 }]}>
@@ -232,7 +236,7 @@ export default function HomeScreen() {
             tags={[org.category, org.subcategory]}
             description={org.description}
             memberCount={org.memberCount}
-            status="I am the storm"
+            onPress={() => navigation.navigate("OrgDetail", { org })}
           />
         ))}
       </View>

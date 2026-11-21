@@ -175,8 +175,8 @@ export default function ParallaxHeaderScrollView({
             parallaxView.body,
             {
               backgroundColor: bodyColor,
-              minHeight: windowHeight,
               paddingBottom: bottomPadding,
+              flexGrow: 1,
             },
           ]}
         >
