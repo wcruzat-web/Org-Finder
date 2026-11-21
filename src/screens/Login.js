@@ -5,7 +5,7 @@ import { layout } from "../styles/style";
 
 import { loginUser } from "../../library/services/authService.js";
 
-export default function Login({ onNavigate, onLoginSuccess }) {
+export default function Login({ onNavigate, onLoginSuccess, onForgotPassword }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -19,7 +19,6 @@ export default function Login({ onNavigate, onLoginSuccess }) {
     try {
       setIsLoading(true);
       await loginUser(email.trim().toLowerCase(), password);
-      console.log("sakses").
       Alert.alert("Success", "Login successful.", [
         {
           text: "Continue",
@@ -60,9 +59,12 @@ export default function Login({ onNavigate, onLoginSuccess }) {
         />
       </View>
 
-      <AppText variant="link" style={layout.formAside}>
-        Forgot Password?
-      </AppText>
+      <TouchableOpacity
+        onPress={onForgotPassword}
+        style={layout.formAside}
+      >
+        <AppText variant="link">Forgot Password?</AppText>
+      </TouchableOpacity>
 
       <AppButton
         title="Log In"
