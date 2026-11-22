@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#292d45">
+  <title>Reset Password | OrgFinder</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="page-shell">
+    <section class="hero-panel">
+      <header class="brand">
+        <div class="brand-mark">OF</div>
+        <div><strong>OrgFinder</strong><small>Student organization hub</small></div>
+      </header>
+      <div class="hero-copy">
+        <p class="eyebrow">YOUR CAMPUS. YOUR COMMUNITY.</p>
+        <h1>A fresh start begins with a secure account.</h1>
+        <p>Choose a new password to get back to discovering organizations, connecting with students, and finding your community.</p>
+      </div>
+      <div class="scenery-placeholder" aria-hidden="true">
+        <i class="star s1"></i><i class="star s2"></i><i class="star s3"></i>
+        <div class="glow"></div><div class="mountain back"></div><div class="mountain front"></div>
+      </div>
+    </section>
+    <section class="form-panel">
+      <div class="form-content">
+        <div class="secure-label"><span></span> SECURE ACCOUNT RECOVERY</div>
+        <h2>Reset your password</h2>
+        <p class="description">Choose a new password for your OrgFinder account.</p>
+        <form id="reset-form">
+          <label for="new-password">New password</label>
+          <div class="input-wrap">
+            <input id="new-password" type="password" placeholder="Enter your new password" autocomplete="new-password" minlength="6" required>
+          </div>
+          <label for="confirm-password">Confirm new password</label>
+          <div class="input-wrap">
+            <input id="confirm-password" type="password" placeholder="Re-enter your new password" autocomplete="new-password" minlength="6" required> 
+          </div>
+          <p class="hint">Use at least 6 characters.</p>
+          <p id="status-message" class="status" role="status" aria-live="polite"></p>
+          <button id="submit-button" class="submit-button" type="submit">Update password</button>
+        </form>
+        <p class="footer-note">Having trouble? Return to OrgFinder and request a new recovery link.</p>
+      </div>
+    </section>
+  </main>
+  <script type="module" src="script.js"></script>
+</body>
+</html>

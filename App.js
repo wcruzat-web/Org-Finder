@@ -29,8 +29,14 @@ SplashScreen.preventAutoHideAsync();
 export default function App() {
   const [fontsLoaded, err] = useFonts({
     Overlock_700Bold,
-    Cause_200ExtraLight, Cause_400Regular, Cause_700Bold, Cause_900Black,
-    Fredoka_300Light, Fredoka_400Regular, Fredoka_700Bold, Fredoka_900Black,
+    Cause_200ExtraLight,
+    Cause_400Regular,
+    Cause_700Bold,
+    Cause_900Black,
+    Fredoka_300Light,
+    Fredoka_400Regular,
+    Fredoka_700Bold,
+    Fredoka_900Black,
   });
 
   const [currentScreen, setCurrentScreen] = useState(null);
@@ -91,6 +97,10 @@ export default function App() {
     setCurrentScreen("home");
   };
 
+  const handleLoginSuccess = () => {
+    setCurrentScreen("home");
+  };
+
   return (
     <SafeAreaProvider>
       <NavigationContainer>
@@ -107,6 +117,7 @@ export default function App() {
               <AuthNavigator
                 onRegistering={setIsRegistering}
                 onRegistrationComplete={handleRegistrationComplete}
+                onLoginSuccess={handleLoginSuccess}
               />
             )}
           </KeyboardAvoidingView>

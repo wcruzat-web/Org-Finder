@@ -127,3 +127,19 @@ export const logoutUser = async () => {
 
   return true;
 };
+
+//? reset password
+export const resetPassword = async (email) => {
+  const validatedEmail = validateEmail(email);
+
+  const { data, error } = await supabase.auth.resetPasswordForEmail(
+    validatedEmail,
+    {
+      redirectTo: "https://gwenabelenedogelio-star.vercel.app/",
+    },
+  );
+
+  if (error) throw new Error(error.message);
+
+  return data;
+};
