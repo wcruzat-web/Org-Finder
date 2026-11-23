@@ -1,4 +1,3 @@
-
 import supabaseAdmin from "../config/supabaseAdmin.js";
 
 //* get all organizations
@@ -6,14 +5,18 @@ export const getOrganizations = async (req, res) => {
   try {
     const { data, error } = await supabaseAdmin
       .from("organizations")
-      .select(`
+      .select(
+        `
         id,
         name,
         category,
         description,
         account_id,
+        course_eligibility,
+        eligible_courses,
         created_at
-      `)
+      `,
+      )
       .order("created_at", { ascending: false });
 
     if (error) throw error;
@@ -35,7 +38,13 @@ export const getOrganizations = async (req, res) => {
 //* create a new organization
 export const createOrganization = async (req, res) => {
   try {
-    const { name, category, description } = req.body;
+    const {
+      name,
+      category,
+      description,
+      course_eligibility,
+      eligible_courses,
+    } = req.body;
 
     if (!name || !category) {
       return res.status(400).json({
@@ -46,18 +55,42 @@ export const createOrganization = async (req, res) => {
 
     //* validate organization category
     const validCategories = [
-      "academic",
-      "non_academic",
-      "religious",
-      "performing_arts",
-      "student_council",
-      "high_school",
+      "Academic",
+      "Non Academic",
+      "Performing Arts",
+      "Student Council",
     ];
 
     if (!validCategories.includes(category)) {
       return res.status(400).json({
         success: false,
         message: "invalid organization category.",
+      });
+    }
+
+    //* validate course eligibility
+    if (!["all", "specific"].includes(course_eligibility)) {
+      return res.status(400).json({
+        success: false,
+        message: "invalid course eligibility.",
+      });
+    }
+
+    //* validate eligible courses
+    const selectedCourses =
+      course_eligibility === "all" ? [] : eligible_courses;
+
+    if (!Array.isArray(selectedCourses)) {
+      return res.status(400).json({
+        success: false,
+        message: "eligible courses must be an array.",
+      });
+    }
+
+    if (course_eligibility === "specific" && selectedCourses.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "select at least one eligible course.",
       });
     }
 
@@ -68,6 +101,8 @@ export const createOrganization = async (req, res) => {
         name: name.trim(),
         category,
         description: description?.trim() || null,
+        course_eligibility,
+        eligible_courses: selectedCourses,
       })
       .select()
       .single();

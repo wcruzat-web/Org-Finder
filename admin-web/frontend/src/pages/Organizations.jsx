@@ -5,6 +5,49 @@ import {
 } from "../services/organizationService";
 import supabase from "../lib/supabase";
 
+const courses = [
+  {
+    label: "BS Agricultural and Biosystems Engineering",
+    value: "BS Agricultural and Biosystems Engineering",
+  },
+  {
+    label: "BS Architecture",
+    value: "BS Architecture",
+  },
+  {
+    label: "BS Civil Engineering",
+    value: "BS Civil Engineering",
+  },
+  {
+    label: "BS Computer Engineering",
+    value: "BS Computer Engineering",
+  },
+  {
+    label: "BS Computer Science",
+    value: "BS Computer Science",
+  },
+  {
+    label: "BS Electrical Engineering",
+    value: "BS Electrical Engineering",
+  },
+  {
+    label: "BS Electronics Engineering",
+    value: "BS Electronics Engineering",
+  },
+  {
+    label: "BS Industrial Engineering",
+    value: "BS Industrial Engineering",
+  },
+  {
+    label: "BS Industrial Technology",
+    value: "BS Industrial Technology",
+  },
+  {
+    label: "BS Information Technology",
+    value: "BS Information Technology",
+  },
+];
+
 function Organizations() {
   const [organizations, setOrganizations] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -14,11 +57,15 @@ function Organizations() {
   const [categoryFilter, setCategoryFilter] = useState("All");
   const [error, setError] = useState("");
 
-  const [form, setForm] = useState({
+  const initialForm = {
     name: "",
     category: "",
     description: "",
-  });
+    course_eligibility: "all",
+    eligible_courses: [],
+  };
+
+  const [form, setForm] = useState(initialForm);
 
   //* fetch organizations from backend
   const fetchOrganizations = async () => {
@@ -116,6 +163,30 @@ function Organizations() {
     }));
   };
 
+  //* handle course eligibility changes
+  const handleEligibilityChange = (e) => {
+    const value = e.target.value;
+
+    setForm((prev) => ({
+      ...prev,
+      course_eligibility: value,
+      eligible_courses: value === "all" ? [] : prev.eligible_courses,
+    }));
+  };
+
+  //* handle selected courses
+  const handleCourseSelection = (e) => {
+    const selectedCourses = Array.from(
+      e.target.selectedOptions,
+      (option) => option.value,
+    );
+
+    setForm((prev) => ({
+      ...prev,
+      eligible_courses: selectedCourses,
+    }));
+  };
+
   //* create organization
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -123,14 +194,21 @@ function Organizations() {
     try {
       setError("");
 
-      await createOrganization(form);
+      if (
+        form.course_eligibility === "specific" &&
+        form.eligible_courses.length === 0
+      ) {
+        setError("Please select at least one eligible course.");
+        return;
+      }
 
-      setForm({
-        name: "",
-        category: "",
-        description: "",
+      await createOrganization({
+        ...form,
+        eligible_courses:
+          form.course_eligibility === "all" ? [] : form.eligible_courses,
       });
 
+      setForm(initialForm);
       setShowModal(false);
 
       await fetchOrganizations();
@@ -283,7 +361,11 @@ function Organizations() {
               </h3>
 
               <button
-                onClick={() => setShowModal(false)}
+                onClick={() => {
+                  setShowModal(false);
+                  setForm(initialForm);
+                  setError("");
+                }}
                 className="text-xl text-gray-400 hover:text-white"
               >
                 &times;
@@ -344,10 +426,59 @@ function Organizations() {
                 />
               </div>
 
+              {/* course eligibility */}
+              <div>
+                <label className="mb-2 block text-sm text-gray-300">
+                  Course Eligibility
+                </label>
+
+                <select
+                  name="course_eligibility"
+                  value={form.course_eligibility}
+                  onChange={handleEligibilityChange}
+                  className="w-full rounded-lg border border-gray-700 bg-gray-950 px-4 py-2.5 text-sm text-white outline-none focus:border-indigo-500"
+                >
+                  <option value="all">All Courses</option>
+                  <option value="specific">Specific Courses</option>
+                </select>
+              </div>
+
+              {/* eligible courses */}
+              {form.course_eligibility === "specific" && (
+                <div>
+                  <label className="mb-2 block text-sm text-gray-300">
+                    Eligible Programs
+                  </label>
+
+                  <select
+                    multiple
+                    value={form.eligible_courses}
+                    onChange={handleCourseSelection}
+                    required
+                    className="h-48 w-full rounded-lg border border-gray-700 bg-gray-950 px-4 py-2.5 text-sm text-white outline-none focus:border-indigo-500"
+                  >
+                    {courses.map((course) => (
+                      <option key={course.value} value={course.value}>
+                        {course.label}
+                      </option>
+                    ))}
+                  </select>
+
+                  <p className="mt-2 text-xs text-gray-500">
+                    Hold Ctrl (Windows) or Command (Mac) to select multiple
+                    programs.
+                  </p>
+                </div>
+              )}
+
               <div className="flex justify-end gap-3 pt-3">
                 <button
                   type="button"
-                  onClick={() => setShowModal(false)}
+                  onClick={() => {
+                    setShowModal(false);
+                    setForm(initialForm);
+                    setError("");
+                  }}
                   className="rounded-lg border border-gray-700 px-4 py-2 text-sm text-gray-300 hover:bg-gray-800"
                 >
                   Cancel
