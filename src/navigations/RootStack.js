@@ -43,6 +43,7 @@ export default function RootStack() {
       <Stack.Screen 
         name="Notifications"
         component={NotifList}
+        options={{title: "Notifications"}}
       />
     </Stack.Navigator>
   );

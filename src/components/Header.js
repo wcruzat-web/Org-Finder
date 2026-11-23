@@ -3,7 +3,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import theme from "../styles/theme-dark";
 import BackIcon from "../../assets/icons/Back";
-import MenuIcon from "../../assets/icons/Menu";
+import NotifIcon from "../../assets/icons/Notif";
 
 const { colors, spacing, fontSizes } = theme;
 
@@ -76,7 +76,7 @@ export default function Header({
       </Text>
 
       <IconButton label="Menu" onPress={onMenuPress}>
-        <MenuIcon />
+        <NotifIcon />
       </IconButton>
     </LinearGradient>
   );

@@ -6,7 +6,7 @@ import { bottomNav, bottomNavColors, bottomNavMetrics } from "../styles/style";
 import {
   HomeIcon,
   OrgListIcon,
-  BellIcon,
+  MyOrgIcon,
   ProfileIcon,
 } from "../../assets/icons/NavIcons";
 
@@ -15,7 +15,7 @@ const { colors, spacing } = theme;
 const TABS = [
   { key: "discover", label: "Discover", Icon: HomeIcon },
   { key: "orglists", label: "Org Lists", Icon: OrgListIcon },
-  { key: "notification", label: "Notification", Icon: BellIcon },
+  { key: "myorgs", label: "My Orgs", Icon: MyOrgIcon },
   { key: "profile", label: "Profile", Icon: ProfileIcon },
 ];
 

@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
-import { ActivityIndicator } from "react-native";
+import { View } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { OrgCard } from "../components/cards";
 import { TabScroll } from "../components/ui";
 
-import layout from "../styles/style.js";
+import { layout } from "../styles/style.js";
 
 import supabase from "../../library/supabase.js";
 export default function OrgList() {
@@ -65,7 +65,7 @@ export default function OrgList() {
         return { ...org, memberCount: count?.member_count ?? 0 };
       });
 
-      console.log("Eligible organizations:", orgData);
+      // console.log("Eligible organizations:", orgData);
       setOrganizations(organizationWithCounts);
     } catch (error) {
       setErrorMessage("Error fetching organizations: " + error.message);
@@ -81,7 +81,8 @@ export default function OrgList() {
 
   return (
     <TabScroll>
-      {organizations.map((org) => (
+      <View style={layout.content}>
+        {organizations.map((org) => (
           <OrgCard
             key={org.id}
             name={org.name}
@@ -91,6 +92,7 @@ export default function OrgList() {
             onPress={() => navigation.navigate("OrgDetail", { org })}
           />
         ))}
+      </View>
     </TabScroll>
   );
 }

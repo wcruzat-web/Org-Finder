@@ -75,7 +75,6 @@ export default function HomeScreen() {
   const [fullName, setFullName] = React.useState("");
   const [greeting, setGreeting] = React.useState("");
   const [subtitle, setSubtitle] = React.useState("");
-  const tags = ["Non-Academic", "Performing"];
   const [browseOrganizations, setBrowseOrganizations] = useState([]);
 
   //para sa ai huhu
@@ -150,7 +149,7 @@ export default function HomeScreen() {
       if (!response.ok || !result.success) {
         throw new Error(result.message || "Failed to fetch recommendations");
       }
-      console.log("API result:", JSON.stringify(result, null, 2));
+      // console.log("API result:", JSON.stringify(result, null, 2));
       setRecommendations(result.data.recommendations);
     } catch (error) {
       console.error("Error fetching recommendations:", error.message);
@@ -161,8 +160,6 @@ export default function HomeScreen() {
   useEffect(() => {
     fetchRecommendations();
   }, []);
-
-  const status = ["open", "closing", "pending", "joined"];
 
   //fetch ng pang user for data ng organizations
 

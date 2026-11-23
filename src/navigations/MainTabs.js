@@ -6,8 +6,8 @@ import HomeScreen from "../screens/HomeScreen";
 import ProfileScreen from "../screens/ProfileScreen.js";
 import theme from "../styles/theme-dark";
 import OrgList from "../screens/OrgList.js";
-import NotifList from "../screens/NotifList.js"
 import { useNavigation } from "@react-navigation/native";
+import MyOrgsList from "../screens/MyOrgsList.js";
 
 const { colors } = theme;
 const Tab = createBottomTabNavigator();
@@ -49,11 +49,11 @@ export default function MainTabs() {
       component={OrgList}
       options={{ title: "Organizations"}}
       />
-      {/* <Tab.Screen
-      name="Notification"
-      component={NotifList}
-      options={{ title: "Notification"}}
-      /> */}
+      <Tab.Screen
+      name="MyOrgs"
+      component={MyOrgsList}
+      options={{ title: "My Organizations"}}
+      />
       <Tab.Screen
         name="Profile"
         options={{ title: "Profile" }}

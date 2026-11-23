@@ -1,5 +1,5 @@
 import { View, Image, StyleSheet } from "react-native";
-import { TabScroll, AppText, Avatar, AppButton } from "../components/ui";
+import { TabScroll, AppText, Avatar, AppButton, Pill } from "../components/ui";
 import { layout, card } from "../styles/style";
 
 import HalftoneCorner from "../components/cards/HalftoneCorner";
@@ -33,11 +33,13 @@ export default function OrgDetails({ route, navigation }) {
         </View>
       </View>
 
-      <View style={layout.content}>
+      <View style={[layout.content, layout.stack]}>
         {/* Name and filter tag continer */}
         <View style={layout.columnCenter}>
-          <AppText variant="headline" align="center">{org.name}</AppText>
-          <AppText variant="caption">{org.category}</AppText>
+          <AppText variant="headline" align="center">
+            {org.name}
+          </AppText>
+          <Pill label={org.category} tone="muted" />
         </View>
 
         {/* Member Count + Button */}
@@ -71,14 +73,19 @@ export default function OrgDetails({ route, navigation }) {
         </View>
 
         {/* Description */}
-        <AppText variant="label">About</AppText>
-        <AppText variant="caption" style={card.description}>
-          {org.description}
-        </AppText>
-        <AppText variant="label">Announcements</AppText>
-        <View>
+        <View style={layout.stackInside}>
+          <AppText variant="label">About</AppText>
+          <AppText variant="caption" style={card.description}>
+            {org.description}
+          </AppText>
+        </View>
+        
+        <View style={layout.stackInside}>
+          <AppText variant="label">Announcements</AppText>
           {/* forda Announcements */}
-          <AppText variant="caption">It looks like there's no announcements at the moment.</AppText>
+          <AppText variant="caption">
+            It looks like there's no announcements at the moment.
+          </AppText>
         </View>
       </View>
     </TabScroll>

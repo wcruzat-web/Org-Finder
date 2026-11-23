@@ -153,7 +153,7 @@ export const inputSelectionColor = colors.primary;
 // #Layout
 
 export const layout = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: colors.background, paddingHorizontal: 0, gap: spacing.xs },
+  screen: { flex: 1, backgroundColor: colors.background },
   gutter: { paddingHorizontal: spacing.lg },
   stack: { gap: spacing.md },
   row: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
@@ -166,12 +166,19 @@ export const layout = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center"
   },
-  offsetNavbar: { paddingTop: spacing["2xl"] * 1.5 },
+  divider: {
+    height: 1,
+    backgroundColor: colors.textDisabled,
+    width: "95%",
+    alignSelf: "center",
+    marginVertical: spacing.xs,
+  },
+  stackInside: { gap: spacing.sm },
   // Scrollable page body
   content: {
     paddingHorizontal: spacing.lg,
     paddingTop: spacing.md,
-    gap: spacing.md,
+    gap: spacing.sm,
   },
   banner: {
     width: "100%",

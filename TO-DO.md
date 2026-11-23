@@ -1,8 +1,9 @@
 ## Work-in-Progress:
 
-- Parallax covers the Header
-- Header Component need polish
-- other components not yet created
+- Profile Page still WIP
+- Org Details View for Members
+- Announcement Card Components
+- Settings UI..?
 
 ## Install this for Groq AI
 

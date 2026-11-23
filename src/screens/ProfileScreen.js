@@ -1,6 +1,6 @@
 import { Alert, View, Image } from "react-native";
-import { AppText, AppButton, TabScroll, Avatar } from "../components/ui";
-import { layout } from "../styles/style";
+import { AppText, AppButton, TabScroll, Avatar, Pill, AppInput } from "../components/ui";
+import { layout, card } from "../styles/style";
 
 import DefaultBanner from "../../assets/banner-placeholder.png";
 
@@ -49,13 +49,25 @@ export default function ProfileScreen() {
         </View>
       </View>
 
-      <View style={layout.content}>
+      <View style={[layout.content, layout.stack]}>
         {/* Name and filter tag continer */}
         <View style={layout.columnCenter}>
-          <AppText variant="headline" align="center">User Name</AppText>
+          <AppText variant="headline" align="center">Princess Katarina Joy Dela Cruz Batumbakal-Lim</AppText>
+          <Pill label="BS Information Technology" tone="muted" dot />
         </View>
 
-        <View>
+        {/* Adishunal infu */}
+        <View style={[card.base, card.default, layout.stack]}>
+          <View style={layout.stackInside}>
+            <AppText variant="bodySmall">Details</AppText>
+            <AppInput placeholder="Add your bio..." />
+          </View>
+          <View style={layout.divider} />
+          <View style={layout.stackInside}>
+            <AppText variant="bodySmall">Switch Account</AppText>
+            <View style={[card.base, card.featured, layout.stack]} />
+            <View style={[card.base, card.featured, layout.stack]} />
+          </View>
           <AppButton title="Log Out" onPress={confirmLogout} />
         </View>
       </View>
