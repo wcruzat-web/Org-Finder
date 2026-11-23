@@ -1,51 +1,15 @@
-import { Alert, View, useWindowDimensions } from "react-native";
-import { AppText, AppButton } from "../components/ui";
+import { Alert, View, Image } from "react-native";
+import { AppText, AppButton, TabScroll, Avatar } from "../components/ui";
 import { layout } from "../styles/style";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useHeaderHeight } from "@react-navigation/elements";
-import ParallaxHeaderScrollView from "../components/ParallaxHeaderScrollView";
-import theme from "../styles/theme-dark";
-import StarsSvg from "../../assets/header/stars.svg";
-import MountainsFrontSvg from "../../assets/header/mountains-front.svg";
+
+import DefaultBanner from "../../assets/banner-placeholder.png";
 
 import { logoutUser } from "../../library/services/authService";
 
-const { colors, spacing } = theme;
-
-// SVG Image at homescreen, layer goes from back to front
-const HEADER_LAYERS = [
-  {
-    source: require("../../assets/header/sky.png"),
-    anchor: "top",
-    speed: 0.25,
-    fill: true,
-  },
-  {
-    source: <StarsSvg width="100%" height="100%" />,
-    aspectRatio: 390 / 157,
-    anchor: "top",
-    speed: 0.1,
-    stretch: false,
-  },
-  {
-    source: require("../../assets/header/mountains-back.png"),
-    aspectRatio: 390.62 / 65,
-    anchor: "bottom",
-    speed: 0.7,
-  },
-  {
-    source: <MountainsFrontSvg width="100%" height="100%" />,
-    aspectRatio: 390 / 43,
-    anchor: "bottom",
-    speed: 1,
-  },
-];
-
 export default function ProfileScreen() {
-  const insets = useSafeAreaInsets();
-  const { width } = useWindowDimensions();
-  const navHeaderHeight = useHeaderHeight();
-  const headerHeight = width * (219.071 / 390) + insets.top;
+
+  const getImageSource = (image) =>
+    typeof image === "string" ? { uri: image } : image;
 
   const handleLogout = async () => {
       try {
@@ -70,16 +34,31 @@ export default function ProfileScreen() {
     };
 
   return (
-    <ParallaxHeaderScrollView
-      layers={HEADER_LAYERS}
-      headerHeight={headerHeight}
-      bodyColor={colors.background}
-      bottomPadding={spacing.md}
-      headerContent={<></>}
-    >
-      <View style={layout.content}>
-        <AppButton title="Log Out" onPress={confirmLogout} />
+    <TabScroll contentStyle={layout.screen} useNavPadding={false}>
+      {/* Banner kontiner */}
+      <View style={layout.banner}>
+        {/* Ba is nner picshur */}
+        <Image
+          source={DefaultBanner}
+          style={{ width: "100%", height: "100%" }}
+          resizeMode="cover"
+        />
+        {/* Frufayl */}
+        <View style={layout.profileSection}>
+          <Avatar size="profile" />
+        </View>
       </View>
-    </ParallaxHeaderScrollView>
+
+      <View style={layout.content}>
+        {/* Name and filter tag continer */}
+        <View style={layout.columnCenter}>
+          <AppText variant="headline" align="center">User Name</AppText>
+        </View>
+
+        <View>
+          <AppButton title="Log Out" onPress={confirmLogout} />
+        </View>
+      </View>
+    </TabScroll>
   );
 }

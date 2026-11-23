@@ -7,6 +7,7 @@ import ProfileScreen from "../screens/ProfileScreen.js";
 import theme from "../styles/theme-dark";
 import OrgList from "../screens/OrgList.js";
 import NotifList from "../screens/NotifList.js"
+import { useNavigation } from "@react-navigation/native";
 
 const { colors } = theme;
 const Tab = createBottomTabNavigator();
@@ -24,6 +25,7 @@ function renderNavBar({ state, navigation }) {
 }
 
 export default function MainTabs() {
+  const navigation = useNavigation();
 
   return (
     <Tab.Navigator
@@ -32,7 +34,7 @@ export default function MainTabs() {
       screenOptions={{
         headerTransparent: true,
         header: ({ options }) => (
-          <Header title={options.title} />
+          <Header title={options.title} onMenuPress={() => navigation.navigate("Notifications")} />
         ),
         sceneStyle: { backgroundColor: colors.background },
       }}
@@ -47,11 +49,11 @@ export default function MainTabs() {
       component={OrgList}
       options={{ title: "Organizations"}}
       />
-      <Tab.Screen
+      {/* <Tab.Screen
       name="Notification"
       component={NotifList}
       options={{ title: "Notification"}}
-      />
+      /> */}
       <Tab.Screen
         name="Profile"
         options={{ title: "Profile" }}

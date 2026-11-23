@@ -11,7 +11,7 @@ import { card, cardColors } from "../../styles/style";
 export default function OrgCard({
   variant = "default",
   name,
-  initials,
+  profile,
   tags = [],
   description,
   status,
@@ -34,7 +34,7 @@ export default function OrgCard({
       {featured ? <HalftoneCorner /> : null}
 
       <View style={card.header}>
-        <Avatar name={name} initials={initials} size={featured ? "md" : "lg"} />
+        {profile ? <Avatar name={name} image={profile} size={featured ? "md" : "lg"}  /> : <Avatar name={name} showPlaceholder={false} size={featured ? "md" : "lg"}  />}
 
         <View style={card.headerText}>
           <AppText variant={featured ? "bodySmall" : "body"} numberOfLines={1}>

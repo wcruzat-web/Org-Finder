@@ -2,6 +2,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Header from "../components/Header";
 import MainTabs from "./MainTabs";
 import OrgDetails from "../screens/OrgDetails";
+import NotifList from "../screens/NotifList";
 
 import theme from "../styles/theme-dark";
 
@@ -37,6 +38,11 @@ export default function RootStack() {
         options={({ route }) => ({
           title: route.params?.org?.name ?? "Organization",
         })}
+      />
+
+      <Stack.Screen 
+        name="Notifications"
+        component={NotifList}
       />
     </Stack.Navigator>
   );

@@ -153,7 +153,7 @@ export const inputSelectionColor = colors.primary;
 // #Layout
 
 export const layout = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: colors.background },
+  screen: { flex: 1, backgroundColor: colors.background, paddingHorizontal: 0, gap: spacing.xs },
   gutter: { paddingHorizontal: spacing.lg },
   stack: { gap: spacing.md },
   row: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
@@ -172,6 +172,21 @@ export const layout = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     paddingTop: spacing.md,
     gap: spacing.md,
+  },
+  banner: {
+    width: "100%",
+    aspectRatio: 16/9,
+    borderBottomWidth: 1,
+    borderBlockColor: colors.onPrimary,
+    marginBottom: 32,
+  },
+  profileSection: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: spacing.md,
+    marginTop: -96,
+    gap: spacing.sm,
   },
   // Login / Signin form pieces
   formHeader: {
@@ -293,9 +308,11 @@ export const avatar = StyleSheet.create({
     borderRadius: spacing.md,
     alignItems: "center",
     justifyContent: "center",
+    overflow: "hidden",
   },
   md: { borderRadius: spacing.md * 0.90, width: 40, height: 40 },
   lg: { width: 44, height: 44 },
+  profile: { borderRadius: spacing.xl, width: 128, height: 128, },
 });
 
 // Pill
