@@ -3,21 +3,10 @@ import { Animated, Pressable, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import theme from "../styles/theme-dark";
 import { bottomNav, bottomNavColors, bottomNavMetrics } from "../styles/style";
-import {
-  HomeIcon,
-  OrgListIcon,
-  MyOrgIcon,
-  ProfileIcon,
-} from "../../assets/icons/NavIcons";
 
 const { colors, spacing } = theme;
 
-const TABS = [
-  { key: "discover", label: "Discover", Icon: HomeIcon },
-  { key: "orglists", label: "Org Lists", Icon: OrgListIcon },
-  { key: "myorgs", label: "My Orgs", Icon: MyOrgIcon },
-  { key: "profile", label: "Profile", Icon: ProfileIcon },
-];
+
 
 function NavItem({ tab, active, onPress }) {
   const { Icon, label } = tab;
@@ -96,6 +85,7 @@ function NavItem({ tab, active, onPress }) {
 }
 
 export default function BottomNav({
+  tabs,
   activeKey,
   defaultKey = "discover",
   onChange,
@@ -106,7 +96,7 @@ export default function BottomNav({
   const currentKey = activeKey ?? internalKey;
   const activeIndex = Math.max(
     0,
-    TABS.findIndex((t) => t.key === currentKey),
+    tabs.findIndex((t) => t.key === currentKey),
   );
 
   const [trackWidth, setTrackWidth] = useState(0);
@@ -129,11 +119,11 @@ export default function BottomNav({
   // Tabs are spread with space-between, so the pill slides by this step per tab
   const step =
     trackWidth > 0
-      ? (trackWidth - bottomNavMetrics.itemWidth) / (TABS.length - 1)
+      ? (trackWidth - bottomNavMetrics.itemWidth) / (tabs.length - 1)
       : 0;
   const indicatorX = indicatorIndex.interpolate({
-    inputRange: TABS.map((_, i) => i),
-    outputRange: TABS.map((_, i) => i * step),
+    inputRange: tabs.map((_, i) => i),
+    outputRange: tabs.map((_, i) => i * step),
   });
 
   return (
@@ -155,7 +145,7 @@ export default function BottomNav({
               ]}
             />
           )}
-          {TABS.map((tab) => (
+          {tabs.map((tab) => (
             <NavItem
               key={tab.key}
               tab={tab}

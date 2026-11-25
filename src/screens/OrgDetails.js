@@ -4,6 +4,7 @@ import { layout, card } from "../styles/style";
 
 import HalftoneCorner from "../components/cards/HalftoneCorner";
 import DefaultBanner from "../../assets/banner-placeholder.png";
+import AnnouncementCard from "../components/cards/AnnouncementCard";
 
 export default function OrgDetails({ route, navigation }) {
   // Receive organization data
@@ -79,13 +80,15 @@ export default function OrgDetails({ route, navigation }) {
             {org.description}
           </AppText>
         </View>
-        
+
         <View style={layout.stackInside}>
           <AppText variant="label">Announcements</AppText>
           {/* forda Announcements */}
-          <AppText variant="caption">
-            It looks like there's no announcements at the moment.
-          </AppText>
+          <AnnouncementCard
+            title="Organization Meeting"
+            time="2 hours ago"
+            message="We would like to inform everyone that our monthly organization meeting will be held this Friday at 3 PM."
+          />
         </View>
       </View>
     </TabScroll>

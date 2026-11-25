@@ -4,5 +4,6 @@ export { default as AppInput } from "./AppInput";
 export { default as Avatar } from "./Avatar";
 export { default as Pill } from "./Pill";
 export { default as TabScroll } from "./TabScroll";
+export { default as SegmentedTabs } from "./SegmentedTabs";
 
 //Use import { component } from "../components/ui" 

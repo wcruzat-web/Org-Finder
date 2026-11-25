@@ -2,11 +2,18 @@ import { useState, useEffect } from "react";
 import { View } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { OrgCard } from "../components/cards";
-import { TabScroll } from "../components/ui";
+import { TabScroll, AppInput, SegmentedTabs } from "../components/ui";
 
 import { layout } from "../styles/style.js";
 
 import supabase from "../../library/supabase.js";
+
+const FILTERS = [
+  { key: "all", label: "All" },
+  { key: "vacancies", label: "Vacancies" },
+  { key: "applications", label: "Applications" },
+];
+
 export default function OrgList() {
 
   const navigation = useNavigation();
@@ -14,6 +21,7 @@ export default function OrgList() {
   const [organizations, setOrganizations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
+  const [filter, setFilter] = useState("all");
 
   const getStudentCourse = async () => {
     try {
@@ -81,6 +89,10 @@ export default function OrgList() {
 
   return (
     <TabScroll>
+      <View style={layout.content}>
+        <AppInput variant="search" onFilterPress={() => {}} />
+        <SegmentedTabs tabs={FILTERS} activeKey={filter} onChange={setFilter} />
+      </View>
       <View style={layout.content}>
         {organizations.map((org) => (
           <OrgCard

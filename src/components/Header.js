@@ -1,20 +1,15 @@
-import { Pressable, StyleSheet, Text } from "react-native";
+import { Pressable, Text } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import theme from "../styles/theme-dark";
+import { header, headerColor, headerMetrics } from "../styles/style"
 import BackIcon from "../../assets/icons/Back";
 import NotifIcon from "../../assets/icons/Notif";
 
-const { colors, spacing, fontSizes } = theme;
-
-const FONT_BOLD = "Overlock_700Bold";
-
 const VARIANTS = {
-  default: { showBack: false, centered: false, fontSize: fontSizes["2xl"] },
+  default: { showBack: false, centered: false },
   withReturnButton: {
     showBack: true,
     centered: true,
-    fontSize: fontSizes.xl,
   },
 };
 
@@ -25,7 +20,7 @@ function IconButton({ label, onPress, children }) {
       accessibilityLabel={label}
       onPress={onPress}
       hitSlop={8}
-      style={styles.iconButton}
+      style={header.iconButton}
     >
       {children}
     </Pressable>
@@ -37,26 +32,17 @@ export default function Header({
   variant = "default",
   onBack,
   onMenuPress,
-  fadeHeight = spacing.lg, // space under the row used by the fade; 0 = no fade space
-  safeArea = true, // add the status bar / notch height on top
 }) {
-  const insets = useSafeAreaInsets();
   const v = VARIANTS[variant] ?? VARIANTS.default;
 
   return (
     <LinearGradient
       // Solid for the top quarter, then fades out. Same color at 0 alpha avoids a gray fringe.
-      colors={[colors.background, `${colors.background}00`]}
-      locations={[0.35, 1]}
+      colors={[headerColor, `${headerColor}00`]}
+      locations={[0.45, 1]}
       // The fade area is only decoration: let touches pass through to what's underneath
       pointerEvents="box-none"
-      style={[
-        styles.container,
-        {
-          paddingTop: spacing.lg,
-          paddingBottom: fadeHeight + spacing.xs,
-        },
-      ]}
+      style={header.container}
     >
       {v.showBack ? (
         <IconButton label="Go back" onPress={onBack}>
@@ -67,9 +53,8 @@ export default function Header({
       <Text
         numberOfLines={1}
         style={[
-          styles.title,
-          { fontSize: v.fontSize },
-          v.centered && styles.centered,
+          header.title,
+          v.centered && header.titleCentered,
         ]}
       >
         {title}
@@ -81,19 +66,3 @@ export default function Header({
     </LinearGradient>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: spacing.lg,
-  },
-  title: {
-    flex: 1,
-    color: colors.textPrimary,
-    fontFamily: FONT_BOLD,
-  },
-  centered: { textAlign: "center" },
-  iconButton: { width: 24, height: 24 },
-});

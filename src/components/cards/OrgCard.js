@@ -1,12 +1,9 @@
-import React from "react";
-import { Pressable, TouchableOpacity, View } from "react-native";
+import { Pressable, View } from "react-native";
 import { ChevronRight, Users } from "lucide-react-native";
 
 import { AppButton, AppText, Avatar, Pill } from "../ui";
 import HalftoneCorner from "./HalftoneCorner";
 import { card, cardColors } from "../../styles/style";
-
-
 
 export default function OrgCard({
   variant = "default",

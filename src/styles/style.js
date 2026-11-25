@@ -19,6 +19,7 @@ const FONT = {
   tag: fonts.Fredoka_Regular,
   initials: fonts.Overlock_Bold,
   buttonLabelSmall: fonts.Cause_Bold,
+  topNav: fonts.Cause_Bold,
 };
 
 //get the lineHeight, used for text wherein line height is 1.25 of font size, adjust value if needed
@@ -64,6 +65,7 @@ export const text = StyleSheet.create({
   buttonLabelSmall: {
     ...textStyle(FONT.buttonLabelSmall, colors.onPrimary, fontSizes.sm),
   },
+  topNav: { ...textStyle(FONT.topNav, colors.textPrimary, fontSizes["2xl"]) },
 });
 
 export const textTone = StyleSheet.create({
@@ -150,13 +152,57 @@ export const input = StyleSheet.create({
 export const inputPlaceholderColor = colors.textSecondary;
 export const inputSelectionColor = colors.primary;
 
+// #AppInput search variant (Figma: Input Field / Search Bar + Filter Button, 36 high)
+
+export const inputSearch = StyleSheet.create({
+  row: { flexDirection: "row", alignItems: "center", gap: spacing.md },
+  bar: {
+    flex: 1,
+    height: 36,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    paddingHorizontal: spacing.sm,
+    backgroundColor: colors.elevated,
+    borderRadius: 30,
+    borderWidth: 2,
+    borderColor: colors.border,
+  },
+  barFocused: { borderColor: colors.primary },
+  field: {
+    flex: 1,
+    padding: 0,
+    color: colors.textPrimary,
+    fontFamily: FONT.label,
+    fontSize: fontSizes.lg,
+    lineHeight: 20,
+  },
+  filter: {
+    width: 36,
+    height: 36,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: colors.surface,
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: colors.border,
+  },
+  filterPressed: { backgroundColor: colors.elevated },
+});
+
+export const inputSearchPlaceholderColor = colors.textDisabled;
+
 // #Layout
 
 export const layout = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: colors.background },
+  screen: { flex: 1, backgroundColor: colors.background, overflow: "hidden" },
   gutter: { paddingHorizontal: spacing.lg },
   stack: { gap: spacing.md },
-  row: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
   rowCenter: {
     flexDirection: "row",
     alignItems: "center",
@@ -164,14 +210,13 @@ export const layout = StyleSheet.create({
   },
   columnCenter: {
     alignItems: "center",
-    justifyContent: "center"
+    justifyContent: "center",
   },
   divider: {
     height: 1,
     backgroundColor: colors.textDisabled,
     width: "95%",
     alignSelf: "center",
-    marginVertical: spacing.xs,
   },
   stackInside: { gap: spacing.sm },
   // Scrollable page body
@@ -182,7 +227,7 @@ export const layout = StyleSheet.create({
   },
   banner: {
     width: "100%",
-    aspectRatio: 16/9,
+    aspectRatio: 16 / 9,
     borderBottomWidth: 1,
     borderBlockColor: colors.onPrimary,
     marginBottom: 32,
@@ -209,9 +254,30 @@ export const layout = StyleSheet.create({
     flexWrap: "wrap",
     marginTop: spacing.lg,
   },
+  wordmark: {
+    top: 296,
+    left: 0,
+    right: 0,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: spacing.xs,
+  },
+  slot: {
+    flexGrow: 1,
+    justifyContent: "flex-end",
+    paddingHorizontal: spacing.lg,
+    paddingBottom: spacing.lg,
+  },
 });
 
 // components/Header.js
+export const headerMetrics = {
+  fadeHeight: spacing.md,
+};
+
+export const headerColor = colors.background;
+
 export const header = StyleSheet.create({
   container: {
     height: "auto",
@@ -219,9 +285,10 @@ export const header = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.lg,
   },
-  title: { flex: 1 },
-  titleCentered: { textAlign: "center" },
+  title: { ...text.topNav, flex: 1 },
+  titleCentered: { fontSize: fontSizes.xl, textAlign: "center" },
   iconButton: {
     width: 24,
     height: 24,
@@ -235,6 +302,8 @@ export const bottomNavMetrics = {
   border: 2,
   radius: 999,
 };
+
+export const bottomNavPadding = bottomNavMetrics.itemHeight * 1.75;
 
 export const bottomNavColors = {
   inactive: colors.textSecondary,
@@ -289,8 +358,10 @@ export const bottomNav = StyleSheet.create({
 });
 
 //components/ParallaxHeaderScrollView.js
+export const parallaxBodyColor = colors.background;
+
 export const parallaxView = StyleSheet.create({
-  root: { flex: 1},
+  root: { flex: 1 },
   fill: { width: "100%", height: "100%" },
   topLayer: {
     position: "absolute",
@@ -306,6 +377,7 @@ export const parallaxView = StyleSheet.create({
     bottom: 0,
   },
   body: { marginTop: -1 },
+  greetings: { position: "absolute", bottom: 0, paddingBottom: spacing["2xl"] * 1.5 },
 });
 
 // Avatar
@@ -317,9 +389,10 @@ export const avatar = StyleSheet.create({
     justifyContent: "center",
     overflow: "hidden",
   },
-  md: { borderRadius: spacing.md * 0.90, width: 40, height: 40 },
+  sm: { borderRadius: 999, width: 36, height: 36 },
+  md: { borderRadius: spacing.md * 0.9, width: 40, height: 40 },
   lg: { width: 44, height: 44 },
-  profile: { borderRadius: spacing.xl, width: 128, height: 128, },
+  profile: { borderRadius: spacing.xl, width: 128, height: 128 },
 });
 
 // Pill
@@ -390,6 +463,34 @@ export const card = StyleSheet.create({
   more: { flexDirection: "row", alignItems: "center" },
   chevron: { marginRight: -spacing.sm },
   halftone: { position: "absolute", top: 0, right: 0 },
+  avatar: {
+    width: 32,
+    height: 32,
+    backgroundColor: colors.background,
+    borderRadius: 999,
+    alignItems: "center",
+    justifyContent: "center",
+    overflow: "hidden",
+  },
+  switch: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: spacing.md,
+  },
+  switchInfo: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.sm,
+    flex: 1,
+  },
+  switchPressed: {
+    backgroundColor: colors.surface,
+    opacity: 0.7,
+    transform: [{ scale: 0.98 }],
+  }
 });
 
 // Notification Cards
@@ -413,12 +514,44 @@ export const notification = StyleSheet.create({
   message: { marginTop: spacing.xs },
 });
 
+//SegmentedTabs
+export const segmentedMetrics = { itemHeight: 28 };
+
+export const segmented = StyleSheet.create({
+  track: {
+    backgroundColor: colors.surface,
+    borderRadius: spacing.sm * 1.5,
+    padding: spacing.xs,
+  },
+  // Measured for its width: the highlight slides across this area.
+  inner: {
+    flexDirection: "row",
+    height: segmentedMetrics.itemHeight,
+  },
+  indicator: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    height: segmentedMetrics.itemHeight,
+    borderRadius: spacing.sm,
+    backgroundColor: colors.support,
+  },
+  tab: {
+    flex: 1,
+    height: segmentedMetrics.itemHeight,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  tabPressed: { opacity: 0.7 },
+});
+
 export default {
   text,
   textTone,
   textAlign,
   button,
   input,
+  inputSearch,
   layout,
   header,
   bottomNav,
@@ -427,4 +560,5 @@ export default {
   pill,
   card,
   notification,
+  segmented,
 };

@@ -7,7 +7,7 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
 } from "react-native-reanimated";
-import { parallaxView } from "../styles/style";
+import { parallaxView, parallaxBodyColor, bottomNavPadding } from "../styles/style";
 
 const isElement = (source) => React.isValidElement(source);
 
@@ -123,11 +123,11 @@ function Layer({
 export default function ParallaxHeaderScrollView({
   layers = [],
   headerHeight = 300,
-  bodyColor = "#000000",
+  bodyColor = parallaxBodyColor,
   edgeBleed = 2,
   bottomBleed = 3,
   headerContent,
-  bottomPadding = 0,
+  bottomPadding = bottomNavPadding,
   children,
   contentContainerStyle,
   ...scrollProps
@@ -167,7 +167,7 @@ export default function ParallaxHeaderScrollView({
       >
         <View style={{ height: headerHeight }}>
           {bottomLayers.map(renderLayer)}
-          <View>{headerContent}</View>
+          <View style={parallaxView.greetings}>{headerContent}</View>
         </View>
 
         <View

@@ -8,8 +8,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import ParallaxHeaderScrollView from "../components/ParallaxHeaderScrollView";
 import theme from "../styles/theme-dark";
-import StarsSvg from "../../assets/header/stars.svg";
-import MountainsFrontSvg from "../../assets/header/mountains-front.svg";
+import HEADER_LAYERS from "../../assets/header/HeaderLayers.js";
 
 import supabase from "../../library/supabase.js";
 
@@ -32,35 +31,6 @@ const SUBTITLE = [
   "Feeling fancy today?",
   "Nothing beats a morning with a cup of coffee.",
   "Friendly Reminder, You matter.",
-];
-
-// SVG Image at homescreen, layer goes from back to front
-const HEADER_LAYERS = [
-  {
-    source: require("../../assets/header/sky.png"),
-    anchor: "top",
-    speed: 0.25,
-    fill: true,
-  },
-  {
-    source: <StarsSvg width="100%" height="100%" />,
-    aspectRatio: 390 / 157,
-    anchor: "top",
-    speed: 0.1,
-    stretch: false,
-  },
-  {
-    source: require("../../assets/header/mountains-back.png"),
-    aspectRatio: 390.62 / 65,
-    anchor: "bottom",
-    speed: 0.7,
-  },
-  {
-    source: <MountainsFrontSvg width="100%" height="100%" />,
-    aspectRatio: 390 / 43,
-    anchor: "bottom",
-    speed: 1,
-  },
 ];
 
 export default function HomeScreen() {
@@ -239,11 +209,9 @@ export default function HomeScreen() {
     <ParallaxHeaderScrollView
       layers={HEADER_LAYERS}
       headerHeight={headerHeight}
-      bodyColor={colors.background}
-      bottomPadding={spacing["2xl"] * 1.8}
       headerContent={
         <>
-          <View style={[layout.gutter, { paddingTop: navHeaderHeight + 12 }]}>
+          <View style={layout.gutter}>
             <AppText variant="headline">
               {greeting}, {fullName ? fullName.trim().split(/\s+/)[0] : "User"}!
             </AppText>
@@ -253,7 +221,7 @@ export default function HomeScreen() {
       }
     >
       <View style={layout.content}>
-        <AppInput />
+        <AppInput variant="search" onFilterPress={() => {}} />
       </View>
       <View style={layout.content}>
         <AppText variant="heading">Recommended for you</AppText>

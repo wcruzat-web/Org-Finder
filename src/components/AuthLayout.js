@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Keyboard,
   Platform,
   ScrollView,
-  StyleSheet,
   View,
 } from "react-native";
 import Animated, {
@@ -13,11 +12,12 @@ import Animated, {
 } from "react-native-reanimated";
 import Svg, { Path } from "react-native-svg";
 import { AppText } from "../components/ui";
+import { layout, card } from "../styles/style";
 
 import TwinkleStars, { starPath } from "./TwinkleStars";
 import theme from "../styles/theme-dark";
 
-const { colors, spacing } = theme;
+const { colors } = theme;
 
 function Sparkle() {
   return (
@@ -49,60 +49,27 @@ export default function AuthLayout({ children }) {
   const keyboardVisible = useKeyboardVisible();
   const wordmarkOpacity = useSharedValue(1);
   useEffect(() => {
-    wordmarkOpacity.value = withTiming(keyboardVisible ? 0 : 1, { duration: 200 });
+    wordmarkOpacity.value = withTiming(keyboardVisible ? 0 : 1, { duration: 350 });
   }, [keyboardVisible, wordmarkOpacity]);
   const wordmarkStyle = useAnimatedStyle(() => ({ opacity: wordmarkOpacity.value }));
 
   return (
-    <View style={styles.root}>
-      <TwinkleStars style={styles.stars} />
+    <View style={layout.screen}>
+      <TwinkleStars style={card.halftone} />
 
-        <Animated.View pointerEvents="none" style={[styles.wordmark]}>
+        <Animated.View pointerEvents="none" style={[layout.wordmark, wordmarkStyle]}>
           <Sparkle />
           <AppText variant="brand">Stargaze.</AppText>
         </Animated.View>
 
       <ScrollView
-        style={styles.scroll}
-        contentContainerStyle={styles.slot}
+        contentContainerStyle={layout.slot}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
         bounces={false}
       >
-        {children ?? (<PlaceholderCard />)}
+        {children}
       </ScrollView>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-    backgroundColor: colors.background,
-    overflow: "hidden",
-  },
-  stars: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-  },
-  wordmark: {
-    top: 296,
-    left: 0,
-    right: 0,
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    gap: 8,
-  },
-  scroll: {
-    flex: 1,
-    paddingBottom: 50,
-  },
-  slot: {
-    flexGrow: 1,
-    justifyContent: "flex-end",
-    paddingHorizontal: spacing.lg,
-    paddingBottom: spacing.lg,
-  },
-});
