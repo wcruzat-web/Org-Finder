@@ -87,3 +87,39 @@ export const createAdminAccount = async (req, res) => {
     });
   }
 };
+
+
+export const searchStudentAccounts = async (req, res) => {
+  try {
+    const query = String(req.query.q || "").trim();
+
+    if (query.length < 2) {
+      return res.status(200).json({
+        success: true,
+        students: [],
+      });
+    }
+
+    const { data: students, error } = await supabaseAdmin
+      .from("accounts")
+      .select("id, full_name, email, course")
+      .eq("role", "student")
+      .or(`full_name.ilike.%${query}%,email.ilike.%${query}%`)
+      .order("full_name")
+      .limit(20);
+
+    if (error) throw error;
+
+    return res.status(200).json({
+      success: true,
+      students: students || [],
+    });
+  } catch (error) {
+    console.error("Student search error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Unable to search student accounts.",
+    });
+  }
+};

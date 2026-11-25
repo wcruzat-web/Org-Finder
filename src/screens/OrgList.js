@@ -15,13 +15,13 @@ const FILTERS = [
 ];
 
 export default function OrgList() {
-
   const navigation = useNavigation();
-  
+
   const [organizations, setOrganizations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
   const [filter, setFilter] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const getStudentCourse = async () => {
     try {
@@ -83,6 +83,11 @@ export default function OrgList() {
     }
   };
 
+  // search organizations by name
+  const filteredOrganizations = organizations.filter((org) =>
+    org.name?.toLowerCase().includes(searchQuery.trim().toLowerCase()),
+  );
+
   useEffect(() => {
     getStudentCourse();
   }, []);
@@ -90,11 +95,17 @@ export default function OrgList() {
   return (
     <TabScroll>
       <View style={layout.content}>
-        <AppInput variant="search" onFilterPress={() => {}} />
+        <AppInput
+          variant="search"
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          onFilterPress={() => {}}
+        />
         <SegmentedTabs tabs={FILTERS} activeKey={filter} onChange={setFilter} />
       </View>
+
       <View style={layout.content}>
-        {organizations.map((org) => (
+        {filteredOrganizations.map((org) => (
           <OrgCard
             key={org.id}
             name={org.name}

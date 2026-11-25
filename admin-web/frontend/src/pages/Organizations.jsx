@@ -1,51 +1,28 @@
+
 import { useEffect, useState } from "react";
 import {
   getOrganizations,
   createOrganization,
 } from "../services/organizationService";
+import {
+  getOrganizationOfficers,
+  searchStudentAccounts,
+  assignOrganizationOfficer,
+  removeOrganizationOfficer,
+} from "../services/organizationOfficerService";
 import supabase from "../lib/supabase";
 
 const courses = [
-  {
-    label: "BS Agricultural and Biosystems Engineering",
-    value: "BS Agricultural and Biosystems Engineering",
-  },
-  {
-    label: "BS Architecture",
-    value: "BS Architecture",
-  },
-  {
-    label: "BS Civil Engineering",
-    value: "BS Civil Engineering",
-  },
-  {
-    label: "BS Computer Engineering",
-    value: "BS Computer Engineering",
-  },
-  {
-    label: "BS Computer Science",
-    value: "BS Computer Science",
-  },
-  {
-    label: "BS Electrical Engineering",
-    value: "BS Electrical Engineering",
-  },
-  {
-    label: "BS Electronics Engineering",
-    value: "BS Electronics Engineering",
-  },
-  {
-    label: "BS Industrial Engineering",
-    value: "BS Industrial Engineering",
-  },
-  {
-    label: "BS Industrial Technology",
-    value: "BS Industrial Technology",
-  },
-  {
-    label: "BS Information Technology",
-    value: "BS Information Technology",
-  },
+  { label: "BS Agricultural and Biosystems Engineering", value: "BS Agricultural and Biosystems Engineering" },
+  { label: "BS Architecture", value: "BS Architecture" },
+  { label: "BS Civil Engineering", value: "BS Civil Engineering" },
+  { label: "BS Computer Engineering", value: "BS Computer Engineering" },
+  { label: "BS Computer Science", value: "BS Computer Science" },
+  { label: "BS Electrical Engineering", value: "BS Electrical Engineering" },
+  { label: "BS Electronics Engineering", value: "BS Electronics Engineering" },
+  { label: "BS Industrial Engineering", value: "BS Industrial Engineering" },
+  { label: "BS Industrial Technology", value: "BS Industrial Technology" },
+  { label: "BS Information Technology", value: "BS Information Technology" },
 ];
 
 function Organizations() {
@@ -57,6 +34,16 @@ function Organizations() {
   const [categoryFilter, setCategoryFilter] = useState("All");
   const [error, setError] = useState("");
 
+  const [showOfficerModal, setShowOfficerModal] = useState(false);
+  const [selectedOrganization, setSelectedOrganization] = useState(null);
+  const [officers, setOfficers] = useState([]);
+  const [officerLoading, setOfficerLoading] = useState(false);
+  const [officerError, setOfficerError] = useState("");
+  const [officerActionLoading, setOfficerActionLoading] = useState(false);
+  const [studentSearch, setStudentSearch] = useState("");
+  const [studentResults, setStudentResults] = useState([]);
+  const [studentSearchLoading, setStudentSearchLoading] = useState(false);
+
   const initialForm = {
     name: "",
     category: "",
@@ -67,7 +54,6 @@ function Organizations() {
 
   const [form, setForm] = useState(initialForm);
 
-  //* fetch organizations from backend
   const fetchOrganizations = async () => {
     try {
       setLoading(true);
@@ -75,22 +61,21 @@ function Organizations() {
 
       const response = await getOrganizations();
       setOrganizations(response.organizations || []);
-    } catch (error) {
-      console.error("fetch organizations error:", error);
-      setError(error.message);
+    } catch (err) {
+      console.error("fetch organizations error:", err);
+      setError(err.message || "Unable to load organizations.");
     } finally {
       setLoading(false);
     }
   };
 
-  //* fetch available categories from database
   const fetchCategories = async () => {
-    const { data, error } = await supabase
+    const { data, error: categoryError } = await supabase
       .from("organizations")
       .select("category");
 
-    if (error) {
-      console.error("fetch categories error:", error);
+    if (categoryError) {
+      console.error("fetch categories error:", categoryError);
       return;
     }
 
@@ -101,7 +86,6 @@ function Organizations() {
     setCategories(uniqueCategories);
   };
 
-  //* load page data
   useEffect(() => {
     let isMounted = true;
 
@@ -110,14 +94,11 @@ function Organizations() {
         setLoading(true);
         setError("");
 
-        //* fetch organizations
         const response = await getOrganizations();
 
         if (!isMounted) return;
-
         setOrganizations(response.organizations || []);
 
-        //* fetch categories
         const { data, error: categoryError } = await supabase
           .from("organizations")
           .select("category");
@@ -129,20 +110,15 @@ function Organizations() {
           return;
         }
 
-        const uniqueCategories = [
+        setCategories([
           ...new Set(data.map((item) => item.category).filter(Boolean)),
-        ];
-
-        setCategories(uniqueCategories);
-      } catch (error) {
+        ]);
+      } catch (err) {
         if (!isMounted) return;
-
-        console.error("load organizations page error:", error);
-        setError(error.message);
+        console.error("load organizations page error:", err);
+        setError(err.message || "Unable to load organizations.");
       } finally {
-        if (isMounted) {
-          setLoading(false);
-        }
+        if (isMounted) setLoading(false);
       }
     };
 
@@ -153,17 +129,11 @@ function Organizations() {
     };
   }, []);
 
-  //* handle form input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
-
-    setForm((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  //* handle course eligibility changes
   const handleEligibilityChange = (e) => {
     const value = e.target.value;
 
@@ -174,7 +144,6 @@ function Organizations() {
     }));
   };
 
-  //* handle selected courses
   const handleCourseSelection = (e) => {
     const selectedCourses = Array.from(
       e.target.selectedOptions,
@@ -187,7 +156,6 @@ function Organizations() {
     }));
   };
 
-  //* create organization
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -213,15 +181,122 @@ function Organizations() {
 
       await fetchOrganizations();
       await fetchCategories();
-    } catch (error) {
-      console.error("create organization error:", error);
-      setError(error.message);
+    } catch (err) {
+      console.error("create organization error:", err);
+      setError(err.message || "Unable to create organization.");
     }
   };
 
-  //* filter organizations
+  const openOfficerModal = async (organization) => {
+    setSelectedOrganization(organization);
+    setShowOfficerModal(true);
+    setStudentSearch("");
+    setStudentResults([]);
+    setOfficers([]);
+    setOfficerError("");
+
+    await fetchOrganizationOfficers(organization.id);
+  };
+
+  const closeOfficerModal = () => {
+    setShowOfficerModal(false);
+    setSelectedOrganization(null);
+    setOfficers([]);
+    setStudentSearch("");
+    setStudentResults([]);
+    setOfficerError("");
+  };
+
+  const fetchOrganizationOfficers = async (organizationId) => {
+    try {
+      setOfficerLoading(true);
+      setOfficerError("");
+
+      const response = await getOrganizationOfficers(organizationId);
+      setOfficers(response.officers || []);
+    } catch (err) {
+      console.error("fetch organization officers error:", err);
+      setOfficerError(err.message || "Unable to retrieve organization officers.");
+    } finally {
+      setOfficerLoading(false);
+    }
+  };
+
+  const handleStudentSearch = async (e) => {
+    const query = e.target.value;
+    setStudentSearch(query);
+    setStudentResults([]);
+
+    if (query.trim().length < 2) {
+      setStudentSearchLoading(false);
+      return;
+    }
+
+    try {
+      setStudentSearchLoading(true);
+
+      const response = await searchStudentAccounts(query.trim());
+      setStudentResults(response.students || []);
+    } catch (err) {
+      console.error("student search error:", err);
+      setOfficerError(err.message || "Unable to search student accounts.");
+    } finally {
+      setStudentSearchLoading(false);
+    }
+  };
+
+  const handleAssignOfficer = async (studentId) => {
+    if (!selectedOrganization) return;
+
+    try {
+      setOfficerActionLoading(true);
+      setOfficerError("");
+
+      await assignOrganizationOfficer(
+        selectedOrganization.id,
+        studentId,
+      );
+
+      await fetchOrganizationOfficers(selectedOrganization.id);
+
+      setStudentResults((prev) =>
+        prev.map((student) =>
+          student.id === studentId
+            ? { ...student, alreadyAssigned: true }
+            : student,
+        ),
+      );
+    } catch (err) {
+      console.error("assign officer error:", err);
+      setOfficerError(err.message || "Unable to assign officer.");
+    } finally {
+      setOfficerActionLoading(false);
+    }
+  };
+
+  const handleRemoveOfficer = async (studentId) => {
+    if (!selectedOrganization) return;
+
+    try {
+      setOfficerActionLoading(true);
+      setOfficerError("");
+
+      await removeOrganizationOfficer(
+        selectedOrganization.id,
+        studentId,
+      );
+
+      await fetchOrganizationOfficers(selectedOrganization.id);
+    } catch (err) {
+      console.error("remove officer error:", err);
+      setOfficerError(err.message || "Unable to remove officer.");
+    } finally {
+      setOfficerActionLoading(false);
+    }
+  };
+
   const filteredOrganizations = organizations.filter((organization) => {
-    const matchesSearch = organization.name
+    const matchesSearch = (organization.name || "")
       .toLowerCase()
       .includes(search.toLowerCase());
 
@@ -233,7 +308,6 @@ function Organizations() {
 
   return (
     <div className="space-y-6">
-      {/* page header */}
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>
           <h2 className="text-2xl font-semibold text-white">Organizations</h2>
@@ -243,14 +317,16 @@ function Organizations() {
         </div>
 
         <button
-          onClick={() => setShowModal(true)}
+          onClick={() => {
+            setError("");
+            setShowModal(true);
+          }}
           className="rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-indigo-700"
         >
           + Add Organization
         </button>
       </div>
 
-      {/* search and category filter */}
       <div className="flex flex-col gap-3 sm:flex-row">
         <input
           type="text"
@@ -266,7 +342,6 @@ function Organizations() {
           className="rounded-lg border border-gray-700 bg-gray-900 px-4 py-2.5 text-sm text-white outline-none focus:border-indigo-500"
         >
           <option value="All">All Categories</option>
-
           {categories.map((category) => (
             <option key={category} value={category}>
               {category.replaceAll("_", " ")}
@@ -275,14 +350,12 @@ function Organizations() {
         </select>
       </div>
 
-      {/* error message */}
       {error && (
         <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-400">
           {error}
         </div>
       )}
 
-      {/* organizations table */}
       <div className="overflow-hidden rounded-xl border border-gray-800 bg-gray-900">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm">
@@ -290,26 +363,20 @@ function Organizations() {
               <tr>
                 <th className="px-6 py-4 font-medium">Organization</th>
                 <th className="px-6 py-4 font-medium">Category</th>
-                <th className="px-6 py-4 font-medium">Account Status</th>
+                <th className="px-6 py-4 text-right font-medium">Actions</th>
               </tr>
             </thead>
 
             <tbody className="divide-y divide-gray-800">
               {loading ? (
                 <tr>
-                  <td
-                    colSpan="3"
-                    className="px-6 py-8 text-center text-gray-400"
-                  >
+                  <td colSpan="3" className="px-6 py-8 text-center text-gray-400">
                     Loading organizations...
                   </td>
                 </tr>
               ) : filteredOrganizations.length === 0 ? (
                 <tr>
-                  <td
-                    colSpan="3"
-                    className="px-6 py-8 text-center text-gray-400"
-                  >
+                  <td colSpan="3" className="px-6 py-8 text-center text-gray-400">
                     No organizations found.
                   </td>
                 </tr>
@@ -329,19 +396,16 @@ function Organizations() {
                     </td>
 
                     <td className="px-6 py-4 capitalize">
-                      {organization.category.replaceAll("_", " ")}
+                      {(organization.category || "").replaceAll("_", " ")}
                     </td>
 
-                    <td className="px-6 py-4">
-                      {organization.account_id ? (
-                        <span className="rounded-full bg-green-500/10 px-3 py-1 text-xs text-green-400">
-                          Account Assigned
-                        </span>
-                      ) : (
-                        <span className="rounded-full bg-yellow-500/10 px-3 py-1 text-xs text-yellow-400">
-                          No Account
-                        </span>
-                      )}
+                    <td className="px-6 py-4 text-right">
+                      <button
+                        onClick={() => openOfficerModal(organization)}
+                        className="rounded-lg bg-indigo-600 px-3 py-2 text-xs font-medium text-white hover:bg-indigo-700"
+                      >
+                        Manage Officers
+                      </button>
                     </td>
                   </tr>
                 ))
@@ -351,7 +415,6 @@ function Organizations() {
         </div>
       </div>
 
-      {/* add organization modal */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
           <div className="w-full max-w-lg rounded-xl border border-gray-800 bg-gray-900 p-6">
@@ -377,7 +440,6 @@ function Organizations() {
                 <label className="mb-2 block text-sm text-gray-300">
                   Organization Name
                 </label>
-
                 <input
                   type="text"
                   name="name"
@@ -393,7 +455,6 @@ function Organizations() {
                 <label className="mb-2 block text-sm text-gray-300">
                   Category
                 </label>
-
                 <select
                   name="category"
                   value={form.category}
@@ -402,7 +463,6 @@ function Organizations() {
                   className="w-full rounded-lg border border-gray-700 bg-gray-950 px-4 py-2.5 text-sm text-white outline-none focus:border-indigo-500"
                 >
                   <option value="">Select category</option>
-
                   {categories.map((category) => (
                     <option key={category} value={category}>
                       {category.replaceAll("_", " ")}
@@ -415,7 +475,6 @@ function Organizations() {
                 <label className="mb-2 block text-sm text-gray-300">
                   Description
                 </label>
-
                 <textarea
                   name="description"
                   value={form.description}
@@ -426,12 +485,10 @@ function Organizations() {
                 />
               </div>
 
-              {/* course eligibility */}
               <div>
                 <label className="mb-2 block text-sm text-gray-300">
                   Course Eligibility
                 </label>
-
                 <select
                   name="course_eligibility"
                   value={form.course_eligibility}
@@ -443,13 +500,11 @@ function Organizations() {
                 </select>
               </div>
 
-              {/* eligible courses */}
               {form.course_eligibility === "specific" && (
                 <div>
                   <label className="mb-2 block text-sm text-gray-300">
                     Eligible Programs
                   </label>
-
                   <select
                     multiple
                     value={form.eligible_courses}
@@ -463,7 +518,6 @@ function Organizations() {
                       </option>
                     ))}
                   </select>
-
                   <p className="mt-2 text-xs text-gray-500">
                     Hold Ctrl (Windows) or Command (Mac) to select multiple
                     programs.
@@ -483,7 +537,6 @@ function Organizations() {
                 >
                   Cancel
                 </button>
-
                 <button
                   type="submit"
                   className="rounded-lg bg-indigo-600 px-5 py-2 text-sm font-medium text-white hover:bg-indigo-700"
@@ -492,6 +545,160 @@ function Organizations() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {showOfficerModal && selectedOrganization && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
+          <div className="w-full max-w-2xl rounded-xl border border-gray-800 bg-gray-900 p-6">
+            <div className="mb-6 flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold text-white">
+                  Manage Officers
+                </h3>
+                <p className="mt-1 text-sm text-gray-400">
+                  {selectedOrganization.name}
+                </p>
+              </div>
+
+              <button
+                onClick={closeOfficerModal}
+                className="text-xl text-gray-400 hover:text-white"
+              >
+                &times;
+              </button>
+            </div>
+
+            {officerError && (
+              <div className="mb-4 rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-400">
+                {officerError}
+              </div>
+            )}
+
+            <div className="mb-6">
+              <label className="mb-2 block text-sm text-gray-300">
+                Search Student Accounts
+              </label>
+
+              <input
+                type="text"
+                value={studentSearch}
+                onChange={handleStudentSearch}
+                placeholder="Search by student name or email..."
+                className="w-full rounded-lg border border-gray-700 bg-gray-950 px-4 py-2.5 text-sm text-white outline-none focus:border-indigo-500"
+              />
+
+              {studentSearchLoading && (
+                <p className="mt-2 text-xs text-gray-400">
+                  Searching students...
+                </p>
+              )}
+
+              {studentResults.length > 0 && (
+                <div className="mt-2 max-h-48 overflow-y-auto rounded-lg border border-gray-700">
+                  {studentResults.map((student) => {
+                    const isAssigned =
+                      officers.some(
+                        (officer) => officer.student?.id === student.id,
+                      ) || student.alreadyAssigned;
+
+                    return (
+                      <div
+                        key={student.id}
+                        className="flex items-center justify-between gap-3 border-b border-gray-800 p-3 last:border-b-0"
+                      >
+                        <div>
+                          <p className="text-sm font-medium text-white">
+                            {student.full_name}
+                          </p>
+                          <p className="text-xs text-gray-400">
+                            {student.email}
+                            {student.course ? ` • ${student.course}` : ""}
+                          </p>
+                        </div>
+
+                        <button
+                          onClick={() => handleAssignOfficer(student.id)}
+                          disabled={officerActionLoading || isAssigned}
+                          className="rounded-lg bg-indigo-600 px-3 py-2 text-xs font-medium text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                          {isAssigned ? "Assigned" : "Assign"}
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+              {!studentSearchLoading &&
+                studentSearch.trim().length >= 2 &&
+                studentResults.length === 0 && (
+                  <p className="mt-2 text-xs text-gray-500">
+                    No matching students found.
+                  </p>
+                )}
+            </div>
+
+            <div>
+              <h4 className="mb-3 text-sm font-semibold text-white">
+                Assigned Officers ({officers.length})
+              </h4>
+
+              {officerLoading ? (
+                <p className="py-6 text-center text-sm text-gray-400">
+                  Loading officers...
+                </p>
+              ) : officers.length === 0 ? (
+                <p className="rounded-lg border border-gray-800 p-5 text-center text-sm text-gray-400">
+                  No officers assigned to this organization.
+                </p>
+              ) : (
+                <div className="max-h-64 overflow-y-auto rounded-lg border border-gray-800">
+                  {officers.map((officer) => (
+                    <div
+                      key={officer.membership_id}
+                      className="flex items-center justify-between gap-3 border-b border-gray-800 p-3 last:border-b-0"
+                    >
+                      <div>
+                        <p className="text-sm font-medium text-white">
+                          {officer.student?.full_name || "Unknown Student"}
+                        </p>
+                        <p className="text-xs text-gray-400">
+                          {officer.student?.email}
+                        </p>
+                        {officer.student?.course && (
+                          <p className="mt-1 text-xs text-gray-500">
+                            {officer.student.course}
+                          </p>
+                        )}
+                      </div>
+
+                      <button
+                        onClick={() =>
+                          handleRemoveOfficer(officer.student?.id)
+                        }
+                        disabled={
+                          officerActionLoading || !officer.student?.id
+                        }
+                        className="rounded-lg border border-red-500/30 px-3 py-2 text-xs text-red-400 hover:bg-red-500/10 disabled:opacity-50"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="mt-6 flex justify-end">
+              <button
+                onClick={closeOfficerModal}
+                className="rounded-lg border border-gray-700 px-4 py-2 text-sm text-gray-300 hover:bg-gray-800"
+              >
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}
