@@ -1,4 +1,3 @@
-
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import AdminLayout from "./components/AdminLayout";
@@ -6,7 +5,6 @@ import ProtectedRoute from "./components/ProtectedRoute";
 
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
-import Accounts from "./pages/Accounts";
 import Organizations from "./pages/Organizations";
 import Vacancies from "./pages/Vacancies";
 import Announcements from "./pages/Announcements";
@@ -23,7 +21,6 @@ function App() {
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<Navigate to="dashboard" replace />} />
             <Route path="dashboard" element={<Dashboard />} />
-            <Route path="accounts" element={<Accounts />} />
             <Route path="organizations" element={<Organizations />} />
             <Route path="vacancies" element={<Vacancies />} />
             <Route path="announcements" element={<Announcements />} />

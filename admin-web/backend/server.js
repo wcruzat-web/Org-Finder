@@ -1,4 +1,3 @@
-
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
@@ -6,6 +5,8 @@ import dotenv from "dotenv";
 import organizationAccountRoutes from "./routes/organizationAccountRoutes.js";
 import organizationRoutes from "./routes/organizationRoutes.js";
 import adminAccountRoutes from "./routes/adminAccountRoutes.js";
+import organizationOfficerRoutes from "./routes/organizationOfficerRoutes.js";
+
 
 dotenv.config();
 
@@ -25,6 +26,7 @@ app.get("/", (req, res) => {
 //* route registrations
 app.use("/api/organization-accounts", organizationAccountRoutes);
 app.use("/api/organizations", organizationRoutes);
+app.use("/api/organizations", organizationOfficerRoutes);
 app.use("/api/admin-accounts", adminAccountRoutes);
 
 app.listen(PORT, () => {
