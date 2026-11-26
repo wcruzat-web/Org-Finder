@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { TouchableOpacity, View, useWindowDimensions } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { AppInput, AppText } from "../components/ui";
+import { AppInput, AppText, CardStack } from "../components/ui";
 import { OrgCard } from "../components/cards";
 import { layout } from "../styles/style";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -11,8 +11,6 @@ import theme from "../styles/theme-dark";
 import HEADER_LAYERS from "../../assets/header/HeaderLayers.js";
 
 import supabase from "../../library/supabase.js";
-
-const { colors, spacing } = theme;
 
 const GREETINGS = [
   "Hello",
@@ -34,7 +32,6 @@ const SUBTITLE = [
 ];
 
 export default function HomeScreen() {
-
   const navigation = useNavigation();
 
   const insets = useSafeAreaInsets();
@@ -225,7 +222,21 @@ export default function HomeScreen() {
       </View>
       <View style={layout.content}>
         <AppText variant="heading">Recommended for you</AppText>
-        {Array.isArray(recommendations) && recommendations.length > 0 ? (
+        <CardStack
+          data={recommendations}
+          keyExtractor={(org) => String(org.id)}
+          renderItem={({ item: org }) => (
+            <OrgCard
+              variant="featured"
+              name={org.name}
+              tags={[org.category]}
+              description={org.reason}
+              tag="Recommended"
+              slots={org.memberCount}
+            />
+          )}
+        />
+        {/* {Array.isArray(recommendations) && recommendations.length > 0 ? (
           recommendations.map((org) => (
             <OrgCard
               key={org.id}
@@ -239,7 +250,7 @@ export default function HomeScreen() {
           ))
         ) : (
           <AppText variant="caption">No recommendation available.</AppText>
-        )}
+        )} */}
       </View>
       <View style={layout.content}>
         <View style={layout.row}>

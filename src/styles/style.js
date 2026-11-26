@@ -545,6 +545,52 @@ export const segmented = StyleSheet.create({
   tabPressed: { opacity: 0.7 },
 });
 
+// CardStack
+export const cardStackMotion = {
+    // Fitted to the Figma stack: the cards behind are smaller, pushed to the
+    // right so only their right edge shows, and tilted a little.
+    rotate: ["-1deg", "3.75deg", "8.25deg", "8.25deg"],
+    x: [0, 54, 89, 89],
+    y: [0, 3, 10, 10],
+    scale: [1, 0.75, 0.58, 0.58],
+    overlay: [0, 0.35, 0.75, 0.75], // how much darker a card behind looks
+    opacity: [1, 1, 1, 0],
+    spring: { friction: 15, tension: 70, overshootClamping: false },
+    swipeDistance: 80, // drag this far to send the card away
+    flingVelocity: 0.6, // or flick faster than this
+    dismissMs: 180, // how long the card takes to leave
+    dragRange: 200, // drag distance that tilts the card the full amount
+    dragRotation: 10, // degrees of tilt at that distance
+    extraHeight: 16, // room under the front card for the cards behind it
+    peek: 12, // Room kept free on the right for the cards behind
+};
+
+export const cardStack = StyleSheet.create({
+    stage: { alignSelf: "stretch" },
+    // Cards sit on top of each other; each hugs its own width.
+    card: { position: "absolute", top: 0, left: 0, right: cardStackMotion.peek, alignItems: "center", },
+    // Darkens the cards behind the front one.
+    overlay: {
+        position: "absolute",
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: colors.background,
+        borderRadius: spacing.xl,
+    },
+    dots: {
+        flexDirection: "row",
+        justifyContent: "center",
+        alignItems: "center",
+        gap: spacing.sm,
+        marginTop: spacing.xs,
+    },
+    dot: { borderRadius: 999 },
+    dotActive: { width: spacing.sm *1.25, height: spacing.sm * 1.25, backgroundColor: colors.textSecondary },
+    dotInactive: { width: spacing.sm, height: spacing.sm, backgroundColor: colors.textDisabled },
+});
+
 export default {
   text,
   textTone,
@@ -561,4 +607,5 @@ export default {
   card,
   notification,
   segmented,
+  cardStack,
 };
