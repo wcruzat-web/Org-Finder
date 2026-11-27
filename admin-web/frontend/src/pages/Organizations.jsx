@@ -139,7 +139,7 @@ function Organizations() {
     setForm((prev) => ({
       ...prev,
       course_eligibility: value,
-      eligible_courses: value === "all" ? [] : prev.eligible_courses,
+      eligible_courses: value === "all" ? null : prev.eligible_courses,
     }));
   };
 
@@ -172,7 +172,7 @@ function Organizations() {
       await createOrganization({
         ...form,
         eligible_courses:
-          form.course_eligibility === "all" ? [] : form.eligible_courses,
+          form.course_eligibility === "all" ? null : form.eligible_courses,
       });
 
       setForm(initialForm);

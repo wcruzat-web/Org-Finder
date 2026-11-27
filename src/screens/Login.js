@@ -5,7 +5,11 @@ import { layout } from "../styles/style";
 
 import { loginUser } from "../../library/services/authService.js";
 
-export default function Login({ onNavigate, onLoginSuccess, onForgotPassword }) {
+export default function Login({
+  onNavigate,
+  onLoginSuccess,
+  onForgotPassword,
+}) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -59,10 +63,7 @@ export default function Login({ onNavigate, onLoginSuccess, onForgotPassword }) 
         />
       </View>
 
-      <TouchableOpacity
-        onPress={onForgotPassword}
-        style={layout.formAside}
-      >
+      <TouchableOpacity onPress={onForgotPassword} style={layout.formAside}>
         <AppText variant="link">Forgot Password?</AppText>
       </TouchableOpacity>
 
