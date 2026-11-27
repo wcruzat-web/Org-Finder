@@ -1,4 +1,4 @@
-import React, {
+import {
     useEffect,
     useLayoutEffect,
     useMemo,
@@ -20,21 +20,17 @@ const HIDDEN = M.rotate.length - 1;
 const SLOTS = M.rotate.map((_, i) => i);
 const NO_DRAG = new Animated.Value(0);
 
-// One card in the stack. Its position is a single animated number (the slot it
-// is heading to); every pose value is read off that number.
-function StackCard({ depth, panX, dragProgress, dragRotate, startHidden, snap, onLayout, children }) {
+function StackCard({ depth, panX, dragProgress, dragRotate, startHidden, snap, reveal, skeleton, onLayout, children }) {
     const slot = useRef(new Animated.Value(startHidden ? HIDDEN : depth)).current;
     const previousDepth = useRef(depth);
     const isFront = depth === 0;
+    const crossfade = reveal && Boolean(skeleton);
 
-    // Runs before the screen is painted.
     useLayoutEffect(() => {
         if (previousDepth.current === 0 && depth > 0) {
             // The card that just left the front slides in from behind.
             slot.setValue(HIDDEN);
         } else if (snap && depth < previousDepth.current) {
-            // After a swipe the drag had already pulled this card up to its new
-            // place, so jump the stored position there: no second animation.
             slot.setValue(depth);
         }
         previousDepth.current = depth;
@@ -59,7 +55,16 @@ function StackCard({ depth, panX, dragProgress, dragRotate, startHidden, snap, o
                 extrapolate: "clamp",
             });
 
+        const fade = (outputRange) =>
+            position.interpolate({
+                inputRange: [0, M.reveal, HIDDEN],
+                outputRange,
+                extrapolate: "clamp",
+            });
+
         return {
+            content: crossfade ? fade([1, 0, 0]) : 1,
+            skeleton: crossfade ? fade([0, 1, 1]) : 0,
             style: {
                 opacity: at(M.opacity),
                 transform: [
@@ -73,7 +78,7 @@ function StackCard({ depth, panX, dragProgress, dragRotate, startHidden, snap, o
             },
             overlay: at(M.overlay),
         };
-    }, [isFront, slot, panX, dragProgress, dragRotate]);
+    }, [isFront, slot, panX, dragProgress, dragRotate, crossfade]);
 
     return (
         <Animated.View
@@ -83,7 +88,17 @@ function StackCard({ depth, panX, dragProgress, dragRotate, startHidden, snap, o
         >
             {/* Hugs the card, so the darkening layer covers the card and nothing else. */}
             <View>
-                {children}
+                <Animated.View style={{ opacity: pose.content }}>{children}</Animated.View>
+                {skeleton && !isFront ? (
+                    <Animated.View
+                        pointerEvents="none"
+                        importantForAccessibility="no-hide-descendants"
+                        accessibilityElementsHidden
+                        style={[cardStack.placeholder, { opacity: pose.skeleton }]}
+                    >
+                        {skeleton}
+                    </Animated.View>
+                ) : null}
                 <Animated.View
                     pointerEvents="none"
                     style={[cardStack.overlay, { opacity: pose.overlay }]}
@@ -104,6 +119,13 @@ function StackCard({ depth, panX, dragProgress, dragRotate, startHidden, snap, o
  *  - keyExtractor:  (item, index) => string. Defaults to item.id, item.key or index
  *  - initialIndex:  which item starts at the front (default 0)
  *  - onIndexChange: called with the new front index
+ *  - renderSkeleton: ({ fill }) => element, e.g. <CardSkeleton fill={fill} />.
+ *                   Optional. With it, cards behind show the skeleton and the real
+ *                   card fades in as it reaches the front, and `loading` works
+ *  - loading:       true shows a stack of skeletons (no swiping, no dots) while
+ *                   the data is still being fetched. Needs renderSkeleton
+ *  - revealContent: with a skeleton, false shows the real cards at all times
+ *                   (default true: cross-fade from the skeleton)
  *  - maxVisible:    how many cards show in the stack (default 3)
  *  - maxDots:       most dots to show; more items than this scrolls a window of dots
  *  - style:         one-off override for the whole component
@@ -117,6 +139,9 @@ export default function CardStack({
     keyExtractor,
     initialIndex = 0,
     onIndexChange,
+    revealContent = true,
+    renderSkeleton,
+    loading = false,
     maxVisible = 3,
     maxDots = 7,
     style,
@@ -202,11 +227,9 @@ export default function CardStack({
         });
     };
 
-    // The responder is created once; it reads the newest values through `latest`.
     latest.current = { count, width, advance, settle, springBack };
     const responder = useRef(
         PanResponder.create({
-            // Only horizontal drags: vertical ones belong to the page scroll.
             onMoveShouldSetPanResponder: (_, g) =>
                 latest.current.count > 1 &&
                 !busy.current &&
@@ -219,9 +242,42 @@ export default function CardStack({
         }),
     ).current;
 
+    if (loading && renderSkeleton) {
+        return (
+            <View style={style}>
+                <View
+                    style={[
+                        cardStack.stage,
+                        cardHeight > 0 ? { height: cardHeight + M.extraHeight } : null,
+                    ]}
+                >
+                    {[2, 1, 0].map((depth) => (
+                        <StackCard
+                            key={`skeleton-${depth}`}
+                            depth={depth}
+                            panX={panX}
+                            dragProgress={dragProgress}
+                            dragRotate={dragRotate}
+                            startHidden={false}
+                            snap={false}
+                            reveal={false}
+                            skeleton={null}
+                            onLayout={(e) =>
+                                setCardHeight((h) =>
+                                    Math.max(h, Math.ceil(e.nativeEvent.layout.height)),
+                                )
+                            }
+                        >
+                            {renderSkeleton({ fill: false })}
+                        </StackCard>
+                    ))}
+                </View>
+            </View>
+        );
+    }
+
     if (count === 0) return null;
 
-    // Front card last, so it is drawn on top.
     const visible = Math.min(count, maxVisible);
     const cards = [];
     for (let depth = visible - 1; depth >= 0; depth -= 1) {
@@ -240,6 +296,8 @@ export default function CardStack({
                 dragRotate={dragRotate}
                 startHidden={mounted.current}
                 snap={fromSwipe.current}
+                reveal={revealContent}
+                skeleton={renderSkeleton ? renderSkeleton({ fill: true }) : null}
                 onLayout={(e) =>
                     setCardHeight((h) =>
                         Math.max(h, Math.ceil(e.nativeEvent.layout.height)),
@@ -251,7 +309,6 @@ export default function CardStack({
         );
     }
 
-    // Dots: all of them, or a window around the current one if there are many.
     const dotCount = Math.min(count, maxDots);
     const firstDot = Math.min(
         Math.max(current - Math.floor(dotCount / 2), 0),

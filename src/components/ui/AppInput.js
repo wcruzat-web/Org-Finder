@@ -38,7 +38,7 @@ const AppInput = forwardRef(function AppInput(
     onBlur?.(e);
   };
 
-  // Search bar (Figma: Input Field / Search Bar). The filter button is a toggle.
+  // Search bar. The filter button is a toggle.
   if (variant === "search") {
     return (
       <View style={[inputSearch.row, style]}>

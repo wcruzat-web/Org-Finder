@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { StatusBar, KeyboardAvoidingView, Platform, Alert } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { NavigationContainer } from "@react-navigation/native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import * as SplashScreen from "expo-splash-screen";
 
 import { useFonts } from "expo-font";
@@ -102,27 +103,29 @@ export default function App() {
   };
 
   return (
-    <SafeAreaProvider>
-      <NavigationContainer>
-        <SafeAreaView style={{ flex: 1, backgroundColor: "#2D3047" }}>
-          <StatusBar backgroundColor="#2D3047" barStyle="light-content" />
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <SafeAreaProvider>
+        <NavigationContainer>
+          <SafeAreaView style={{ flex: 1, backgroundColor: "#2D3047" }}>
+            <StatusBar backgroundColor="#2D3047" barStyle="light-content" />
 
-          <KeyboardAvoidingView
-            style={{ flex: 1 }}
-            behavior={Platform.OS === "ios" ? "padding" : undefined}
-          >
-            {currentScreen === "home" && !isRegistering ? (
-              <RootStack />
-            ) : (
-              <AuthNavigator
-                onRegistering={setIsRegistering}
-                onRegistrationComplete={handleRegistrationComplete}
-                onLoginSuccess={handleLoginSuccess}
-              />
-            )}
-          </KeyboardAvoidingView>
-        </SafeAreaView>
-      </NavigationContainer>
-    </SafeAreaProvider>
+            <KeyboardAvoidingView
+              style={{ flex: 1 }}
+              behavior={Platform.OS === "ios" ? "padding" : undefined}
+            >
+              {currentScreen === "home" && !isRegistering ? (
+                <RootStack />
+              ) : (
+                <AuthNavigator
+                  onRegistering={setIsRegistering}
+                  onRegistrationComplete={handleRegistrationComplete}
+                  onLoginSuccess={handleLoginSuccess}
+                />
+              )}
+            </KeyboardAvoidingView>
+          </SafeAreaView>
+        </NavigationContainer>
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 }

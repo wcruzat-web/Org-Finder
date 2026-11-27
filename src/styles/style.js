@@ -115,18 +115,32 @@ export const button = StyleSheet.create({
   ghost: { backgroundColor: "transparent" },
   ghostPressed: { opacity: 0.6 },
   disabled: { opacity: 0.75 },
+  composer: {
+    height: "auto",
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.sm,
+    justifyContent: "flex-start",
+    gap: spacing.sm,
+    backgroundColor: colors.elevated,
+    borderWidth: 2,
+    borderColor: colors.border,
+    borderRadius: 999,
+  },
+  composerPressed: { backgroundColor: colors.surface },
 });
 
 export const buttonLabelTone = {
   primary: "onBrand",
   secondary: "primary",
   ghost: "brand",
+  composer: "secondary",
 };
 
 export const buttonSpinnerColor = {
   primary: colors.onPrimary,
   secondary: colors.textPrimary,
   ghost: colors.primary,
+  composer: colors.textSecondary,
 };
 
 // #AppInput Styles
@@ -152,19 +166,19 @@ export const input = StyleSheet.create({
 export const inputPlaceholderColor = colors.textSecondary;
 export const inputSelectionColor = colors.primary;
 
-// #AppInput search variant (Figma: Input Field / Search Bar + Filter Button, 36 high)
+// Search Bar
 
 export const inputSearch = StyleSheet.create({
   row: { flexDirection: "row", alignItems: "center", gap: spacing.md },
   bar: {
     flex: 1,
-    height: 36,
+    height: "auto",
     flexDirection: "row",
     alignItems: "center",
-    gap: 12,
-    paddingHorizontal: spacing.sm,
+    gap: spacing.sm,
+    padding: spacing.sm,
     backgroundColor: colors.elevated,
-    borderRadius: 30,
+    borderRadius: 999,
     borderWidth: 2,
     borderColor: colors.border,
   },
@@ -178,12 +192,12 @@ export const inputSearch = StyleSheet.create({
     lineHeight: 20,
   },
   filter: {
-    width: 36,
-    height: 36,
+    width: "auto",
+    padding: spacing.sm,
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: colors.surface,
-    borderRadius: 12,
+    borderRadius: spacing.md,
     borderWidth: 2,
     borderColor: colors.border,
   },
@@ -357,6 +371,16 @@ export const bottomNav = StyleSheet.create({
   },
 });
 
+// BottomSheets
+export const sheets = StyleSheet.create({
+  content: {
+    flex: 1,
+    padding: spacing.md,
+    gap: spacing.sm,
+    backgroundColor: colors.surface,
+  },
+});
+
 //components/ParallaxHeaderScrollView.js
 export const parallaxBodyColor = colors.background;
 
@@ -377,7 +401,11 @@ export const parallaxView = StyleSheet.create({
     bottom: 0,
   },
   body: { marginTop: -1 },
-  greetings: { position: "absolute", bottom: 0, paddingBottom: spacing["2xl"] * 1.5 },
+  greetings: {
+    position: "absolute",
+    bottom: 0,
+    paddingBottom: spacing["2xl"] * 1.5,
+  },
 });
 
 // Avatar
@@ -490,7 +518,7 @@ export const card = StyleSheet.create({
     backgroundColor: colors.surface,
     opacity: 0.7,
     transform: [{ scale: 0.98 }],
-  }
+  },
 });
 
 // Notification Cards
@@ -545,50 +573,113 @@ export const segmented = StyleSheet.create({
   tabPressed: { opacity: 0.7 },
 });
 
+// Skeleton Loading 4 Reco Cards
+export const skeletonMotion = { shimmerWidth: 120, shimmerMs: 1300 };
+
+export const skeletonColors = {
+  block: colors.elevated,
+  shimmer: colors.textSecondary,
+};
+
+export const skeleton = StyleSheet.create({
+  // When the skeleton sits inside the stack it fills the card it replaces.
+  fill: { width: "100%", height: "100%" },
+  block: { backgroundColor: colors.elevated },
+  avatar: { width: 40, height: 40, borderRadius: spacing.lg },
+  titleRow: { height: 20, justifyContent: "center" },
+  title: { width: 130, height: 14, borderRadius: 7 },
+  tagsRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.sm,
+    height: 12,
+    marginTop: spacing.xs,
+  },
+  tag: { width: 38, height: 8, borderRadius: 4 },
+  pill: { width: 79, height: 20, borderRadius: 999 },
+  descRow: { height: 20, justifyContent: "center" },
+  descBar: { height: 8, borderRadius: 4 },
+  descBarShort: { width: "70%" },
+  stat: { flexDirection: "row", alignItems: "center", gap: spacing.xs },
+  statIcon: { width: 12, height: 12, borderRadius: 6 },
+  statBar: { width: 80, height: 8, borderRadius: 4 },
+  button: { width: 98, height: 28, borderRadius: 999 },
+  shimmer: {
+    position: "absolute",
+    top: 0,
+    bottom: 0,
+    left: 0,
+    width: skeletonMotion.shimmerWidth,
+  },
+});
+
 // CardStack
 export const cardStackMotion = {
-    // Fitted to the Figma stack: the cards behind are smaller, pushed to the
-    // right so only their right edge shows, and tilted a little.
-    rotate: ["-1deg", "3.75deg", "8.25deg", "8.25deg"],
-    x: [0, 54, 89, 89],
-    y: [0, 3, 10, 10],
-    scale: [1, 0.75, 0.58, 0.58],
-    overlay: [0, 0.35, 0.75, 0.75], // how much darker a card behind looks
-    opacity: [1, 1, 1, 0],
-    spring: { friction: 15, tension: 70, overshootClamping: false },
-    swipeDistance: 80, // drag this far to send the card away
-    flingVelocity: 0.6, // or flick faster than this
-    dismissMs: 180, // how long the card takes to leave
-    dragRange: 200, // drag distance that tilts the card the full amount
-    dragRotation: 10, // degrees of tilt at that distance
-    extraHeight: 16, // room under the front card for the cards behind it
-    peek: 12, // Room kept free on the right for the cards behind
+  // Fitted to the Figma stack: the cards behind are smaller, pushed to the
+  // right so only their right edge shows, and tilted a little.
+  rotate: ["-1deg", "3.75deg", "8.25deg", "8.25deg"],
+  x: [0, 54, 89, 89],
+  y: [0, 3, 10, 10],
+  scale: [1, 0.75, 0.58, 0.58],
+  overlay: [0, 0.35, 0.75, 0.75], // how much darker a card behind looks
+  opacity: [1, 1, 1, 0],
+  spring: { friction: 9, tension: 60, overshootClamping: false },
+  swipeDistance: 80, // drag this far to send the card away
+  flingVelocity: 0.6, // or flick faster than this
+  dismissMs: 180, // how long the card takes to leave
+  dragRange: 200, // drag distance that tilts the card the full amount
+  dragRotation: 10, // degrees of tilt at that distance
+  extraHeight: 16, // room under the front card for the cards behind it
+  peek: 12, // Room kept free on the right for the cards behind
+  reveal: 0.01, // Card content stays hidden until reveal value is met
 };
 
 export const cardStack = StyleSheet.create({
-    stage: { alignSelf: "stretch" },
-    // Cards sit on top of each other; each hugs its own width.
-    card: { position: "absolute", top: 0, left: 0, right: cardStackMotion.peek, alignItems: "center", },
-    // Darkens the cards behind the front one.
-    overlay: {
-        position: "absolute",
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: colors.background,
-        borderRadius: spacing.xl,
-    },
-    dots: {
-        flexDirection: "row",
-        justifyContent: "center",
-        alignItems: "center",
-        gap: spacing.sm,
-        marginTop: spacing.xs,
-    },
-    dot: { borderRadius: 999 },
-    dotActive: { width: spacing.sm *1.25, height: spacing.sm * 1.25, backgroundColor: colors.textSecondary },
-    dotInactive: { width: spacing.sm, height: spacing.sm, backgroundColor: colors.textDisabled },
+  stage: { alignSelf: "stretch" },
+  card: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: cardStackMotion.peek,
+    alignItems: "center",
+  },
+  placeholder: {
+    // placeholder 4 skeleton loading
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    overflow: "hidden",
+    borderRadius: spacing.xl,
+  },
+  overlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: colors.background,
+    borderRadius: spacing.xl,
+  },
+  dots: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: spacing.sm,
+    marginTop: spacing.xs,
+  },
+  dot: { borderRadius: 999 },
+  dotActive: {
+    width: spacing.sm * 1.25,
+    height: spacing.sm * 1.25,
+    backgroundColor: colors.textSecondary,
+  },
+  dotInactive: {
+    width: spacing.sm,
+    height: spacing.sm,
+    backgroundColor: colors.textDisabled,
+  },
 });
 
 export default {
@@ -601,6 +692,7 @@ export default {
   layout,
   header,
   bottomNav,
+  sheets,
   parallaxView,
   avatar,
   pill,
@@ -608,4 +700,5 @@ export default {
   notification,
   segmented,
   cardStack,
+  skeleton,
 };

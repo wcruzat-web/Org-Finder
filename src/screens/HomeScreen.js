@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { TouchableOpacity, View, useWindowDimensions } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { AppInput, AppText, CardStack } from "../components/ui";
-import { OrgCard } from "../components/cards";
+import { OrgCard, CardSkeleton } from "../components/cards";
 import { layout } from "../styles/style";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
@@ -36,7 +36,6 @@ export default function HomeScreen() {
 
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
-  const navHeaderHeight = useHeaderHeight();
   const headerHeight = width * (219.071 / 390) + insets.top;
 
   const [fullName, setFullName] = React.useState("");
@@ -45,6 +44,7 @@ export default function HomeScreen() {
   const [browseOrganizations, setBrowseOrganizations] = useState([]);
 
   //para sa ai huhu
+  const [loading, setLoading] = React.useState(false);
   const [recommendations, setRecommendations] = useState([]);
   const [recommendationError, setRecommendationError] = useState(null);
 
@@ -118,6 +118,7 @@ export default function HomeScreen() {
       }
       // console.log("API result:", JSON.stringify(result, null, 2));
       setRecommendations(result.data.recommendations);
+      setLoading(false); 
     } catch (error) {
       console.error("Error fetching recommendations:", error.message);
       setRecommendationError(error.message);
@@ -125,6 +126,7 @@ export default function HomeScreen() {
   };
 
   useEffect(() => {
+    setLoading(true);
     fetchRecommendations();
   }, []);
 
@@ -222,40 +224,33 @@ export default function HomeScreen() {
       </View>
       <View style={layout.content}>
         <AppText variant="heading">Recommended for you</AppText>
-        <CardStack
-          data={recommendations}
-          keyExtractor={(org) => String(org.id)}
-          renderItem={({ item: org }) => (
-            <OrgCard
-              variant="featured"
-              name={org.name}
-              tags={[org.category]}
-              description={org.reason}
-              tag="Recommended"
-              slots={org.memberCount}
-            />
-          )}
-        />
-        {/* {Array.isArray(recommendations) && recommendations.length > 0 ? (
-          recommendations.map((org) => (
-            <OrgCard
-              key={org.id}
-              variant="featured"
-              name={org.name}
-              tags={[org.category]}
-              description={org.reason}
-              tag="Recommended"
-              slots={org.memberCount}
-            />
-          ))
+        {Array.isArray(recommendations) && recommendations.length > 0 ? (
+          <CardStack
+            loading={loading}
+            renderSkeleton={({ fill }) => <CardSkeleton fill={fill} />}
+            data={recommendations}
+            keyExtractor={(org) => String(org.id)}
+            renderItem={({ item: org }) => (
+              <OrgCard
+                variant="featured"
+                name={org.name}
+                tags={[org.category]}
+                description={org.reason}
+                tag="Recommended"
+                slots={org.memberCount}
+                onPress={() => navigation.navigate("OrgDetail", { org })}
+              />
+            )}
+          />
         ) : (
           <AppText variant="caption">No recommendation available.</AppText>
-        )} */}
+        )}
       </View>
       <View style={layout.content}>
         <View style={layout.row}>
           <AppText variant="heading">Browse organizations</AppText>
-          <TouchableOpacity onPress={null}>
+          {/* add onClick function to 'See All' and redirect to Org Lists Tabs */}
+          <TouchableOpacity>
             <AppText variant="link">See All</AppText>
           </TouchableOpacity>
         </View>

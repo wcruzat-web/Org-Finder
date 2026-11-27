@@ -47,7 +47,7 @@ export default function MainTabs() {
       screenOptions={{
         headerTransparent: true,
         header: ({ options }) => (
-          <Header title={options.title} onMenuPress={() => navigation.navigate("Notifications")} />
+          <Header title={options.title} onIconPress={() => navigation.navigate("Notifications")} />
         ),
         sceneStyle: { backgroundColor: colors.background },
       }}

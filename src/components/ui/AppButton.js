@@ -2,6 +2,7 @@ import React from "react";
 import { ActivityIndicator, Pressable } from "react-native";
 
 import AppText from "./AppText";
+import PlusIcon from "../../../assets/icons/PlusIcon";
 import {
   button,
   buttonLabelTone,
@@ -13,6 +14,7 @@ export default function AppButton({
   children,
   onPress,
   variant = "primary",
+  icon,
   size = "md",
   loading = false,
   disabled = false,
@@ -22,6 +24,14 @@ export default function AppButton({
   ...rest
 }) {
   const blocked = disabled || loading;
+  const leftIcon =
+    icon !== undefined ? icon : variant === "composer" ? <PlusIcon /> : null;
+  const labelVariant =
+    variant === "composer"
+      ? "body"
+      : size === "sm"
+        ? "buttonLabelSmall"
+        : "buttonLabel";
 
   return (
     <Pressable
@@ -36,7 +46,7 @@ export default function AppButton({
       style={({ pressed }) => [
         button.base,
         button[variant] ?? button.primary,
-        size === "sm" ? button.sm : null,
+        size === "sm" && variant !== "composer" ? button.sm : null,
         pressed ? button[`${variant}Pressed`] : null,
         fullWidth ? button.fullWidth : null,
         disabled ? button.disabled : null,
@@ -48,12 +58,15 @@ export default function AppButton({
           color={buttonSpinnerColor[variant] ?? buttonSpinnerColor.primary}
         />
       ) : (
-        <AppText
-          variant={size === "sm" ? "buttonLabelSmall" : "buttonLabel"}
-          tone={buttonLabelTone[variant] ?? buttonLabelTone.primary}
-        >
-          {children ?? title}
-        </AppText>
+        <>
+          {leftIcon}
+          <AppText
+            variant={labelVariant}
+            tone={buttonLabelTone[variant] ?? buttonLabelTone.primary}
+          >
+            {children ?? title}
+          </AppText>
+        </>
       )}
     </Pressable>
   );

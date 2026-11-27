@@ -26,19 +26,14 @@ export default function ProfileScreen() {
   const [loadingOrganizations, setLoadingOrganizations] = useState(true);
 
   const fetchOfficerOrganizations = async () => {
-   
-
     try {
       setLoadingOrganizations(true);
       setOrganizationError(null);
-
 
       const {
         data: { user },
         error: userError,
       } = await supabase.auth.getUser();
-
-  
 
       if (userError) throw userError;
       if (!user) throw new Error("No authenticated user found.");
@@ -48,8 +43,6 @@ export default function ProfileScreen() {
         .select("id, auth_user_id, full_name, course")
         .eq("auth_user_id", user.id)
         .single();
-
-
 
       if (accountError) throw accountError;
 
@@ -63,12 +56,9 @@ export default function ProfileScreen() {
         course: account.course,
       });
 
-
       const { data: semesterId, error: semesterError } = await supabase.rpc(
         "get_active_semester_id",
       );
-
-    
 
       if (semesterError) throw semesterError;
 
@@ -76,7 +66,6 @@ export default function ProfileScreen() {
         setOfficerOrganizations([]);
         return;
       }
-
 
       const { data: memberships, error: membershipError } = await supabase
         .from("organization_members")
@@ -183,15 +172,14 @@ export default function ProfileScreen() {
           {profile.course ? (
             <Pill label={profile.course} tone="muted" dot />
           ) : (
-            <AppText variant="bodySmall">Course not available</AppText>
+            <AppText variant="tag">Course not available</AppText>
           )}
         </View>
 
         {/* Additional information */}
         <View style={layout.stack}>
           <View style={[card.base, card.default, layout.stackInside]}>
-            <AppText variant="bodySmall">Details</AppText>
-            <AppInput placeholder="Add your bio..." />
+            <AppText variant="bodySmall">Edit Info</AppText>
           </View>
 
           <View style={[card.base, card.default, layout.stackInside]}>
@@ -203,9 +191,10 @@ export default function ProfileScreen() {
               ) : organizationError ? (
                 <AppText variant="bodySmall">{organizationError}</AppText>
               ) : officerOrganizations.length === 0 ? (
-                <AppText variant="bodySmall">
-                  You have no active officer assignments.
-                </AppText>
+                <SwitchCard
+                  name="Test Switch"
+                  onPress={() => navigation.navigate("OrgView")}
+                />
               ) : (
                 officerOrganizations.map((org) => (
                   <SwitchCard

@@ -1,12 +1,21 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Animated, Pressable, StyleSheet, View } from "react-native";
+import { useEffect, useRef, useState } from "react";
+import { Animated, Pressable, StyleSheet, View, Keyboard, Platform, } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import theme from "../styles/theme-dark";
 import { bottomNav, bottomNavColors, bottomNavMetrics } from "../styles/style";
 
 const { colors, spacing } = theme;
 
-
+function useKeyboardVisible() {
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const ios = Platform.OS === "ios";
+    const show = Keyboard.addListener(ios ? "keyboardWillShow" : "keyboardDidShow", () => setVisible(true));
+    const hide = Keyboard.addListener(ios ? "keyboardWillHide" : "keyboardDidHide", () => setVisible(false));
+    return () => { show.remove(); hide.remove(); };
+  }, []);
+  return visible;
+}
 
 function NavItem({ tab, active, onPress }) {
   const { Icon, label } = tab;
@@ -91,6 +100,7 @@ export default function BottomNav({
   onChange,
 }) {
   const insets = useSafeAreaInsets();
+  const keyboardVisible = useKeyboardVisible();
 
   const [internalKey, setInternalKey] = useState(defaultKey);
   const currentKey = activeKey ?? internalKey;
@@ -125,6 +135,8 @@ export default function BottomNav({
     inputRange: tabs.map((_, i) => i),
     outputRange: tabs.map((_, i) => i * step),
   });
+
+  if (keyboardVisible) return null;
 
   return (
     <View

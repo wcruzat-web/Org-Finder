@@ -1,8 +1,10 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Header from "../components/Header";
 import MainTabs from "./MainTabs";
+import OrgView from "./OrgView";
 import OrgDetails from "../screens/OrgDetails";
 import NotifList from "../screens/NotifList";
+import OrgNotif from "../screens/OrgView/NotifList";
 
 import theme from "../styles/theme-dark";
 
@@ -21,6 +23,7 @@ export default function RootStack() {
             title={options.title}
             variant="withReturnButton"
             onBack={navigation.goBack}
+            hideIcon={true}
           />
         ),
         sceneStyle: { backgroundColor: colors.background },
@@ -40,10 +43,22 @@ export default function RootStack() {
         })}
       />
 
-      <Stack.Screen 
+      <Stack.Screen
         name="Notifications"
         component={NotifList}
-        options={{title: "Notifications"}}
+        options={{ title: "Notifications" }}
+      />
+
+      <Stack.Screen
+        name="OrgView"
+        component={OrgView}
+        options={{ headerShown: false }}
+      />
+
+      <Stack.Screen
+        name="OrgNotifs"
+        component={OrgNotif}
+        options={{ title: "Notifications" }}
       />
     </Stack.Navigator>
   );

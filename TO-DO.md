@@ -1,8 +1,9 @@
 ## Work-in-Progress:
 
-- Profile Page still WIP
-- Org Details View for Members WIP, routes set-up ready, screens still WIP
-- Settings UI..?
+- Profile Page still WIP + Settings UI..?
+- Member List for Org View
+- Edit Org View to include KPI cards.
+- Fix styling for Applications Sheets
 
 ## Install this for Groq AI
 

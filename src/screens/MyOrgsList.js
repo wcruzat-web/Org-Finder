@@ -2,18 +2,19 @@ import { useState, useEffect } from "react";
 import { View } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { OrgCard } from "../components/cards";
-import { TabScroll } from "../components/ui";
+import { TabScroll, AppInput, } from "../components/ui";
 
 import { layout } from "../styles/style.js";
 
 import supabase from "../../library/supabase.js";
-export default function MyOrgsList() {
 
+export default function MyOrgsList() {
   const navigation = useNavigation();
-  
+
   const [organizations, setOrganizations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const getStudentCourse = async () => {
     try {
@@ -75,6 +76,11 @@ export default function MyOrgsList() {
     }
   };
 
+  // search organizations by name
+  const filteredOrganizations = organizations.filter((org) =>
+    org.name?.toLowerCase().includes(searchQuery.trim().toLowerCase()),
+  );
+
   useEffect(() => {
     getStudentCourse();
   }, []);
@@ -82,7 +88,16 @@ export default function MyOrgsList() {
   return (
     <TabScroll>
       <View style={layout.content}>
-        {organizations.map((org) => (
+        <AppInput
+          variant="search"
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          onFilterPress={() => {}}
+        />
+      </View>
+
+      <View style={layout.content}>
+        {filteredOrganizations.map((org) => (
           <OrgCard
             key={org.id}
             name={org.name}
