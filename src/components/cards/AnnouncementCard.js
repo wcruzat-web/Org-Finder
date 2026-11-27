@@ -1,4 +1,4 @@
-import { Pressable, View, } from "react-native";
+import { Pressable, View } from "react-native";
 
 import { AppText } from "../ui";
 import { card, cardColors } from "../../styles/style";
@@ -34,17 +34,11 @@ export default function AnnouncementCard({
             </AppText>
           ) : null}
         </View>
-
       </View>
 
-      <AppText
-        variant="caption"
-        numberOfLines={3}
-        style={card.description}
-      >
+      <AppText variant="caption" numberOfLines={3} style={card.description}>
         {message}
       </AppText>
-
     </Pressable>
   );
 }

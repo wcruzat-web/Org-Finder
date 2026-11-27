@@ -19,7 +19,8 @@
       "favicon": "./assets/app-icon.jpg"
     },
     "plugins": [
-      "expo-web-browser"
+      "expo-web-browser",
+      "expo-splash-screen"
     ],
     "extra": {
       "eas": {

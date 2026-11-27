@@ -31,12 +31,17 @@ const ApplicationSheet = forwardRef(({ onSubmit }, ref) => {
     },
   }));
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!message.trim()) return;
 
-    onSubmit?.(message.trim());
-    setMessage("");
-    sheetRef.current?.close();
+    try {
+      await onSubmit?.(message.trim());
+
+      setMessage("");
+      sheetRef.current?.close();
+    } catch (error) {
+      console.error("application submission failed:", error);
+    }
   };
 
   return (

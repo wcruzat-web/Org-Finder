@@ -6,7 +6,7 @@ import organizationAccountRoutes from "./routes/organizationAccountRoutes.js";
 import organizationRoutes from "./routes/organizationRoutes.js";
 import adminAccountRoutes from "./routes/adminAccountRoutes.js";
 import organizationOfficerRoutes from "./routes/organizationOfficerRoutes.js";
-
+import semesterRoutes from "./routes/semesterRoutes.js";
 
 dotenv.config();
 
@@ -28,6 +28,7 @@ app.use("/api/organization-accounts", organizationAccountRoutes);
 app.use("/api/organizations", organizationRoutes);
 app.use("/api/organizations", organizationOfficerRoutes);
 app.use("/api/admin-accounts", adminAccountRoutes);
+app.use("/api/semesters", semesterRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

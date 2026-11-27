@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import {
   getOrganizations,
@@ -13,7 +12,10 @@ import {
 import supabase from "../lib/supabase";
 
 const courses = [
-  { label: "BS Agricultural and Biosystems Engineering", value: "BS Agricultural and Biosystems Engineering" },
+  {
+    label: "BS Agricultural and Biosystems Engineering",
+    value: "BS Agricultural and Biosystems Engineering",
+  },
   { label: "BS Architecture", value: "BS Architecture" },
   { label: "BS Civil Engineering", value: "BS Civil Engineering" },
   { label: "BS Computer Engineering", value: "BS Computer Engineering" },
@@ -91,9 +93,6 @@ function Organizations() {
 
     const loadPageData = async () => {
       try {
-        setLoading(true);
-        setError("");
-
         const response = await getOrganizations();
 
         if (!isMounted) return;
@@ -140,7 +139,7 @@ function Organizations() {
     setForm((prev) => ({
       ...prev,
       course_eligibility: value,
-      eligible_courses: value === "all" ? [] : prev.eligible_courses,
+      eligible_courses: value === "all" ? null : prev.eligible_courses,
     }));
   };
 
@@ -216,7 +215,9 @@ function Organizations() {
       setOfficers(response.officers || []);
     } catch (err) {
       console.error("fetch organization officers error:", err);
-      setOfficerError(err.message || "Unable to retrieve organization officers.");
+      setOfficerError(
+        err.message || "Unable to retrieve organization officers.",
+      );
     } finally {
       setOfficerLoading(false);
     }
@@ -252,10 +253,7 @@ function Organizations() {
       setOfficerActionLoading(true);
       setOfficerError("");
 
-      await assignOrganizationOfficer(
-        selectedOrganization.id,
-        studentId,
-      );
+      await assignOrganizationOfficer(selectedOrganization.id, studentId);
 
       await fetchOrganizationOfficers(selectedOrganization.id);
 
@@ -281,10 +279,7 @@ function Organizations() {
       setOfficerActionLoading(true);
       setOfficerError("");
 
-      await removeOrganizationOfficer(
-        selectedOrganization.id,
-        studentId,
-      );
+      await removeOrganizationOfficer(selectedOrganization.id, studentId);
 
       await fetchOrganizationOfficers(selectedOrganization.id);
     } catch (err) {
@@ -363,6 +358,9 @@ function Organizations() {
               <tr>
                 <th className="px-6 py-4 font-medium">Organization</th>
                 <th className="px-6 py-4 font-medium">Category</th>
+                <th className="px-6 py-4 text-center font-medium">
+                  Current Members
+                </th>
                 <th className="px-6 py-4 text-right font-medium">Actions</th>
               </tr>
             </thead>
@@ -370,13 +368,19 @@ function Organizations() {
             <tbody className="divide-y divide-gray-800">
               {loading ? (
                 <tr>
-                  <td colSpan="3" className="px-6 py-8 text-center text-gray-400">
+                  <td
+                    colSpan="4"
+                    className="px-6 py-8 text-center text-gray-400"
+                  >
                     Loading organizations...
                   </td>
                 </tr>
               ) : filteredOrganizations.length === 0 ? (
                 <tr>
-                  <td colSpan="3" className="px-6 py-8 text-center text-gray-400">
+                  <td
+                    colSpan="4"
+                    className="px-6 py-8 text-center text-gray-400"
+                  >
                     No organizations found.
                   </td>
                 </tr>
@@ -397,6 +401,12 @@ function Organizations() {
 
                     <td className="px-6 py-4 capitalize">
                       {(organization.category || "").replaceAll("_", " ")}
+                    </td>
+
+                    <td className="px-6 py-4 text-center">
+                      <span className="inline-flex min-w-10 items-center justify-center rounded-full bg-indigo-500/10 px-3 py-1 text-sm font-semibold text-indigo-400">
+                        {organization.member_count ?? 0}
+                      </span>
                     </td>
 
                     <td className="px-6 py-4 text-right">
@@ -675,12 +685,8 @@ function Organizations() {
                       </div>
 
                       <button
-                        onClick={() =>
-                          handleRemoveOfficer(officer.student?.id)
-                        }
-                        disabled={
-                          officerActionLoading || !officer.student?.id
-                        }
+                        onClick={() => handleRemoveOfficer(officer.student?.id)}
+                        disabled={officerActionLoading || !officer.student?.id}
                         className="rounded-lg border border-red-500/30 px-3 py-2 text-xs text-red-400 hover:bg-red-500/10 disabled:opacity-50"
                       >
                         Remove
