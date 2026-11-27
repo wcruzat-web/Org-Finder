@@ -3,27 +3,49 @@ import supabaseAdmin from "../config/supabaseAdmin.js";
 //* get all organizations
 export const getOrganizations = async (req, res) => {
   try {
-    const { data, error } = await supabaseAdmin
-      .from("organizations")
-      .select(
-        `
-        id,
-        name,
-        category,
-        description,
-        account_id,
-        course_eligibility,
-        eligible_courses,
-        created_at
-      `,
-      )
-      .order("created_at", { ascending: false });
+    //* fetch organizations
+    const { data: organizations, error: organizationsError } =
+      await supabaseAdmin
+        .from("organizations")
+        .select(
+          `
+          id,
+          name,
+          category,
+          description,
+          account_id,
+          course_eligibility,
+          eligible_courses,
+          created_at
+        `,
+        )
+        .order("created_at", { ascending: false });
 
-    if (error) throw error;
+    if (organizationsError) throw organizationsError;
+
+    //* fetch current semester member counts
+    const { data: memberCounts, error: countsError } = await supabaseAdmin.rpc(
+      "get_organization_member_counts",
+    );
+
+    if (countsError) throw countsError;
+
+    //* map member counts to organizations
+    const countMap = new Map(
+      memberCounts.map((item) => [
+        item.organization_id,
+        Number(item.member_count),
+      ]),
+    );
+
+    const organizationsWithCounts = organizations.map((organization) => ({
+      ...organization,
+      member_count: countMap.get(organization.id) ?? 0,
+    }));
 
     return res.status(200).json({
       success: true,
-      organizations: data,
+      organizations: organizationsWithCounts,
     });
   } catch (error) {
     console.error("get organizations error:", error);

@@ -9,6 +9,7 @@ import Organizations from "./pages/Organizations";
 import Vacancies from "./pages/Vacancies";
 import Announcements from "./pages/Announcements";
 import Analytics from "./pages/Analytics";
+import Semesters from "./pages/Semesters";
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
             <Route path="vacancies" element={<Vacancies />} />
             <Route path="announcements" element={<Announcements />} />
             <Route path="analytics" element={<Analytics />} />
+            <Route path="semesters" element={<Semesters />} />
           </Route>
         </Route>
       </Routes>

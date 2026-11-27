@@ -5,15 +5,7 @@ import supabase from "../lib/supabase";
 const sections = [
   {
     title: "OVERVIEW",
-    items: [
-      { label: "Dashboard", path: "/admin/dashboard", icon: "▦" },
-    ],
-  },
-  {
-    title: "USER MANAGEMENT",
-    items: [
-      { label: "Accounts", path: "/admin/accounts", icon: "♙" },
-    ],
+    items: [{ label: "Dashboard", path: "/admin/dashboard", icon: "▦" }],
   },
   {
     title: "DATA MANAGEMENT",
@@ -21,6 +13,7 @@ const sections = [
       { label: "Organizations", path: "/admin/organizations", icon: "♧" },
       { label: "Vacancies", path: "/admin/vacancies", icon: "▤" },
       { label: "Announcements", path: "/admin/announcements", icon: "◈" },
+      { label: "Semesters", path: "/admin/semesters", icon: "▣" },
     ],
   },
   {
@@ -73,10 +66,14 @@ function AdminSidebar() {
 
   return (
     <aside className="flex h-full w-[165px] shrink-0 flex-col border-r border-[#41445B] bg-[#292C43] px-2.5 py-4 text-white lg:w-[185px]">
+      {/* app branding */}
       <div className="mb-7 flex items-center gap-2.5 px-1">
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#D9B77D] text-lg text-[#292C43]">
-          ◉
-        </div>
+        <img
+          src="../assets/app-icon.jpg"
+          alt="OrgApp icon"
+          className="h-9 w-9 shrink-0 rounded-xl object-contain"
+        />
+
         <div>
           <h1 className="text-sm font-bold">OrgApp</h1>
           <p className="text-[10px] text-slate-400">Admin Console</p>
@@ -114,12 +111,13 @@ function AdminSidebar() {
         ))}
       </nav>
 
-     {/* admin account and logout */}
+      {/* admin account and logout */}
       <div className="mt-5 border-t border-[#41445B] pt-4">
         <div className="mb-3 flex items-center gap-2.5">
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#D9B77D] text-xs font-bold text-[#292C43]">
             {fullName.charAt(0).toUpperCase()}
           </div>
+
           <div className="min-w-0">
             <p className="truncate text-xs font-semibold">{fullName}</p>
             <p className="text-[9px] text-slate-400">Administrator</p>
