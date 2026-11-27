@@ -99,21 +99,17 @@ export const createOrganization = async (req, res) => {
     }
 
     //* validate eligible courses
-    const selectedCourses =
-      course_eligibility === "all" ? [] : eligible_courses;
+    let selectedCourses = null;
 
-    if (!Array.isArray(selectedCourses)) {
-      return res.status(400).json({
-        success: false,
-        message: "eligible courses must be an array.",
-      });
-    }
+    if (course_eligibility === "specific") {
+      if (!Array.isArray(eligible_courses) || eligible_courses.length === 0) {
+        return res.status(400).json({
+          success: false,
+          message: "select at least one eligible course.",
+        });
+      }
 
-    if (course_eligibility === "specific" && selectedCourses.length === 0) {
-      return res.status(400).json({
-        success: false,
-        message: "select at least one eligible course.",
-      });
+      selectedCourses = eligible_courses;
     }
 
     //* insert organization into database

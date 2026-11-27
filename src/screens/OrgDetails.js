@@ -90,6 +90,49 @@ export default function OrgDetails({ route, navigation }) {
     }
   };
 
+  const handleSubmitApplication = async (message) => {
+    try {
+      const {
+        data: { user },
+        error: userError,
+      } = await supabase.auth.getUser();
+
+      if (userError) throw userError;
+      if (!user) throw new Error("You must be logged in to apply.");
+
+      const { data: account, error: accountError } = await supabase
+        .from("accounts")
+        .select("id")
+        .eq("auth_user_id", user.id)
+        .single();
+
+      if (accountError) throw accountError;
+
+      const { error: applicationError } = await supabase
+        .from("applications")
+        .insert({
+          organization_id: org.id,
+          student_id: account.id,
+          message: message,
+        });
+
+      if (applicationError) {
+        if (applicationError.code === "23505") {
+          throw new Error(
+            "You already have a pending application for this organization.",
+          );
+        }
+
+        throw applicationError;
+      }
+
+      return true;
+    } catch (error) {
+      console.error("error submitting application:", error);
+      throw error;
+    }
+  };
+
   useEffect(() => {
     checkMembership();
   }, [org.id]);
@@ -191,12 +234,7 @@ export default function OrgDetails({ route, navigation }) {
       </TabScroll>
 
       {!membershipLoading && !isMember && (
-        <ApplicationSheet
-          ref={sheetRef}
-          onSubmit={(message) => {
-            console.log("Application:", message);
-          }}
-        />
+        <ApplicationSheet ref={sheetRef} onSubmit={handleSubmitApplication} />
       )}
     </View>
   );

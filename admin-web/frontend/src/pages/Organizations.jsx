@@ -172,7 +172,7 @@ function Organizations() {
       await createOrganization({
         ...form,
         eligible_courses:
-          form.course_eligibility === "all" ? null : form.eligible_courses,
+          form.course_eligibility === "all" ? [] : form.eligible_courses,
       });
 
       setForm(initialForm);
