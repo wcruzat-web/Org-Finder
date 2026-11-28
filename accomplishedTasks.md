@@ -46,4 +46,7 @@
 3. Got per-organization announcements up and running.
 4. Added notifications for both students and orgs.
 5. Org Officers can now accept new applicants.
+6. Removal of announcement by admin
+7. Removed the vacancies, both in database and admin interface
+8. Implementation of inactive account rule for organization, added to admin dashboard
 <!-- I NEED: applicants card for specific tab -->

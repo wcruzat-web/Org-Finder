@@ -6,7 +6,6 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Organizations from "./pages/Organizations";
-import Vacancies from "./pages/Vacancies";
 import Announcements from "./pages/Announcements";
 import Analytics from "./pages/Analytics";
 import Semesters from "./pages/Semesters";
@@ -23,7 +22,6 @@ function App() {
             <Route index element={<Navigate to="dashboard" replace />} />
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="organizations" element={<Organizations />} />
-            <Route path="vacancies" element={<Vacancies />} />
             <Route path="announcements" element={<Announcements />} />
             <Route path="analytics" element={<Analytics />} />
             <Route path="semesters" element={<Semesters />} />

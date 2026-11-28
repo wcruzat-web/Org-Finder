@@ -9,15 +9,14 @@ export const getOrganizations = async (req, res) => {
         .from("organizations")
         .select(
           `
-          id,
-          name,
-          category,
-          description,
-          account_id,
-          course_eligibility,
-          eligible_courses,
-          created_at
-        `,
+      id,
+      name,
+      category,
+      description,
+      course_eligibility,
+      eligible_courses,
+      created_at
+    `,
         )
         .order("created_at", { ascending: false });
 

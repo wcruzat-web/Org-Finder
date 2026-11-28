@@ -8,3 +8,5 @@
 ## Install this for Groq AI
 
 npm install express cors dotenv @supabase/supabase-js groq-sdk
+
+npm install lucide-react

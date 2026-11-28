@@ -1,25 +1,43 @@
 import { useEffect, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
+import {
+  LayoutDashboard,
+  Building2,
+  Megaphone,
+  CalendarDays,
+  BarChart3,
+  LogOut,
+} from "lucide-react";
+import appIcon from "../assets/app-icon.jpg";
 import supabase from "../lib/supabase";
 
 const sections = [
   {
     title: "OVERVIEW",
-    items: [{ label: "Dashboard", path: "/admin/dashboard", icon: "▦" }],
+    items: [
+      {
+        label: "Dashboard",
+        path: "/admin/dashboard",
+        icon: LayoutDashboard,
+      },
+    ],
   },
   {
     title: "DATA MANAGEMENT",
     items: [
-      { label: "Organizations", path: "/admin/organizations", icon: "♧" },
-      { label: "Vacancies", path: "/admin/vacancies", icon: "▤" },
-      { label: "Announcements", path: "/admin/announcements", icon: "◈" },
-      { label: "Semesters", path: "/admin/semesters", icon: "▣" },
+      { label: "Organizations", path: "/admin/organizations", icon: Building2 },
+      { label: "Announcements", path: "/admin/announcements", icon: Megaphone },
+      { label: "Semesters", path: "/admin/semesters", icon: CalendarDays },
     ],
   },
   {
     title: "ANALYTICS",
     items: [
-      { label: "Analytics & Reports", path: "/admin/analytics", icon: "▥" },
+      {
+        label: "Analytics & Reports",
+        path: "/admin/analytics",
+        icon: BarChart3,
+      },
     ],
   },
 ];
@@ -28,7 +46,6 @@ function AdminSidebar() {
   const navigate = useNavigate();
   const [fullName, setFullName] = useState("Admin");
 
-  //* fetch admin fullname from accounts
   useEffect(() => {
     const fetchAdminName = async () => {
       const {
@@ -44,7 +61,7 @@ function AdminSidebar() {
         .eq("auth_user_id", user.id)
         .single();
 
-      if (!error && data) {
+      if (!error && data?.full_name) {
         setFullName(data.full_name);
       }
     };
@@ -52,7 +69,6 @@ function AdminSidebar() {
     fetchAdminName();
   }, []);
 
-  //* logout admin
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut();
 
@@ -66,10 +82,9 @@ function AdminSidebar() {
 
   return (
     <aside className="flex h-full w-[165px] shrink-0 flex-col border-r border-[#41445B] bg-[#292C43] px-2.5 py-4 text-white lg:w-[185px]">
-      {/* app branding */}
       <div className="mb-7 flex items-center gap-2.5 px-1">
         <img
-          src="../assets/app-icon.jpg"
+          src={appIcon}
           alt="OrgApp icon"
           className="h-9 w-9 shrink-0 rounded-xl object-contain"
         />
@@ -88,30 +103,33 @@ function AdminSidebar() {
             </p>
 
             <div className="space-y-1.5">
-              {section.items.map((item) => (
-                <NavLink
-                  key={item.path}
-                  to={item.path}
-                  className={({ isActive }) =>
-                    `flex min-h-9 items-center gap-2 rounded-xl px-2.5 py-2 text-[12px] transition ${
-                      isActive
-                        ? "bg-[#D9B77D] font-semibold text-[#292C43]"
-                        : "text-slate-200 hover:bg-[#383C55]"
-                    }`
-                  }
-                >
-                  <span className="w-4 text-center text-sm">{item.icon}</span>
-                  <span className="min-w-0 flex-1 whitespace-nowrap">
-                    {item.label}
-                  </span>
-                </NavLink>
-              ))}
+              {section.items.map((item) => {
+                const Icon = item.icon;
+
+                return (
+                  <NavLink
+                    key={item.path}
+                    to={item.path}
+                    className={({ isActive }) =>
+                      `flex min-h-9 items-center gap-2 rounded-xl px-2.5 py-2 text-[12px] transition ${
+                        isActive
+                          ? "bg-[#D9B77D] font-semibold text-[#292C43]"
+                          : "text-slate-200 hover:bg-[#383C55]"
+                      }`
+                    }
+                  >
+                    <Icon size={16} strokeWidth={1.8} />
+                    <span className="min-w-0 flex-1 whitespace-nowrap">
+                      {item.label}
+                    </span>
+                  </NavLink>
+                );
+              })}
             </div>
           </div>
         ))}
       </nav>
 
-      {/* admin account and logout */}
       <div className="mt-5 border-t border-[#41445B] pt-4">
         <div className="mb-3 flex items-center gap-2.5">
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#D9B77D] text-xs font-bold text-[#292C43]">
@@ -128,7 +146,7 @@ function AdminSidebar() {
           onClick={handleLogout}
           className="flex w-full items-center gap-2 rounded-xl px-2.5 py-2 text-left text-xs text-slate-200 transition hover:bg-[#383C55] hover:text-white"
         >
-          <span className="w-4 text-center text-sm">↪</span>
+          <LogOut size={15} strokeWidth={1.8} />
           Logout
         </button>
       </div>

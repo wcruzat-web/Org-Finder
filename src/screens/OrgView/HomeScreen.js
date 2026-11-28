@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { View, Image, ActivityIndicator } from "react-native";
 import {
   TabScroll,
@@ -68,15 +68,17 @@ export default function HomeScreen({
   };
 
   // fetch announcements belonging to the selected organization
-  useEffect(() => {
-    const fetchAnnouncements = async () => {
+
+  const fetchAnnouncements = useCallback(
+    async (showLoading = false) => {
       if (!organization?.id) {
         setAnnouncements([]);
         return;
       }
 
-      setLoadingAnnouncements(true);
-      setAnnouncementError(null);
+      if (showLoading) {
+        setLoadingAnnouncements(true);
+      }
 
       const { data, error } = await supabase
         .from("announcements")
@@ -87,17 +89,75 @@ export default function HomeScreen({
 
       if (error) {
         console.error("error fetching announcements:", error);
-        setAnnouncementError("unable to load announcements.");
-        setAnnouncements([]);
+
+        if (showLoading) {
+          setAnnouncementError("unable to load announcements.");
+        }
       } else {
-        setAnnouncements(data || []);
+        setAnnouncementError(null);
+
+        setAnnouncements((current) => {
+          const next = data ?? [];
+
+          // avoid unnecessary renders when announcement data has not changed
+          if (
+            current.length === next.length &&
+            current.every(
+              (item, index) =>
+                item.id === next[index].id &&
+                item.title === next[index].title &&
+                item.body === next[index].body &&
+                item.created_at === next[index].created_at,
+            )
+          ) {
+            return current;
+          }
+
+          return next;
+        });
       }
 
-      setLoadingAnnouncements(false);
-    };
+      if (showLoading) {
+        setLoadingAnnouncements(false);
+      }
+    },
+    [organization?.id],
+  );
 
-    fetchAnnouncements();
-  }, [organization?.id, announcementRefreshKey]);
+  // initial fetch and silent background polling
+  useEffect(() => {
+    fetchAnnouncements(true);
+
+    const interval = setInterval(() => {
+      fetchAnnouncements(false);
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [fetchAnnouncements, announcementRefreshKey]);
+
+  // listen for announcement changes in realtime
+  useEffect(() => {
+    if (!organization?.id) return;
+
+    const channel = supabase
+      .channel(`organization-announcements-${organization.id}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "announcements",
+        },
+        () => {
+          fetchAnnouncements();
+        },
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [organization?.id, fetchAnnouncements]);
 
   return (
     <View style={{ flex: 1 }}>

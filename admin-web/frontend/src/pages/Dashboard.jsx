@@ -1,112 +1,226 @@
-
-const statistics = [
-  {
-    label: "Active organizations",
-    value: "128",
-    change: "↑ 16 from last semester",
-    icon: "♧",
-  },
-  {
-    label: "Open vacancies",
-    value: "214",
-    change: "↑ 21 from last semester",
-    icon: "▣",
-  },
-  {
-    label: "Applications this semester",
-    value: "1,846",
-    change: "↑ 253 from last semester",
-    icon: "▤",
-  },
-  {
-    label: "Total organization accounts",
-    value: "149",
-    change: "Organization accounts created",
-    icon: "♙",
-  },
-];
-
-const semesters = [
-  { label: "1S 23-24", value: 704 },
-  { label: "2S 23-24", value: 1015 },
-  { label: "1S 24-25", value: 1128 },
-  { label: "2S 24-25", value: 1402 },
-  { label: "1S 25-26", value: 1593 },
-  { label: "2S 25-26", value: 1846 },
-];
-
-const organizations = [
-  { name: "Academic", count: 58, percentage: 39 },
-  { name: "Community service", count: 32, percentage: 21 },
-  { name: "Arts and culture", count: 24, percentage: 16 },
-  { name: "Recreation", count: 20, percentage: 13 },
-  { name: "Others", count: 15, percentage: 10 },
-];
-
-const activities = [
-  {
-    status: "Removed",
-    color: "bg-[#713D4A] text-[#FF9A9A]",
-    action: "Vacancy: Unpaid Marketing Intern",
-    organization: "Junior Entrepreneurs' Circle",
-    details: "Misleading compensation",
-    time: "2 hours ago",
-  },
-  {
-    status: "Approved",
-    color: "bg-[#245A4A] text-[#63E6A8]",
-    action: "Account verification",
-    organization: "Red Cross Youth Council",
-    details: "Documents complete",
-    time: "5 hours ago",
-  },
-  {
-    status: "Deactivated",
-    color: "bg-[#6B5830] text-[#F5D17B]",
-    action: "Account deactivated",
-    organization: "Photography Circle",
-    details: "Repeated policy violation",
-    time: "Yesterday",
-  },
-];
+import { useEffect, useState } from "react";
+import { Building2, FileText, Users } from "lucide-react";
+import supabase from "../lib/supabase";
 
 function Dashboard() {
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [statistics, setStatistics] = useState({
+    activeOrganizations: 0,
+    totalOrganizations: 0,
+    applicationsThisSemester: 0,
+  });
+  const [semesters, setSemesters] = useState([]);
+  const [organizations, setOrganizations] = useState([]);
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
+
+  async function fetchDashboardData() {
+    setLoading(true);
+    setError("");
+
+    try {
+      const [
+        { data: organizationData, error: organizationError },
+        { data: monitoringData, error: monitoringError },
+        { data: semesterData, error: semesterError },
+        { data: applicationData, error: applicationError },
+      ] = await Promise.all([
+        supabase.from("organizations").select("id, category"),
+
+        supabase
+          .from("org_monitoring")
+          .select("organization_id, last_posted_at"),
+
+        supabase
+          .from("semesters")
+          .select("id, name, starts_on, ends_on")
+          .order("starts_on", { ascending: true }),
+
+        supabase.from("applications").select("submitted_at"),
+      ]);
+
+      if (organizationError) throw organizationError;
+      if (monitoringError) throw monitoringError;
+      if (semesterError) throw semesterError;
+      if (applicationError) throw applicationError;
+
+      const now = new Date();
+
+      const monitoringMap = new Map(
+        (monitoringData || []).map((record) => [
+          record.organization_id,
+          new Date(record.last_posted_at),
+        ]),
+      );
+
+      const activeOrganizations = (organizationData || []).filter(
+        (organization) => {
+          const lastPosted = monitoringMap.get(organization.id);
+
+          return (
+            lastPosted &&
+            now.getTime() - lastPosted.getTime() <= 30 * 24 * 60 * 60 * 1000 &&
+            lastPosted <= now
+          );
+        },
+      ).length;
+
+      const currentSemester = (semesterData || []).find((semester) => {
+        const today = now.toISOString().slice(0, 10);
+
+        return today >= semester.starts_on && today <= semester.ends_on;
+      });
+
+      const applications = applicationData || [];
+
+      const applicationsThisSemester = currentSemester
+        ? applications.filter((application) => {
+            const submittedDate = new Date(application.submitted_at)
+              .toISOString()
+              .slice(0, 10);
+
+            return (
+              submittedDate >= currentSemester.starts_on &&
+              submittedDate <= currentSemester.ends_on
+            );
+          }).length
+        : 0;
+
+      const semesterStatistics = (semesterData || []).map((semester) => {
+        const count = applications.filter((application) => {
+          const submittedDate = new Date(application.submitted_at)
+            .toISOString()
+            .slice(0, 10);
+
+          return (
+            submittedDate >= semester.starts_on &&
+            submittedDate <= semester.ends_on
+          );
+        }).length;
+
+        return {
+          label: semester.name,
+          value: count,
+          isCurrent: semester.id === currentSemester?.id,
+        };
+      });
+
+      const categoryCounts = (organizationData || []).reduce(
+        (counts, organization) => {
+          const category = organization.category || "Uncategorized";
+
+          counts[category] = (counts[category] || 0) + 1;
+
+          return counts;
+        },
+        {},
+      );
+
+      const organizationOverview = Object.entries(categoryCounts)
+        .map(([name, count]) => ({
+          name,
+          count,
+          percentage:
+            organizationData.length > 0
+              ? (count / organizationData.length) * 100
+              : 0,
+        }))
+        .sort((a, b) => b.count - a.count);
+
+      setStatistics({
+        activeOrganizations,
+        totalOrganizations: organizationData.length,
+        applicationsThisSemester,
+      });
+
+      setSemesters(semesterStatistics.slice(-6));
+      setOrganizations(organizationOverview);
+    } catch (err) {
+      console.error("dashboard data error:", err);
+      setError("Unable to load dashboard data.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const statisticCards = [
+    {
+      label: "Active organizations",
+      value: statistics.activeOrganizations,
+      change: "Posted within the last 30 days",
+      icon: Building2,
+    },
+    {
+      label: "Applications this semester",
+      value: statistics.applicationsThisSemester,
+      change: "Applications submitted this semester",
+      icon: FileText,
+    },
+    {
+      label: "Total organizations",
+      value: statistics.totalOrganizations,
+      change: "Registered organizations",
+      icon: Users,
+    },
+  ];
+
+  const maximumApplications = Math.max(
+    ...semesters.map((semester) => semester.value),
+    1,
+  );
+
   return (
     <div className="space-y-4 pb-6 text-white">
-
-      {/* Statistics */}
-      <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        {statistics.map((stat) => (
-          <div
-            key={stat.label}
-            className="rounded-xl bg-[#383C55] p-4 shadow-sm"
+      {error && (
+        <div className="rounded-xl border border-red-400/30 bg-red-500/10 p-4 text-sm text-red-300">
+          {error}
+          <button
+            onClick={fetchDashboardData}
+            className="ml-3 font-semibold underline"
           >
-            <div className="flex items-center justify-between">
-              <p className="text-sm text-[#C5CDE2]">{stat.label}</p>
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#484D68] text-sm text-[#D9B77D]">
-                {stat.icon}
+            Retry
+          </button>
+        </div>
+      )}
+
+      {/* statistics */}
+      <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
+        {statisticCards.map((stat) => {
+          const Icon = stat.icon;
+
+          return (
+            <div
+              key={stat.label}
+              className="rounded-xl bg-[#383C55] p-4 shadow-sm"
+            >
+              <div className="flex items-center justify-between">
+                <p className="text-sm text-[#C5CDE2]">{stat.label}</p>
+
+                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#484D68] text-[#D9B77D]">
+                  <Icon size={19} />
+                </div>
               </div>
+
+              <h3 className="mt-2 text-3xl font-bold tracking-wide text-white">
+                {loading ? "—" : stat.value.toLocaleString()}
+              </h3>
+
+              <p className="mt-2 text-xs text-[#68DCA8]">{stat.change}</p>
             </div>
-
-            <h3 className="mt-2 text-3xl font-bold tracking-wide text-white">
-              {stat.value}
-            </h3>
-
-            <p className="mt-2 text-xs text-[#68DCA8]">{stat.change}</p>
-          </div>
-        ))}
+          );
+        })}
       </section>
 
-      {/* Chart and Organization Overview */}
+      {/* chart and organization overview */}
       <section className="grid grid-cols-1 gap-3 xl:grid-cols-[1.55fr_1fr]">
-
-        {/* Applications Chart */}
+        {/* applications chart */}
         <div className="rounded-xl bg-[#383C55] p-4 md:p-5">
           <div className="flex flex-wrap items-start justify-between gap-2">
             <div>
-              <h3 className="text-base font-bold">
-                Applications per semester
-              </h3>
+              <h3 className="text-base font-bold">Applications per semester</h3>
               <p className="mt-1 text-xs text-[#AEB8D5]">
                 Submitted throughout the academic year
               </p>
@@ -118,120 +232,89 @@ function Dashboard() {
             </div>
           </div>
 
-          <div className="mt-5 flex h-[190px] items-end justify-around gap-3 px-2">
-            {semesters.map((semester, index) => (
-              <div
-                key={semester.label}
-                className="flex h-full flex-1 flex-col items-center justify-end"
-              >
-                <span className="mb-2 text-xs text-[#DCE2F4]">
-                  {semester.value.toLocaleString()}
-                </span>
-
+          {loading ? (
+            <div className="flex h-[190px] items-center justify-center text-sm text-[#AEB8D5]">
+              Loading applications...
+            </div>
+          ) : semesters.length === 0 ? (
+            <div className="flex h-[190px] items-center justify-center text-sm text-[#AEB8D5]">
+              No semester data available.
+            </div>
+          ) : (
+            <div className="mt-5 flex h-[190px] items-end justify-around gap-3 px-2">
+              {semesters.map((semester) => (
                 <div
-                  className={`w-full max-w-[42px] rounded-t-lg ${
-                    index === semesters.length - 1
-                      ? "bg-[#D9B77D]"
-                      : "bg-[#69718F]"
-                  }`}
-                  style={{ height: `${(semester.value / 1846) * 125}px` }}
-                />
+                  key={semester.label}
+                  className="flex h-full flex-1 flex-col items-center justify-end"
+                >
+                  <span className="mb-2 text-xs text-[#DCE2F4]">
+                    {semester.value.toLocaleString()}
+                  </span>
 
-                <span className="mt-2 whitespace-nowrap text-[10px] text-[#AEB8D5]">
-                  {semester.label}
-                </span>
-              </div>
-            ))}
-          </div>
+                  <div
+                    className={`w-full max-w-[42px] rounded-t-lg ${
+                      semester.isCurrent ? "bg-[#D9B77D]" : "bg-[#69718F]"
+                    }`}
+                    style={{
+                      height: `${
+                        (semester.value / maximumApplications) * 125
+                      }px`,
+                    }}
+                  />
+
+                  <span className="mt-2 whitespace-nowrap text-[10px] text-[#AEB8D5]">
+                    {semester.label}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
-        {/* Organization Overview */}
+        {/* organization overview */}
         <div className="rounded-xl bg-[#383C55] p-4 md:p-5">
           <div className="mb-5 flex items-center justify-between gap-2">
             <h3 className="text-base font-bold">Organization overview</h3>
+
             <span className="rounded-full bg-[#705B2D] px-3 py-1.5 text-[11px] font-semibold text-[#F5D17B]">
-              149 accounts
+              {loading
+                ? "Loading..."
+                : `${statistics.totalOrganizations} organizations`}
             </span>
           </div>
 
-          <div className="space-y-4">
-            {organizations.map((organization) => (
-              <div key={organization.name}>
-                <div className="mb-2 flex items-center justify-between text-xs">
-                  <span className="text-[#DCE2F4]">
-                    {organization.name}
-                  </span>
-                  <span className="font-semibold text-white">
-                    {organization.count}
-                  </span>
+          {loading ? (
+            <div className="py-6 text-center text-sm text-[#AEB8D5]">
+              Loading organizations...
+            </div>
+          ) : organizations.length === 0 ? (
+            <div className="py-6 text-center text-sm text-[#AEB8D5]">
+              No organizations available.
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {organizations.map((organization) => (
+                <div key={organization.name}>
+                  <div className="mb-2 flex items-center justify-between text-xs">
+                    <span className="text-[#DCE2F4]">{organization.name}</span>
+
+                    <span className="font-semibold text-white">
+                      {organization.count}
+                    </span>
+                  </div>
+
+                  <div className="h-2 overflow-hidden rounded-full bg-[#292C43]">
+                    <div
+                      className="h-full rounded-full bg-[#D9B77D]"
+                      style={{
+                        width: `${organization.percentage}%`,
+                      }}
+                    />
+                  </div>
                 </div>
-
-                <div className="h-2 overflow-hidden rounded-full bg-[#292C43]">
-                  <div
-                    className="h-full rounded-full bg-[#D9B77D]"
-                    style={{ width: `${organization.percentage}%` }}
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Recent Admin Activity */}
-      <section className="rounded-xl bg-[#383C55] p-4 md:p-5">
-        <div className="mb-3 flex items-center justify-between">
-          <h3 className="text-base font-bold">Recent admin activity</h3>
-          <button className="text-xs font-medium text-[#C5D4FF] hover:text-white">
-            View all
-          </button>
-        </div>
-
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[750px] text-left">
-            <thead>
-              <tr className="border-b border-[#50546C] text-xs text-[#AEB8D5]">
-                <th className="py-3 font-medium">Status / Action</th>
-                <th className="py-3 font-medium">Organization</th>
-                <th className="py-3 font-medium">Details</th>
-                <th className="py-3 text-right font-medium">Time</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {activities.map((activity) => (
-                <tr
-                  key={activity.action}
-                  className="border-b border-[#50546C] last:border-0"
-                >
-                  <td className="py-4 pr-4">
-                    <div className="flex items-center gap-3">
-                      <span
-                        className={`whitespace-nowrap rounded-full px-2.5 py-1 text-[10px] font-semibold ${activity.color}`}
-                      >
-                        {activity.status}
-                      </span>
-                      <span className="text-xs font-semibold text-white">
-                        {activity.action}
-                      </span>
-                    </div>
-                  </td>
-
-                  <td className="py-4 text-xs text-[#C5CDE2]">
-                    {activity.organization}
-                  </td>
-
-                  <td className="py-4 text-xs text-[#C5CDE2]">
-                    {activity.details}
-                  </td>
-
-                  <td className="py-4 text-right text-[11px] text-[#AEB8D5]">
-                    {activity.time}
-                  </td>
-                </tr>
               ))}
-            </tbody>
-          </table>
+            </div>
+          )}
         </div>
       </section>
     </div>

@@ -1,5 +1,6 @@
 
 import { useLocation } from "react-router-dom";
+import { Bell } from "lucide-react";
 
 const pageInfo = {
   "/admin/dashboard": {
@@ -14,13 +15,13 @@ const pageInfo = {
     title: "Organizations",
     description: "Manage registered organizations",
   },
-  "/admin/vacancies": {
-    title: "Vacancies",
-    description: "Manage organization vacancies",
-  },
   "/admin/announcements": {
     title: "Announcements",
     description: "Manage announcements",
+  },
+  "/admin/semesters": {
+    title: "Semesters",
+    description: "Manage academic semesters",
   },
   "/admin/analytics": {
     title: "Analytics & Reports",
@@ -30,7 +31,8 @@ const pageInfo = {
 
 function AdminHeader() {
   const location = useLocation();
-  const currentPage = pageInfo[location.pathname] || pageInfo["/admin/dashboard"];
+  const currentPage =
+    pageInfo[location.pathname] || pageInfo["/admin/dashboard"];
 
   return (
     <header className="flex min-h-[76px] items-center justify-between gap-4 bg-[#292C43] px-4 py-3 md:px-6">
@@ -43,25 +45,13 @@ function AdminHeader() {
         </p>
       </div>
 
-      <div className="flex items-center gap-2.5">
-        <input
-          type="text"
-          placeholder="Search organizations, vacancies..."
-          className="hidden h-10 w-48 rounded-full border border-[#4A4E68] bg-[#383C55] px-4 text-xs text-white outline-none placeholder:text-[#AEB8D5] focus:border-[#D9B77D] md:block lg:w-64"
-        />
-
-        <button
-          type="button"
-          aria-label="Notifications"
-          className="flex h-10 w-10 items-center justify-center rounded-full bg-[#383C55] text-base text-white hover:bg-[#41445B]"
-        >
-          ♧
-        </button>
-
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#D9B77D] text-xs font-bold text-[#292C43]">
-          AD
-        </div>
-      </div>
+      <button
+        type="button"
+        aria-label="Notifications"
+        className="flex h-10 w-10 items-center justify-center rounded-full bg-[#383C55] text-white transition hover:bg-[#41445B]"
+      >
+        <Bell size={19} strokeWidth={1.8} />
+      </button>
     </header>
   );
 }

@@ -1,10 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import {
-  View,
-  TouchableOpacity,
-  ActivityIndicator,
-  Alert,
-} from "react-native";
+import { View, TouchableOpacity, ActivityIndicator, Alert } from "react-native";
 import { NotificationCard } from "../components/cards";
 import { layout } from "../styles/style";
 import { AppText, TabScroll } from "../components/ui";
@@ -41,7 +36,8 @@ export default function NotifList() {
     try {
       const { data, error } = await supabase
         .from("notifications")
-        .select(`
+        .select(
+          `
           id,
           type,
           application_id,
@@ -61,7 +57,8 @@ export default function NotifList() {
               name
             )
           )
-        `)
+        `,
+        )
         .order("sent_at", { ascending: false });
 
       if (error) throw error;
@@ -101,10 +98,8 @@ export default function NotifList() {
 
       setNotifications((current) =>
         current.map((item) =>
-          unreadIds.includes(item.id)
-            ? { ...item, read_at: readAt }
-            : item
-        )
+          unreadIds.includes(item.id) ? { ...item, read_at: readAt } : item,
+        ),
       );
     } catch (error) {
       console.error("error marking notifications as read:", error);
@@ -142,13 +137,12 @@ export default function NotifList() {
     }
 
     if (item.type === "announcement") {
-      const announcement = item.announcement;
       const organizationName =
-        announcement?.organization?.name ?? "Organization";
+        item.announcement?.organization?.name ?? "An organization";
 
       return {
         name: organizationName,
-        message: announcement?.title ?? "Posted a new announcement.",
+        message: `${organizationName} posted a new announcement!`,
       };
     }
 
@@ -161,10 +155,7 @@ export default function NotifList() {
   return (
     <TabScroll useNavPadding={false}>
       <View style={[layout.content, { paddingTop: spacing["2xl"] }]}>
-        <TouchableOpacity
-          onPress={handleMarkAllAsRead}
-          disabled={updating}
-        >
+        <TouchableOpacity onPress={handleMarkAllAsRead} disabled={updating}>
           <AppText variant="link" align="right">
             {updating ? "Updating..." : "Mark all as read"}
           </AppText>
