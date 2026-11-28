@@ -222,7 +222,11 @@ export default function ProfileScreen() {
                     <SwitchCard
                       key={org.id}
                       name={org.name}
-                      onPress={() => navigation.navigate("OrgView")}
+                      onPress={() =>
+                        navigation.navigate("OrgView", {
+                          organization: org,
+                        })
+                      }
                     />
                   ))
                 )}

@@ -35,7 +35,6 @@
 <!-- 8.  TO DO: Display submitted applications in application tab -->
 
 ## Accomplished [11-27/11-28] - Jade
-
 1. Added Announcement Sheets for posting announcements
 2. Custom modal for alerts
 3. Added members pages + member cards

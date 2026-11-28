@@ -29,9 +29,16 @@ const AnnouncementSheet = forwardRef(({ onSubmit }, ref) => {
   }));
 
   const canPost = title.trim() && body.trim();
-  const handlePost = () => {
+  const handlePost = async () => {
     if (!canPost) return;
-    onSubmit?.({ title: title.trim(), body: body.trim() });
+
+    const success = await onSubmit?.({
+      title: title.trim(),
+      body: body.trim(),
+    });
+
+    if (success === false) return;
+
     setTitle("");
     setBody("");
     sheetRef.current?.close();
