@@ -35,6 +35,15 @@
 <!-- 8.  TO DO: Display submitted applications in application tab -->
 
 ## Accomplished [11-27/11-28] - Jade
+
 1. Added Announcement Sheets for posting announcements
 2. Custom modal for alerts
 3. Added members pages + member cards
+
+## Accomplished [11/28] - Cruzat
+1. Hooked up the database to pull in each org's name, description, and member list.
+2. Set up the Members and Applicants tabs to display their respective lists.
+3. Got per-organization announcements up and running.
+4. Added notifications for both students and orgs.
+5. Org Officers can now accept new applicants.
+<!-- I NEED: applicants card for specific tab -->

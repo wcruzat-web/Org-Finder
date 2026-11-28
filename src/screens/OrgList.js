@@ -10,7 +10,6 @@ import supabase from "../../library/supabase.js";
 
 const FILTERS = [
   { key: "all", label: "All" },
-  { key: "vacancies", label: "Vacancies" },
   { key: "applications", label: "Applications" },
 ];
 

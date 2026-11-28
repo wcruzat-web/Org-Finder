@@ -220,9 +220,6 @@ export default function HomeScreen() {
       }
     >
       <View style={layout.content}>
-        <AppInput variant="search" onFilterPress={() => {}} />
-      </View>
-      <View style={layout.content}>
         <AppText variant="heading">Recommended for you</AppText>
         {Array.isArray(recommendations) && recommendations.length > 0 ? (
           <CardStack
