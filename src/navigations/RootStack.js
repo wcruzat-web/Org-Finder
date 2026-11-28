@@ -7,6 +7,7 @@ import NotifList from "../screens/NotifList";
 import OrgNotif from "../screens/OrgView/NotifList";
 
 import theme from "../styles/theme-dark";
+import ViewMembers from "../screens/ViewMembers";
 
 const { colors } = theme;
 
@@ -23,7 +24,8 @@ export default function RootStack() {
             title={options.title}
             variant="withReturnButton"
             onBack={navigation.goBack}
-            hideIcon={true}
+            // icon={options.icon?? null}
+            hideIcon={options.hideIcon?? true}
           />
         ),
         sceneStyle: { backgroundColor: colors.background },
@@ -40,6 +42,8 @@ export default function RootStack() {
         component={OrgDetails}
         options={({ route }) => ({
           title: route.params?.org?.name ?? "Organization",
+          // icon: "menu",
+          // hideIcon: false,
         })}
       />
 
@@ -47,6 +51,12 @@ export default function RootStack() {
         name="Notifications"
         component={NotifList}
         options={{ title: "Notifications" }}
+      />
+
+      <Stack.Screen
+        name="ViewMembers"
+        component={ViewMembers}
+        options={{ title: "View Members", }}
       />
 
       <Stack.Screen

@@ -14,6 +14,7 @@ import { SearchIcon, FilterIcon } from "../../../assets/icons/SearchIcons";
 const AppInput = forwardRef(function AppInput(
   {
     variant = "default",
+    as: Field = TextInput,
     showFilter = true,
     onFilterPress,
     label,
@@ -87,7 +88,7 @@ const AppInput = forwardRef(function AppInput(
     <View style={[input.wrapper, style]}>
       {label ? <AppText variant="label">{label}</AppText> : null}
 
-      <TextInput
+      <Field
         ref={ref}
         placeholderTextColor={inputPlaceholderColor}
         selectionColor={inputSelectionColor}

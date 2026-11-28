@@ -1,14 +1,14 @@
 import { useState, useEffect } from "react";
-import { Alert, View, Image, ActivityIndicator } from "react-native";
+import { View, Image, ActivityIndicator } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import supabase from "../../library/supabase";
 import {
   AppText,
   AppButton,
+  AppModal,
   TabScroll,
   Avatar,
   Pill,
-  AppInput,
 } from "../components/ui";
 import { layout, card } from "../styles/style";
 import DefaultBanner from "../../assets/banner-placeholder.png";
@@ -24,6 +24,32 @@ export default function ProfileScreen() {
   const [officerOrganizations, setOfficerOrganizations] = useState([]);
   const [organizationError, setOrganizationError] = useState(null);
   const [loadingOrganizations, setLoadingOrganizations] = useState(true);
+
+  const [modal, setModal] = useState({
+    visible: false,
+    title: "",
+    message: "",
+    type: "alert",
+    confirmText: "OK",
+    cancelText: "Cancel",
+    onConfirm: null,
+  });
+
+  const showModal = (title, message, options = {}) => {
+    setModal({
+      visible: true,
+      title,
+      message,
+      type: options.type || "alert",
+      confirmText: options.confirmText || "OK",
+      cancelText: options.cancelText || "Cancel",
+      onConfirm: options.onConfirm || null,
+    });
+  };
+
+  const closeModal = () => {
+    setModal((prev) => ({ ...prev, visible: false }));
+  };
 
   const fetchOfficerOrganizations = async () => {
     try {
@@ -122,94 +148,106 @@ export default function ProfileScreen() {
 
   const navigation = useNavigation();
 
-  const getImageSource = (image) =>
-    typeof image === "string" ? { uri: image } : image;
-
   const handleLogout = async () => {
     try {
       await logoutUser();
 
-      Alert.alert("Logged Out", "You have successfully logged out.");
+      showModal("Logged Out", "You have successfully logged out.");
     } catch (error) {
-      Alert.alert("Logout Failed", error.message);
+      showModal("Logout Failed", error.message);
       return;
     }
   };
 
-  const confirmLogout = async () => {
-    Alert.alert("Menu", "Log out of OrgFinder?", [
-      { text: "Cancel", style: "cancel" },
-      {
-        text: "Log out",
-        style: "destructive",
-        onPress: handleLogout,
-      },
-    ]);
+  const confirmLogout = () => {
+    showModal("Menu", "Log out of OrgFinder?", {
+      type: "confirmCancel",
+      confirmText: "Log out",
+      cancelText: "Cancel",
+      onConfirm: handleLogout,
+    });
   };
 
   return (
-    <TabScroll useNavPadding={false}>
-      {/* Banner */}
-      <View style={layout.banner}>
-        <Image
-          source={DefaultBanner}
-          style={{ width: "100%", height: "100%" }}
-          resizeMode="cover"
-        />
+    <>
+      <TabScroll useNavPadding={false}>
+        {/* Banner */}
+        <View style={layout.banner}>
+          <Image
+            source={DefaultBanner}
+            style={{ width: "100%", height: "100%" }}
+            resizeMode="cover"
+          />
 
-        <View style={layout.profileSection}>
-          <Avatar size="profile" />
-        </View>
-      </View>
-
-      <View style={[layout.content, layout.stack]}>
-        {/* Name and course */}
-        <View style={layout.columnCenter}>
-          <AppText variant="headline" align="center">
-            {profile.full_name || "Student Name"}
-          </AppText>
-
-          {profile.course ? (
-            <Pill label={profile.course} tone="muted" dot />
-          ) : (
-            <AppText variant="tag">Course not available</AppText>
-          )}
+          <View style={layout.profileSection}>
+            <Avatar size="profile" />
+          </View>
         </View>
 
-        {/* Additional information */}
-        <View style={layout.stack}>
-          <View style={[card.base, card.default, layout.stackInside]}>
-            <AppText variant="bodySmall">Edit Info</AppText>
+        <View style={[layout.content, layout.stack]}>
+          {/* Name and course */}
+          <View style={layout.columnCenter}>
+            <AppText variant="headline" align="center">
+              {profile.full_name || "Student Name"}
+            </AppText>
+
+            {profile.course ? (
+              <Pill label={profile.course} tone="muted" dot />
+            ) : (
+              <AppText variant="tag">Course not available</AppText>
+            )}
           </View>
 
-          <View style={[card.base, card.default, layout.stackInside]}>
-            <View style={layout.stackInside}>
-              <AppText variant="bodySmall">Switch Account</AppText>
+          {/* Additional information */}
+          <View style={layout.stack}>
+            <View style={[card.base, card.default, layout.stackInside]}>
+              <AppText variant="bodySmall">Edit Info</AppText>
+            </View>
 
-              {loadingOrganizations ? (
-                <ActivityIndicator />
-              ) : organizationError ? (
-                <AppText variant="bodySmall">{organizationError}</AppText>
-              ) : officerOrganizations.length === 0 ? (
-                <SwitchCard
-                  name="Test Switch"
-                  onPress={() => navigation.navigate("OrgView")}
-                />
-              ) : (
-                officerOrganizations.map((org) => (
+            <View style={[card.base, card.default, layout.stackInside]}>
+              <View style={layout.stackInside}>
+                <AppText variant="bodySmall">Switch Account</AppText>
+
+                {loadingOrganizations ? (
+                  <ActivityIndicator />
+                ) : organizationError ? (
+                  <AppText variant="bodySmall">{organizationError}</AppText>
+                ) : officerOrganizations.length === 0 ? (
                   <SwitchCard
-                    key={org.id}
-                    name={org.name}
+                    name="Test Switch"
                     onPress={() => navigation.navigate("OrgView")}
                   />
-                ))
-              )}
+                ) : (
+                  officerOrganizations.map((org) => (
+                    <SwitchCard
+                      key={org.id}
+                      name={org.name}
+                      onPress={() => navigation.navigate("OrgView")}
+                    />
+                  ))
+                )}
+              </View>
             </View>
-          </View>
 
-          <AppButton title="Log Out" onPress={confirmLogout} />
+            <AppButton title="Log Out" onPress={confirmLogout} />
+          </View>
         </View>
-      </View>
-    </TabScroll>
+      </TabScroll>
+
+      <AppModal
+        visible={modal.visible}
+        title={modal.title}
+        message={modal.message}
+        type={modal.type}
+        confirmText={modal.confirmText}
+        cancelText={modal.cancelText}
+        onConfirm={() => {
+          const callback = modal.onConfirm;
+          closeModal();
+          callback?.();
+        }}
+        onClose={closeModal}
+      />
+    </>
   );
 }

@@ -1,9 +1,9 @@
 import { Pressable, Text } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { header, headerColor, headerMetrics } from "../styles/style";
 import BackIcon from "../../assets/icons/Back";
 import NotifIcon from "../../assets/icons/Notif";
+import MenuIcon from "../../assets/icons/Menu";
 
 const VARIANTS = {
   default: { showBack: false, centered: false },
@@ -31,6 +31,7 @@ export default function Header({
   title,
   variant = "default",
   onBack,
+  icon = "notif",
   onIconPress,
   hideIcon = false,
 }) {
@@ -59,9 +60,15 @@ export default function Header({
       </Text>
 
       {!hideIcon ? (
-        <IconButton label="Notif" onPress={onIconPress}>
-          <NotifIcon />
-        </IconButton>
+        icon === "notif" ? (
+          <IconButton label="Notif" onPress={onIconPress}>
+            <NotifIcon />
+          </IconButton>
+        ) : icon === "menu" ? (
+          <IconButton label="Menu" onPress={onIconPress}>
+            <MenuIcon />
+          </IconButton>
+        ) : null
       ) : null}
     </LinearGradient>
   );

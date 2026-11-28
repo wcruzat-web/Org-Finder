@@ -127,6 +127,12 @@ export const button = StyleSheet.create({
     borderRadius: 999,
   },
   composerPressed: { backgroundColor: colors.surface },
+  leave: {
+    backgroundColor: colors.errorBg,
+    borderWidth: 2,
+    borderColor: colors.error,
+    borderRadius: 999,
+  },
 });
 
 export const buttonLabelTone = {
@@ -134,6 +140,7 @@ export const buttonLabelTone = {
   secondary: "primary",
   ghost: "brand",
   composer: "secondary",
+  leave: "error",
 };
 
 export const buttonSpinnerColor = {
@@ -225,6 +232,12 @@ export const layout = StyleSheet.create({
   columnCenter: {
     alignItems: "center",
     justifyContent: "center",
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    gap: spacing.sm,
+    marginTop: spacing.md,
   },
   divider: {
     height: 1,
@@ -462,6 +475,18 @@ export const cardColors = {
   halftone: colors.supportSoft,
 };
 
+export const memberCard = StyleSheet.create({
+  header: { flexDirection: "row", alignItems: "center", gap: spacing.sm },
+  response: {
+    backgroundColor: colors.surface,
+    borderRadius: spacing.md,
+    padding: spacing.sm,
+    gap: spacing.xs,
+  },
+  actions: { flexDirection: "row", gap: spacing.sm },
+  action: { flex: 1 },
+});
+
 export const card = StyleSheet.create({
   base: {
     borderRadius: spacing.lg,
@@ -540,6 +565,26 @@ export const notification = StyleSheet.create({
   },
   title: { flex: 1 },
   message: { marginTop: spacing.xs },
+});
+
+//Modals
+export const modal = StyleSheet.create({
+  overlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: spacing.xl,
+  },
+  container: {
+    width: "100%",
+    maxWidth: 400,
+    backgroundColor: colors.surface,
+    borderRadius: spacing.xl,
+    padding: spacing.lg,
+    gap: spacing.md,
+    elevation: 10,
+  },
 });
 
 //SegmentedTabs

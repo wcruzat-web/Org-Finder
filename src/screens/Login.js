@@ -1,6 +1,8 @@
+
 import React, { useState } from "react";
-import { View, Alert, TouchableOpacity } from "react-native";
+import { View, TouchableOpacity } from "react-native";
 import { AppText, AppInput, AppButton } from "../components/ui";
+import AppModal from "../components/ui/AppModal";
 import { layout } from "../styles/style";
 
 import { loginUser } from "../../library/services/authService.js";
@@ -14,23 +16,56 @@ export default function Login({
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
+  const [modal, setModal] = useState({
+    visible: false,
+    type: "alert",
+    title: "",
+    message: "",
+    confirmText: "",
+    onConfirm: null,
+  });
+
+  const closeModal = () => {
+    setModal((prev) => ({ ...prev, visible: false }));
+  };
+
+  const showModal = (options) => {
+    setModal({
+      visible: true,
+      type: "alert",
+      title: "",
+      message: "",
+      confirmText: "",
+      onConfirm: null,
+      ...options,
+    });
+  };
+
   const handleLogin = async () => {
     if (!email.trim() || !password) {
-      Alert.alert("Required", "Please enter your email and password.");
+      showModal({
+        title: "Required",
+        message: "Please enter your email and password.",
+      });
       return;
     }
 
     try {
       setIsLoading(true);
       await loginUser(email.trim().toLowerCase(), password);
-      Alert.alert("Success", "Login successful.", [
-        {
-          text: "Continue",
-          onPress: onLoginSuccess,
-        },
-      ]);
+
+      showModal({
+        type: "confirm",
+        title: "Success",
+        message: "Login successful.",
+        confirmText: "Continue",
+        onConfirm: onLoginSuccess,
+      });
     } catch (error) {
-      Alert.alert("Login Failed", error.message);
+      showModal({
+        title: "Login Failed",
+        message: error.message,
+      });
     } finally {
       setIsLoading(false);
     }
@@ -78,6 +113,16 @@ export default function Login({
         <AppText variant="caption">Don't have an account? </AppText>
         <AppText variant="link">Sign In</AppText>
       </TouchableOpacity>
+
+      <AppModal
+        visible={modal.visible}
+        type={modal.type}
+        title={modal.title}
+        message={modal.message}
+        confirmText={modal.confirmText}
+        onConfirm={modal.onConfirm}
+        onClose={closeModal}
+      />
     </View>
   );
 }

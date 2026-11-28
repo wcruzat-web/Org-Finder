@@ -1,4 +1,4 @@
-import React, {
+import {
   forwardRef,
   useMemo,
   useRef,
@@ -6,7 +6,7 @@ import React, {
   useImperativeHandle,
 } from "react";
 
-import { View, StyleSheet, Keyboard } from "react-native";
+import { View, Keyboard } from "react-native";
 
 import BottomSheet, {
   BottomSheetView,
@@ -14,8 +14,8 @@ import BottomSheet, {
   BottomSheetTextInput,
 } from "@gorhom/bottom-sheet";
 
-import { AppText, AppButton } from "../ui";
-import { sheets } from "../../styles/style";
+import { AppText, AppInput, AppButton } from "../ui";
+import { layout, sheets } from "../../styles/style";
 
 const ApplicationSheet = forwardRef(({ onSubmit }, ref) => {
   const sheetRef = useRef(null);
@@ -70,28 +70,30 @@ const ApplicationSheet = forwardRef(({ onSubmit }, ref) => {
       <BottomSheetView style={sheets.content}>
         <AppText variant="heading">Apply for Membership</AppText>
 
-        <AppText variant="caption">
-          Tell us why you'd like to join this organization.
-        </AppText>
-
-        <BottomSheetTextInput
+        <AppInput
+          as={BottomSheetTextInput}
+          label="Why would you like to join our organization?"
           value={message}
           onChangeText={setMessage}
-          placeholder="Write your application..."
+          placeholder="For I..."
           multiline
           textAlignVertical="top"
-          style={styles.input}
+          inputStyle={{ minHeight: 72 }}
         />
 
-        <View style={styles.buttons}>
+        <View style={layout.buttonContainer}>
           <AppButton
             title="Cancel"
             variant="secondary"
+            size="sm"
+            fullWidth={false}
             onPress={() => sheetRef.current?.close()}
           />
 
           <AppButton
             title="Submit Application"
+            size="sm"
+            fullWidth={false}
             onPress={handleSubmit}
             disabled={!message.trim()}
           />
@@ -102,18 +104,3 @@ const ApplicationSheet = forwardRef(({ onSubmit }, ref) => {
 });
 
 export default ApplicationSheet;
-
-const styles = StyleSheet.create({
-  input: {
-    minHeight: 130,
-    borderRadius: 16,
-    backgroundColor: "#343950",
-    padding: 16,
-    color: "#FFFFFF",
-    fontSize: 15,
-  },
-  buttons: {
-    flexDirection: "row",
-    gap: 12,
-  },
-});

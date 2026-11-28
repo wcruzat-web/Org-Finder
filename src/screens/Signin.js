@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { View, TouchableOpacity, Alert } from "react-native";
-import { AppText, AppInput, AppButton } from "../components/ui";
+import { View, TouchableOpacity } from "react-native";
+import { AppText, AppInput, AppButton, AppModal } from "../components/ui";
 import { Dropdown } from "react-native-element-dropdown";
 
 import courses from "../../data/courses.js";
@@ -30,6 +30,26 @@ export default function Signin({
   const [courseStep, setCourseStep] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
+  const [modal, setModal] = useState({
+    visible: false,
+    title: "",
+    message: "",
+    type: "alert",
+    confirmText: "OK",
+    onConfirm: null,
+  });
+
+  const showModal = (title, message, options = {}) => {
+    setModal({
+      visible: true,
+      title,
+      message,
+      type: options.type || "alert",
+      confirmText: options.confirmText || "OK",
+      onConfirm: options.onConfirm || null,
+    });
+  };
+
   const passwordRegex = {
     uppercase: /[A-Z]/,
     lowercase: /[a-z]/,
@@ -38,14 +58,14 @@ export default function Signin({
 
   const handleRegister = async () => {
     if (!email || !password || !confirmPassword) {
-      Alert.alert("Error", "Please fill in all fields.");
+      showModal("Error", "Please fill in all fields.");
       return;
     } else if (false) {
       // This is a placeholder for the condition that checks if the password is valid
     } else {
       for (const [key, regex] of Object.entries(passwordRegex)) {
         if (!regex.test(password)) {
-          Alert.alert(
+          showModal(
             "Error",
             `Password must contain at least one ${key} character.`,
           );
@@ -55,7 +75,7 @@ export default function Signin({
     }
 
     if (password !== confirmPassword) {
-      Alert.alert("Error", "Passwords do not match.");
+      showModal("Error", "Passwords do not match.");
       return;
     }
 
@@ -65,7 +85,7 @@ export default function Signin({
       await registerUser(email.trim().toLowerCase(), password);
       setOtpSent(true);
     } catch (error) {
-      Alert.alert("Registration Failed", error.message);
+      showModal("Registration Failed", error.message);
     } finally {
       setIsLoading(false);
     }
@@ -78,7 +98,7 @@ export default function Signin({
       setOtpSent(false);
       setNameStep(true);
     } catch (error) {
-      Alert.alert("Verification Failed", error.message);
+      showModal("Verification Failed", error.message);
     } finally {
       setIsLoading(false);
     }
@@ -86,7 +106,7 @@ export default function Signin({
 
   const handleNameSubmit = () => {
     if (!fullName.trim()) {
-      Alert.alert("Required", "Please enter your full name.");
+      showModal("Required", "Please enter your full name.");
       return;
     }
 
@@ -96,21 +116,21 @@ export default function Signin({
 
   const handleCourseSubmit = async () => {
     if (!course.trim()) {
-      Alert.alert("Required", "Please enter your course.");
+      showModal("Required", "Please enter your course.");
       return;
     }
 
     try {
       setIsLoading(true);
       await createStudentAccount(fullName, course);
-      Alert.alert("Success", "Account created successfully.", [
-        {
-          text: "Continue",
-          onPress: onRegistrationComplete,
-        },
-      ]);
+
+      showModal("Success", "Account created successfully.", {
+        type: "confirm",
+        confirmText: "Continue",
+        onConfirm: onRegistrationComplete,
+      });
     } catch (error) {
-      Alert.alert(
+      showModal(
         "Account Creation Failed",
         "Account Already Exists or " + error.message,
       );
@@ -243,6 +263,18 @@ export default function Signin({
           <AppText variant="link">Log In</AppText>
         </TouchableOpacity>
       )}
+
+      <AppModal
+        visible={modal.visible}
+        type={modal.type}
+        title={modal.title}
+        message={modal.message}
+        confirmText={modal.confirmText}
+        onConfirm={modal.onConfirm}
+        onClose={() =>
+          setModal((prev) => ({ ...prev, visible: false }))
+        }
+      />
     </View>
   );
 }

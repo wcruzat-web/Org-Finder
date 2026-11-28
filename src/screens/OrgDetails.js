@@ -1,13 +1,15 @@
 import { useRef, useState, useEffect } from "react";
-import { View, Image, Keyboard } from "react-native";
+import { View, Image, Keyboard, TouchableOpacity } from "react-native";
 import { TabScroll, AppText, Avatar, AppButton, Pill } from "../components/ui";
 import { layout, card } from "../styles/style";
 
 import DefaultBanner from "../../assets/banner-placeholder.png";
 import { AnnouncementCard, ApplicationSheet } from "../components/cards";
 import supabase from "../../library/supabase.js";
+import { useNavigation } from "@react-navigation/native";
 
-export default function OrgDetails({ route, navigation }) {
+export default function OrgDetails({ route }) {
+  const navigation = useNavigation();
   const { org } = route.params;
 
   const sheetRef = useRef(null);
@@ -167,9 +169,13 @@ export default function OrgDetails({ route, navigation }) {
           </View>
 
           <View style={card.footer}>
-            <AppText variant="caption" tone="primary">
-              {org.memberCount} Members
-            </AppText>
+            <TouchableOpacity
+              onPress={() => navigation.navigate("ViewMembers", { org })}
+            >
+              <AppText variant="caption" tone="primary">
+                {org.memberCount} Members
+              </AppText>
+            </TouchableOpacity>
 
             {!membershipLoading && (
               <View style={layout.columnCenter}>

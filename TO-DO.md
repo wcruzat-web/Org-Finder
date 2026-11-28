@@ -1,9 +1,9 @@
 ## Work-in-Progress:
 
 - Profile Page still WIP + Settings UI..?
-- Member List for Org View
 - Edit Org View to include KPI cards.
-- Fix styling for Applications Sheets
+- Add leave button for members
+- Member card's onPress function is a ticking timebomb, once onPress is passed as props it would cause an error and break functionality due to nested buttons, fix ASAP.
 
 ## Install this for Groq AI
 
